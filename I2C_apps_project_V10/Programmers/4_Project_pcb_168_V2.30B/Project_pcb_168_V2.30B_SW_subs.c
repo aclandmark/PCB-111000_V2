@@ -1,6 +1,206 @@
+
+
+/**********************************************************************************************************/
+void new_record(void){int Local_r_pointer;								//Start of new record from the hex file
+
+while (r_pointer == w_pointer);											//Wait for new entry in array "store"
+Local_r_pointer = r_pointer;
+record_length =  store[Local_r_pointer]; 								//Obtain the length of the new record
+inc_r_pointer;  														//Increment the read pointer
+Count_down = record_length/2; 											//Initialised to record lenghth (in commands) 
+if (record_length_old < 0x10)short_record=1;							//Check for "record length" (<8 commands)
+record_length_old = record_length;										//Save record length
+
+while (r_pointer == w_pointer);											//Wait for next entry in array "store"
+Local_r_pointer = r_pointer;
+Hex_address  =  (store[Local_r_pointer]); 								//Get the address of the first command in the new record
+inc_r_pointer;  														//Increment the read pointer
+Hex_address  = Hex_address/2;											//Convert address from byte to word value
+prog_led_control++;
+
+if (Hex_address == HW_address)orphan = 0;								//New record follows on immediately from the old
+else{if (Hex_address == 0);											//Start of hex file: address is zero
+		else{if ((Hex_address & PAmask) > (page_address + PageSZ))		//Long jump: At least one page is unused
+				{section_break=1;page_break=0;}
+			if((Hex_address & PAmask) == (page_address + PageSZ))		//Page jump: Jump to next page without filling current one
+				{section_break=0;page_break=1; }
+			if ((Hex_address & PAmask) == page_address)				//Short jump: Jump within page
+				{section_break=0;page_break=0; orphan = 0;}}}
+
+if(prog_led_control & 0b00001000) {LEDs_on;}	
+else {LEDs_off;}}  
+
+
+
+/**********************************************************************************************************/
+void start_new_code_block(void){
+HW_address = Hex_address;												//Initialise HW_address
+page_address = (Hex_address & PAmask);									//Obtain page address
+write_address = Hex_address - page_address;								//Initialise write_address: zero to Page size -1
+page_offset = write_address;											//"page_offset" is the initial value of "write_address"											
+line_offset = Hex_address & 0x0007;										//Not all lines start with addresses that are multiples of 8
+space_on_page = (PageSZ - page_offset);}								//Initialise "space_on_page"
+
+
+
+
+
+
+/**********************************************************************************************************/
+void Program_record(void){
+
+while(Count_down){ 														//Initially contains the number of commands in the line
+Count_down--;															//Decrement "count_down" each time a command is written to the page buffer
+Flash_flag = 1;  														//Indicates that page buffer containes commands that will need burning to flash 
+copy_cmd_to_page_buffer();  												 
+write_address++;
+HW_address++;
+space_on_page--;
+prog_counter++;       
+if (write_address == PageSZ){											//If page_buffrer is now full:
+Read_write_mem('W', page_address, 0x0);									//Burn contents of page buffer to flash
+Flash_flag = 0;															//Buffer now contains no data to burn to flash
+write_address = 0;														//"while loop" continues if there is a line offset
+space_on_page = PageSZ;
+page_offset = line_offset;
+if (line_offset) orphan = 1;}}}										//One or more commands in current record will be on next page
+
+
+/**********************************************************************************************************/
+void copy_cmd_to_page_buffer(void){
+get_next_hex_cmd();
+Load_page('L', write_address, Hex_cmd & 0x00FF); 
+Load_page('H', write_address, (Hex_cmd >> 8));}
+
+
+/**********************************************************************************************************/
+void get_next_hex_cmd(void){int Local_r_pointer;
+while (r_pointer == w_pointer);
+Local_r_pointer = r_pointer;
+Hex_cmd = store[Local_r_pointer];
+inc_r_pointer;}
+
+
+
+/**********************************************************************************************************/
+void write_page_SUB(signed int page_address){
+Read_write_mem('W',  page_address, 0x0);
+Flash_flag = 0;}
+
+
+
+/***********************************************************/
+char receive_byte_with_Ack(void){
+char byte;
+TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);		//Set Ack enable and clear interrupt
+while (!(TWCR & (1 << TWINT)));						//Wait for interrupt
+byte = TWDR;
+return byte;}
+
+/***********************************************************/
+char receive_byte_with_Nack(void){
+char byte;
+TWCR = (1 << TWEN) | (1 << TWINT);		//Set Ack enable and clear interrupt
+while (!(TWCR & (1 << TWINT)));						//Wait for interrupt
+byte = TWDR;
+return byte;}
+
+
+
+
+
+/*
+void Verify_Flash_99 (void){
+int line_no_mem;
+int  print_out = 0, print_counter, star_counter = 0;
+unsigned int Verify_address;
+signed int phys_address, FF_cmd_counter;
+signed int prog_counter_mem;
+int data_counter;
+char print_out_mode = 0; //temp_char;
+char skip_lines[4];
+
+FF_cmd_counter = 0;
+
+Text_int_0_FF; sendString("   ");	
+print_out = 0; data_counter = 0;
+skip_lines[0] = '0';		//MSB
+skip_lines[1] = waitforkeypress();
+skip_lines[2] = '\0';
+
+if (isCharavailable(100)){skip_lines[0] = skip_lines[1];
+skip_lines[1] = receiveChar();}	binUnwantedChars();		//NEW CMD
+print_out = askiX2_to_hex(skip_lines);
+sendHex (16,print_out); sendString("   ");
+
+if (print_out == 0); else {
+sendString("1/2?\r\n");	
+print_out_mode =  waitforkeypress(); binUnwantedChars();		//NEW CMD
+newline();}
+
+Verify_address=0;  phys_address = 0;  read_ops=0; line_no_mem = line_no-2;
+line_no = 0; prog_counter_mem = prog_counter; print_counter = 0;
+
+while(1){ if(!(prog_counter_mem))break;		//print out loop starts
+FF_cmd_counter = 0;
+while(1) {
+Hex_cmd = 0;
+Hex_cmd = Read_write_mem('L',phys_address, 0x0);							//H for test mode
+Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
+phys_address++;        
+if (phys_address == FlashSZ)break;
+if (Hex_cmd != 0xFFFF) break;
+LEDs_on;
+Verify_address++;FF_cmd_counter++; 
+//if(FF_cmd_counter >= FF_cmd_counter_limit){Verify_address = 0x3800; phys_address = 0x3800; FF_cmd_counter = 0; }
+}
+LEDs_off;
+if (phys_address == FlashSZ)break;
+
+if ((print_out == 0)  && (!( star_counter - 10))){sendChar('*');star_counter = 0;}
+
+if(print_out && ((!(line_no))||(print_counter == print_out)))			
+{newline(); sendHex (16, Verify_address*2);
+sendString("   "); if(print_out_mode == '1'){Print_hex_file;} else sendHex (16, Hex_cmd);
+}
+read_ops++;
+prog_counter_mem--;
+
+{char m; for (m=0; m<7; m++){       
+Hex_cmd = Read_write_mem('L',phys_address, 0x0);								//H for test mode
+Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
+if (Hex_cmd != 0xFFFF){
+Verify_address++; prog_counter_mem--;
+if(Verify_address & 0x0040) {
+LEDs_on;	}				 
+else {LEDs_off;} 			
+phys_address++;         
+if(print_out && ((!(line_no))||(print_counter == print_out))){if(print_out_mode == '1'){Print_hex_file;} else sendHex (16, Hex_cmd);
+{five_msec_delay;}}
+read_ops++;}
+if(phys_address==FlashSZ)break;}}
+if(print_counter == print_out)print_counter = 0;
+line_no++;
+print_counter++; star_counter++;
+if (phys_address == FlashSZ)break;
+Verify_address++; }//print out loop ends
+LEDs_off;
+newline();}*/
+
+
+
+
+
+
+
+
+/*
 void Program_Flash (void){
 char temp_char=0;
 UCSR0B |= (1<<RXCIE0);sei();
+
+
+
 new_record();  short_line=0;
 start_new_code_block();
 Program_record();			
@@ -34,9 +234,9 @@ while(1){if (isCharavailable(2)==1)temp_char = receiveChar();else break;}
 	
 if((Flash_flag) && (!(orphan))){write_page_SUB(page_address);}
 if(orphan) {write_page_SUB(page_address + PageSZ);}}	
+*/
 
-/*************************************************************************/
-ISR(USART_RX_vect){
+/*ISR(USART_RX_vect){
 	unsigned char tempChar=0;
 	unsigned char tempChar1;
 	int local_pointer;
@@ -83,11 +283,11 @@ if ((counter & 0x03) == 0x0)  {tempInt2+= tempChar; tempInt2 = tempInt2<<8;tempI
 local_pointer = w_pointer++; store[local_pointer] = tempInt1; cmd_counter++;}}
 
 counter++;
-w_pointer = w_pointer & 0b00111111;	}
+w_pointer = w_pointer & 0b00111111;	}*/
 
 
-/*************************************************************************/
 
+/*
 
 void Verify_Flash_99 (void){
 int line_no_mem;
@@ -167,12 +367,12 @@ LEDs_off;
 newline();}
 
 
-/*************************************************************************/
+
 
 void waitforchar(void){unsigned char n=255; 																																			
 while (!(UCSR0A & (1 << RXC0))) {n--; if(n==0) break;}}
 
-/*************************************************************************/
+
 
 void new_record(void){int B_int_r_pointer;			
 next_char; 
@@ -191,10 +391,11 @@ else{if (Hex_address == 0);
 		else{if ((Hex_address & PAmask) > (page_address + PageSZ)){section_break=1;page_break=0;}
 			if((Hex_address & PAmask) == (page_address + PageSZ)){section_break=0;page_break=1; }
 			if ((Hex_address & PAmask) == page_address){section_break=0;page_break=0; orphan = 0;}}}
-if(line_counter & 0b00001000) {LED_2_on;}	 
+if(
+ & 0b00001000) {LED_2_on;}	 
 else {LED_2_off;}} 
 
-/*************************************************************************/
+
 
 void start_new_code_block(void){signed char page_offset;
 PIC_address = Hex_address;
@@ -205,7 +406,7 @@ line_offset = Hex_address & 0x0007;
 offset = page_offset;	//	Hex_address & 0x0007;
 space_on_page = (PageSZ - page_offset);}
 
-/*************************************************************************/
+
 
 void Program_record(void){
 unsigned char Dummy_byte;
@@ -225,21 +426,37 @@ space_on_page = PageSZ;
 offset = line_offset; 
 if (offset) orphan = 1;}}}
 
-/*************************************************************************/
+
 
 void decode_cmd_write_to_flash_SUB(void){
 decode_HEX_cmd_SUB();
 Load_page('L', write_address, Hex_cmd & 0x00FF); 
 Load_page('H', write_address, (Hex_cmd >> 8));}
 
-/*************************************************************************/
+
+
+void copy_cmd_to_page_buffer(void){
+get_next_hex_cmd();
+Load_page('L', write_address, Hex_cmd & 0x00FF); 
+Load_page('H', write_address, (Hex_cmd >> 8));}
+
+
+void get_next_hex_cmd(void){int Local_r_pointer;/////////
+while (r_pointer == w_pointer);
+Local_r_pointer = r_pointer;
+Hex_cmd = store[Local_r_pointer];
+inc_r_pointer;}
+
+
+
+
 
 void decode_HEX_cmd_SUB(void){int A_int_r_pointer;
 next_char;
 A_int_r_pointer = r_pointer;
 Hex_cmd = store[A_int_r_pointer];inc_r_pointer;}
 
-/*************************************************************************/
+
 
 void write_page_SUB(signed int page_address){
 char Dummy_byte;
@@ -247,7 +464,7 @@ Dummy_byte = Read_write_mem('W',  page_address, 0x0);
 Flash_flag = 0;}
 
 
-/***********************************************************/
+
 char receive_byte_with_Ack(void){
 char byte;
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT);		//Set Ack enable and clear interrupt
@@ -255,10 +472,11 @@ while (!(TWCR & (1 << TWINT)));						//Wait for interrupt
 byte = TWDR;
 return byte;}
 
-/***********************************************************/
+
+
 char receive_byte_with_Nack(void){
 char byte;
 TWCR = (1 << TWEN) | (1 << TWINT);		//Set Ack enable and clear interrupt
 while (!(TWCR & (1 << TWINT)));						//Wait for interrupt
 byte = TWDR;
-return byte;}
+return byte;}*/
