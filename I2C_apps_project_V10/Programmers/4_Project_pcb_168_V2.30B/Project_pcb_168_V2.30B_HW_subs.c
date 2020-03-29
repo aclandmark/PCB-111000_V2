@@ -26,6 +26,9 @@ case (read_lock_bits): if((n > 9) && (PGD_resp_H)) Echo = Echo | (1<< (15-n));br
 {ten_msec_delay;}	
 return Echo;}                
 
+
+
+/****************************************************************************************************/
 char Read_write_mem(char Operation,  int mem_address, char EEPROM_data){
 unsigned char cmd = 0;
 char n,Echo=0;
@@ -53,6 +56,9 @@ if(Operation == 'W'){five_msec_delay;}
 if(Operation == 'I'){five_msec_delay;}	
 return Echo;}
 
+
+
+/****************************************************************************************************/
 void Load_page(char high_low, int address_on_page, unsigned char data){
 int cmd = 0;
 unsigned char n,Echo;
