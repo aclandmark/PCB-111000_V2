@@ -40,47 +40,40 @@ that it has just been programmed and ensure that the auto cal routine runs
 #include "Project_pcb_168_V2.30B_SW_subs.c"
 #include "Project_pcb_168_V2.30B_HW_subs.c"
 #include "1_Basic_Timer_IO_subs.c"
+#include "Project_pcb_168_V2_30B_EEPROM_subs.c"
 
 #define wdr()  __asm__ __volatile__("wdr")
-#define Version "Project_pcb_168_V2.30B" 
+#define Version "Project_pcb_168_V2.30B"
+
+
+ void Text_to_EEPROM(int*, char);
+char Text_from_EEPROM(int*);
+void binUnwantedChars_dot (void);
+
+
 
 
 int main (void){ 
-unsigned int target_type = 0, target_type_M;	// temp_config_int=0, temp_config_cmd = 0;
+unsigned int target_type = 0, target_type_M;	
 char temp_char;
-char  my_cal_value=0, op_code;	// op_code_2, op_code_3, 
+char op_code;	
 unsigned char fuse_H;
 int long cal_error;
 char OSCCAL_WV;
 
 
+setup_HW;
 
 
-wdr();
-MCUSR &= ~(1<<WDRF);
-WDTCSR |= (1 <<WDCE) | (1<< WDE);
-WDTCSR = 0;
-
-if ((eeprom_read_byte((uint8_t*)0x1F7) > 0x0F)\
-&&  (eeprom_read_byte((uint8_t*)0x1F7) < 0xF0) && (eeprom_read_byte((uint8_t*)0x1F7)\
-== eeprom_read_byte((uint8_t*)0x1F8))) {OSCCAL = eeprom_read_byte((uint8_t*)0x1F7);my_cal_value=1;}
-
-/*************This program works with 8MHz clock and EEPROM preserved*********************************/
-ADMUX |= (1 << REFS0);			//select internal ADC ref and remove external supply on AREF pin
-while (!(PIND & (1 << PD1)));	//wait for DPDT switch
-USART_init(0,16);				//use 16 for 57.6K, 	51 for 19.2k or 12 for 76.8k, 25 for 38.4
-Set_LED_ports;	
-LEDs_off;		
 /*****************Power-up and make contact with target****************************/
 op_code =0;		
 while(1){
-do{sendString("P  ");} while((isCharavailable(255) == 0)); //op_code = receiveChar();
+do{sendString("P  ");} while((isCharavailable(255) == 0)); 
 switch(receiveChar()){
-case 'P': case 'p':	fuse_H = 0xD0; FF_cmd_counter_limit = 500;	op_code =1;break;
-case 'X': case 'x':	fuse_H = 0xD7; FF_cmd_counter_limit = 10000;op_code =1;break; 
+case 'P': case 'p':	fuse_H = 0xD0; 	op_code =1;break;													//FF_cmd_counter_limit = 500;
+case 'X': case 'x':	fuse_H = 0xD7; op_code =1;break; 													//FF_cmd_counter_limit = 10000;
 case 'v': case 'V': sendString (Version);newline();wdt_enable(WDTO_60MS); while(1);break;
 case 'R': case 'r':
-TWAR = 0x02;
 waiting_for_I2C_master;									
 OSCCAL_WV = receive_byte_with_Ack();					
 cal_error = receive_byte_with_Ack();					
@@ -88,11 +81,9 @@ cal_error = (cal_error << 8) + receive_byte_with_Nack();
 clear_I2C_interrupt;
 sendString("\r\nTarget cal factor  ");
 sendHex(16, OSCCAL_WV);sendChar('\t');
-sendString("error ");sendHex(10, cal_error); sendString("\r\n");
-break;
+sendString("error ");sendHex(10, cal_error); sendString("\r\n");break;
 
-
-
+case 'S': case 's': Prog_on_chip_EEPROM();wdt_enable(WDTO_60MS); while(1);break;
 default:break;}if(op_code)break;}	
 		
 boot_target;
@@ -100,8 +91,8 @@ Atmel_powerup_and_target_detect;        //waits for keypress to continue  Holds 
 
 newline();sendString("ATMEGA");
 switch (target){
-case 168: sendString ("168");  PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000; EEPROM = 0x200; text_start = 0x5; break;		//no cal bits
-case 328: sendString ("328"); PageSZ = 0x40; PAmask = 0x3FC0; FlashSZ=0x4000; EEPROM = 0x200; text_start = 0x5; break;		//For normal strings
+case 168: sendString ("168");  PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000; EE_top = 0x200; text_start = 0x5; break;		//no cal bits
+case 328: sendString ("328"); PageSZ = 0x40; PAmask = 0x3FC0; FlashSZ=0x4000; EE_top = 0x200; text_start = 0x5; break;		//For normal strings
 default: wdt_enable(WDTO_1S); while(1);break;}
 Text_Press_P_R_or_H;
 
@@ -114,11 +105,11 @@ Text_SendEorAOK
 while(1){
 op_code = waitforkeypress();
 switch (op_code){
-case 'e':	if(target==328){EEPROM = 0x400; text_start = 0x200;}Prog_EEPROM(); break;		//Place backup strings between 0x200 and 0x400
-case 'E':  Prog_EEPROM(); break;//No return from here
+case 'e':	if(target==328){EE_top = 0x400; text_start = 0x200;}Prog_Target_EEPROM(); break;		//Place backup strings between 0x200 and 0x400
+case 'E':  Prog_Target_EEPROM(); break;//No return from here
 
 case 'D':
-sendString("Reset EEPROM! D or AOK");newline();
+sendString("Reset target EEPROM! D or AOK");newline();
 if(waitforkeypress() == 'D'){
 sendString("10 sec wait");
 if(target == 168){for (int m = 0; m <= 0x1FF;m++)
@@ -143,14 +134,18 @@ Atmel_config(write_fuse_bits_h,0xE2 );}
 
 Atmel_config(write_lock_bits_h,0xEB );
 
-prog_counter=0; line_length_old=0; line_counter = 0; cmd_counter = 0; 
-Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0; 
+prog_counter=0; record_length_old=0;  cmd_counter = 0; 
+Flash_flag = 0;  HW_address = 0;  section_break = 0; orphan = 0; 
 
 newline();Text_Send_Hex
+
+UCSR0B |= (1<<RXCIE0); sei();
+
 Program_Flash();
-Verify_Flash_99();  
+Verify_Flash();  
 Read_write_mem('I', 0x3F9, 1); 				//EXTRA LINE: See notes above
 
+newline();
 sendString (Version);newline();
 Text_ATMEGA168_configBits; newline();  
 sendHex(16, Atmel_config(read_extended_fuse_bits_h, 0));
@@ -159,7 +154,7 @@ sendHex(16, Atmel_config(read_fuse_bits_h, 0));
 sendHex(16, Atmel_config(read_lock_bits_h, 0));
 
 Text_on_chip_cal_bit
-if (my_cal_value==1) sendHex(16, OSCCAL);
+if (cal_factor==1) sendHex(16, OSCCAL);
 sendHex(16, OSCCAL);
 
 newline();
@@ -174,326 +169,280 @@ wdt_enable(WDTO_60MS); while(1);
 return 1;  }
 
 
-
-
-
-
-
-
-
-void Prog_EEPROM(void){					
-int EEP_address_counter = 0,   Saved_UART_counter_value = 0,   EEP_buffer_pointer, EEP_data_counter = 0;
-char temp_char, Down_Load_Flag = 0, down_load_status, op_code;	
-unsigned char  EEPROM_buffer[265];
-char reservation[4];
-int App_reservation;
-
-EEP_address_counter = text_start;
-Text_Press_W_or_R;
-while(1){if (!(isCharavailable(150))) sendString("?");	else break;}
-switch(receiveChar()){
-
-case 'R':
-if(((Read_write_mem('O', 0x0, 0)) ==0xFF)  &&  ((Read_write_mem('O', 0x1, 0)) ==0xFF))
-{sendString("No Data!\r\n");break;}
-
-EEPROM = ( ( (Read_write_mem('O', 0x3, 0))<<8 ) +  (Read_write_mem('O', 0x4, 0))) ;
-Upload_text((Read_write_mem('O', 0x0, 0x0) << 8) + Read_write_mem('O', 0x1, 0x0));	
-if(Read_write_mem('O', 0x2, 0x0) && (Read_write_mem('O', 0x2, 0x0)!= 0xFF)){sendString("1,2 or 3");	
-op_code =  waitforkeypress();	binUnwantedChars();		
-switch (op_code){
-case '1':  Upload_data_1 (((Read_write_mem('O', 0x0, 0x0) << 8) + Read_write_mem('O', 0x1, 0x0))  ,Read_write_mem('O', 0x2, 0x0)); break;
-case '2':	 Upload_data_2 (((Read_write_mem('O', 0x0, 0x0) << 8) + Read_write_mem('O', 0x1, 0x0))  ,Read_write_mem('O', 0x2, 0x0)); break;	
-default:	Upload_data (((Read_write_mem('O', 0x0, 0x0) << 8) + Read_write_mem('O', 0x1, 0x0))  ,Read_write_mem('O', 0x2, 0x0)); break;}}
-
-
-if ((((Read_write_mem('O', 0x3, 0)) <<8 ) +  (Read_write_mem('O', 0x4, 0)))  == 0xFFFF); else	
-{ if((((Read_write_mem('O', 0x3, 0)) <<8 ) +  (Read_write_mem('O', 0x4, 0))) < 0x200)
-{sendString("\r\nApp: Start addr's  ");sendHex(16,(((Read_write_mem('O', 0x3, 0)) <<8 ) +  (Read_write_mem('O', 0x4, 0)))) ;}}
-break;		
-
-case 'r':
-text_start_mem = text_start;
-text_start = 0x200;
-Upload_text(0x3F7);
-text_start = text_start_mem;
-break;
-
-case 'W':
-case 'w':
-Text_int_0_FF; 		
-reservation[0] = '0';		//MSB
-reservation[2] = '\0';
-while(1){
-reservation[1] = waitforkeypress();
-if (non_numeric_char (reservation[1]))sendChar ('?'); else break;}
-
-if (isCharavailable(150)){while(1){
-temp_char = receiveChar();
-if (non_numeric_char (temp_char)) {sendChar ('?'); while (!(UCSR0A & (1 << RXC0)));} else break;}  binUnwantedChars();		//NEW LINE
-reservation[0] = reservation[1]; 
-reservation[1] = temp_char;}
-	
-App_reservation =  askiX2_to_hex(reservation);
-
-if(App_reservation > 0){
-sendString("\r\nApp: Start addr's  ");sendHex(16, (EEPROM - App_reservation));newline();
-sendString ("X to escape or AOK\r\n");
-if(waitforkeypress() == 'X') {binUnwantedChars();	wdt_enable(WDTO_1S); while(1);}}
-binUnwantedChars();		
-EEPROM = EEPROM - App_reservation;
-temp_char = Read_write_mem('I', 0x3, (EEPROM >> 8)); 	
-temp_char = Read_write_mem('I', 0x4, (EEPROM & 0x00FF));
-
-Text_Send_Text_File;
-EEP_data_counter = 0;
-do {
-down_load_status = (Download_text(&EEP_address_counter, &Saved_UART_counter_value,\
-&Down_Load_Flag, &EEP_buffer_pointer,  EEPROM_buffer));
-if (!(down_load_status)){Down_Load_Flag = 0;  
-LED_1_off;	
-Text_Send_file_again}}
-while (!(down_load_status));
-LED_1_off;	
-
-if (Down_Load_Flag == 2){
-while (!(Download_data(&EEP_address_counter, &Saved_UART_counter_value,\
-&Down_Load_Flag, &EEP_data_counter,  &EEP_buffer_pointer, EEPROM_buffer)))
-{LED_1_off;							
-Text_Send_file_again;}}
-binUnwantedChars ();
-LED_1_off;
-
-sendString("AK?");	
-binUnwantedChars();		
-temp_char = Read_write_mem('I', 0x0, (EEP_address_counter >> 8));  	
-temp_char = Read_write_mem('I', 0x1, (EEP_address_counter & 0x00FF));
-temp_char = Read_write_mem('I', 0x2, EEP_data_counter);	temp_char = waitforkeypress();
-Upload_text(EEP_address_counter);  
-if (EEP_data_counter > 0) Upload_data (EEP_address_counter, EEP_data_counter); 
-break;  //End of Read case
+/***************************************************************************************************************************************************/
+ISR(USART_RX_vect){
+	unsigned char Rx_Hex_char=0;
+	unsigned char Rx_askii_char;
+	int local_pointer;
+		
+Rx_askii_char = receiveChar();
+switch (Rx_askii_char){
+case '0':  Rx_Hex_char = 0x00; break;						//Convert askii chars received from hex file to binary digits
+case '1':  Rx_Hex_char = 0x01; break;
+case '2':  Rx_Hex_char = 0x02; break;
+case '3':  Rx_Hex_char = 0x03; break;
+case '4':  Rx_Hex_char = 0x04; break;
+case '5':  Rx_Hex_char = 0x05; break;
+case '6':  Rx_Hex_char = 0x06; break;
+case '7':  Rx_Hex_char = 0x07; break;
+case '8':  Rx_Hex_char = 0x08; break;
+case '9':  Rx_Hex_char = 0x09; break;
+case 'A':  Rx_Hex_char = 0x0A; break;
+case 'B':  Rx_Hex_char = 0x0B; break;
+case 'C':  Rx_Hex_char = 0x0C; break;
+case 'D':  Rx_Hex_char = 0x0D; break;
+case 'E':  Rx_Hex_char = 0x0E; break;
+case 'F':  Rx_Hex_char = 0x0F; break;
+case ':':  counter = 0;  break;
 default: break;}
+
+switch (counter){
+case 0x0:  	break;											//Detect -:- at start of new line
+case 0x1: 	tempInt1 = Rx_Hex_char<<4;  break;				//Acquire first digit 
+case 0x2: 	tempInt1 += Rx_Hex_char;  						//Acquire second digit and combine with first to obtain number of commands in line
+			char_count = 9 + ((tempInt1) *2); 				//Calculate line length in terms of individual characters
+			local_pointer = w_pointer++; 					//Update pointer to array "store"
+			store[local_pointer] = tempInt1; break;			//Save the number of commands in the line to the array  
+case 0x3: 	tempInt1 = Rx_Hex_char<<4;  break;				//Next 4 digits give the address of the first command in the line
+case 0x4:	tempInt1 += Rx_Hex_char; 
+			tempInt1=tempInt1<<8; break;					//Acquire second digit and combine it with first 
+case 0x5:	tempInt1 += Rx_Hex_char<<4;  break;			//Continue for third digit
+case 0x6: 	tempInt1 += Rx_Hex_char; 						//Acquire final digit and caculate address of next command 
+			local_pointer = w_pointer++; 					//Update pointers to array "store"
+			store[local_pointer] = tempInt1; break;			//Save address of next command to array "store"
+case 0x7: 	break;											//chars 7 and 8 are not used
+case 0x8: 	break;
+default: 	break;}
+
+if ((counter > 8)&&(counter < char_count)){				//Continue to acquire, decode and store commands
+if ((counter & 0x03) == 0x01){tempInt1 = Rx_Hex_char<<4;}	//Note: Final two chars at the end of every line are ignored
+if ((counter & 0x03) == 0x02)  {tempInt1 += Rx_Hex_char;}
+if ((counter & 0x03) == 0x03)  {tempInt2 = Rx_Hex_char<<4;}
+if ((counter & 0x03) == 0x0)  	{tempInt2+= Rx_Hex_char; 
+								tempInt2=tempInt2<<8;tempInt1+=tempInt2;
+local_pointer = w_pointer++; 	
+store[local_pointer] = tempInt1; cmd_counter++;}}
+
+counter++;
+w_pointer = w_pointer & 0b00011111;	}  						//Overwrites array after 32 entries
+
+
+
+/***************************************************************************************************************************************************/
+void Program_Flash (void){
+
+new_record();  												//Start reading first record which is being downloaded to array "store" 
+start_new_code_block(); 									//Initialise new programming block (usually starts at address zero but not exclusivle so)
+Program_record();											//Coppy commands from array "store" to the page_buffer														
+			
+		
+while(1){		
+new_record();												//Continue reading subsequent records
+if (record_length==0)break; 								//Escape when end of hex file is reached
+
+
+if (Hex_address == HW_address){								//Normal code: Address read from hex file equals HW address and lines contains 8 commands
+switch(short_record){
+case 0: if (space_on_page == (PageSZ - line_offset))		//If starting new page
+			{page_address = (Hex_address & PAmask);}		//get new page address
+			break;
+
+case 1:	start_new_code_block();								//Short line with no break in file (often found in WinAVR hex files).
+		short_record=0;break;}}
+		
+		
+if(Hex_address != HW_address){								//Break in file
+	if (section_break){										//Section break: always found when two hex files are combined into one 										
+		if((Flash_flag) && (!(orphan)))
+		{write_page_SUB(page_address);}						//Burn contents of the partially full page buffer to flash
+		if(orphan) 
+		write_page_SUB(page_address + PageSZ);} 			//Burn outstanding commands to the next page in flash			
+		
+	if(page_break)											//In practice page breaks and short jumps are rarely if ever found											
+		{if((Flash_flag) && (!(orphan)))					//Burn contents of the partially filled page buffer to flash
+		{write_page_SUB(page_address);}														
+		orphan = 0;}
+		
+	start_new_code_block();									//A new code block is always required where there is a break in the hex file.
+	short_record=0;}
+		
+Program_record();}											//Continue filling page_buffer
+		
+
+cli();	
+UCSR0B &= (~(1<<RXCIE0));									//download complete, disable UART Rx interrupt
+LEDs_off;				
+while(1){if (isCharavailable(1)==1)receiveChar();
+		else break;}										//Clear last few characters of hex file
+	
+if((Flash_flag) && (!(orphan)))
+{write_page_SUB(page_address);}								//Burn final contents of page_buffer to flash
+if(orphan) {write_page_SUB(page_address + PageSZ);}}
+
+
+
+
+/***************************************************************************************************************************************************/
+
+void Verify_Flash (void){			//short version
+int   star_counter;
+signed int phys_address;
+char offset=0;
+read_ops = 0;
+Hex_cmd = 0;
+star_counter = 0;
+phys_address = 0;
+while(1){
+Hex_cmd = Read_write_mem('L',phys_address, 0x0);							//H for test mode
+Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
+phys_address++; 
+star_counter++;       
+if (phys_address == FlashSZ)break;
+if (Hex_cmd != 0xFFFF){
+read_ops++; if(read_ops >= prog_counter) offset = 4;}
+if (!( star_counter - 200)){sendChar('*' + offset);star_counter = 0;}}}
+
+
+
+
+/***************************************************************************************************************************************************/
+void Prog_on_chip_EEPROM(void){
+char User_response, next_char, text;
+int EEP_read_address=0,EEP_write_address = 0;
+
+sendString("Set baud rate to 2.4k then AK\r\n");	
+USART_init(1,160);
+User_prompt;
+//waitforkeypress();
+sendString("Send message file\r\n");
+
+
+
+/***************Strings in the .txt file are saved to EEPROM**************************/
+
+while(1){next_char = waitforkeypress();								//wait for first character from file
+if ((next_char != '\r') && (next_char != '\n'))						//Ignore leading carriage returns
+break;}							
+Text_to_EEPROM(&EEP_write_address, next_char);								//save first letter to EEPROM
+
+while(EEP_write_address < 0x1F6) 											//Exits before cal bytes can be overwritten
+	{if(isCharavailable(2)) 											//returns 1 if a new letter is available (0 at the end of the file) 
+	{text = receiveChar(); 												//Temporary storage
+
+	switch (text){														//Test the new character	
+		case '\r':														//If it is '\r' and or '\n' 
+		case '\n':														//ignore it or replace it with with a single '\0'
+		if(next_char == '\0')break; 
+		else 	{next_char = '\0'; 
+				Text_to_EEPROM(&EEP_write_address, next_char);}break;
+		default : 	next_char = text; 									//save the letter
+					Text_to_EEPROM(&EEP_write_address, next_char);			//increments the write address
+					break;}
+
+	}else break; }														//End of file reached
+
+if(EEP_write_address == 0x1F6)												//If text file was too long
+{Text_to_EEPROM(&EEP_write_address, '\0');									//Place '\0' in 0x1F6 to terminate the string
+binUnwantedChars_dot();}												//Send dots to pc to indicate lost characters
+
+
+/****************Echo text file to screen with the address of each string**********************/
+
+sendHex(16, EEP_read_address); sendChar('\t');							//Send address of first line of text
+do{																		//Read back text one line at a time
+while(1){text = Text_from_EEPROM(&EEP_read_address);						//Increments the read address
+if(text)sendChar(text); else break;} 								//When '\0' is detected start next line
+newline();sendHex(16,EEP_read_address); 									//Send address of next line
+sendChar('\t');}
+while(EEP_read_address < EEP_write_address);									//Exit when read address equals write address
+
+
+sendString("\r\nBAUD RATE 57.6k!!\r\npress any key to continue\r\n");
+
+USART_init(0,16);
+
+waitforkeypress();
 wdt_enable(WDTO_60MS); while(1);}
 
 
 
-char Download_text(int *ptr_EEP_address_counter,\
-int *ptr_Saved_UART_counter_value,\
-char *ptr_Down_Load_Flag,\
-int *ptr_EEP_buffer_pointer, unsigned char EEPROM_buffer[]){	
-int UART_counter = 0;
-char temp_char, text_char;
 
-*ptr_EEP_buffer_pointer = 0;
-text_char = waitforkeypress();	UART_counter++;											
-while(1){text_char = Rx_data(); UART_counter++; if (text_char == '"') break;}	
-	
-while(!(*ptr_Down_Load_Flag)){//loop1
-text_char = Rx_data(); UART_counter++; 
-if (text_char != '"')	{//loop2
-if (UART_counter > *ptr_Saved_UART_counter_value){//loop 3  Only save text if downloaded for the first time
-
-switch (text_char){	
-case '\n':
-case '\r':
-if (   EEPROM_buffer[ ((*ptr_EEP_buffer_pointer)-1)] != '\0')
-{text_char = '\0';} else {((*ptr_EEP_buffer_pointer)--); text_char = '\0';}
-default: break;}
-
-EEPROM_buffer[((*ptr_EEP_buffer_pointer)++)] = text_char;
-if 	((*ptr_EEP_buffer_pointer >= RBL) && (text_char != '\r') && (text_char != '\0')) *ptr_Down_Load_Flag = 1;	}//loop 3																														
-}//loop2
-else break;}   	//loop1	Exit Loop 1 when the second " is received
-
-if (*ptr_Down_Load_Flag == 1){binUnwantedChars();	 
-*ptr_Saved_UART_counter_value = UART_counter; 
-EEPROM_buffer[(*ptr_EEP_buffer_pointer)++] = '\0';
-
-LED_1_on;
-{int n=0;
-while (((*ptr_EEP_address_counter) +n) < EEPROM){
-temp_char = Read_write_mem('I', ((*ptr_EEP_address_counter) + n),EEPROM_buffer[n]); 
-n++;
-if (n==(*ptr_EEP_buffer_pointer))break;}
-if (((*ptr_EEP_address_counter) +n) == EEPROM){*ptr_Down_Load_Flag = 3; // EEPROM overflow occurs: Save text and exit
-temp_char = Read_write_mem('I', (EEPROM-1), '\0'); 
-*ptr_EEP_address_counter = EEPROM;  
-return 1;}
-(*ptr_EEP_address_counter) += n-1; 
-*ptr_EEP_buffer_pointer = 0;}  
-return 0;}
-
-else // " char encountered to terminate text input
-LED_1_on;							
-EEPROM_buffer[((*ptr_EEP_buffer_pointer)++)] = '\0';
-*ptr_Saved_UART_counter_value = UART_counter;
-(*ptr_EEP_address_counter) += (*ptr_EEP_buffer_pointer); //addres of first number 
-if((*ptr_EEP_address_counter) >= EEPROM){*ptr_Down_Load_Flag = 3; //EEPROM overflow occurs: Save text and exit
-{int n=0;\
-while (((*ptr_EEP_address_counter) - (*ptr_EEP_buffer_pointer) +n) < (EEPROM-1)){\
-temp_char = Read_write_mem('I', ((*ptr_EEP_address_counter) - (*ptr_EEP_buffer_pointer) + n),EEPROM_buffer[n]);
-n++;}}
-temp_char = Read_write_mem('I', (EEPROM-1), '\0'); 
-*ptr_EEP_address_counter = EEPROM; return 1;}
-*ptr_Down_Load_Flag = 2; 
-return 1;}
+/****************************************************/
+void Text_to_EEPROM(int*w_a, char byte){					//on-chip EEPROM
+eeprom_write_byte((uint8_t*)(*w_a),byte); 					//macro provided by winavr
+*w_a = *w_a + 1;}
 
 
 
-char Download_data(int *ptr_EEP_address_counter,int *ptr_Saved_UART_counter_value,\
-char *ptr_Down_Load_Flag, int *ptr_EEP_data_counter,\
-int *ptr_EEP_buffer_pointer, unsigned char EEPROM_buffer[]){
-
-int data_int=0, UART_counter=0, ADDR_last_string=0, next_data_address=0;
-char data_text,  temp_char;
-
-if(*ptr_EEP_buffer_pointer == 0) {next_data_address = *ptr_EEP_address_counter + *ptr_EEP_data_counter + *ptr_EEP_data_counter;
-data_text = waitforkeypress();	UART_counter++;	
-while 	(UART_counter < *ptr_Saved_UART_counter_value) {data_text = Rx_data(); UART_counter++; }}
-
-else {UART_counter = *ptr_Saved_UART_counter_value; ADDR_last_string = *ptr_EEP_address_counter - *ptr_EEP_buffer_pointer;}
-	
-while((*ptr_Down_Load_Flag ==0) || (*ptr_Down_Load_Flag ==2) ){ //LOOP 1
-data_text = Rx_data(); UART_counter++; 
-if(!data_text)break;
-switch (data_text){
-case '-': case '+': case '0': case '1': case '2':  case '3': case '4': case '5':  case '6': case '7': case '8': case '9':  
-data_int = decimal_conversion(data_text, &UART_counter); 
-EEPROM_buffer[(*ptr_EEP_buffer_pointer)++] = (data_int >> 8);
-EEPROM_buffer[(*ptr_EEP_buffer_pointer)++] = (data_int & 0x00FF);
-(*ptr_EEP_data_counter)++;
-if((*ptr_EEP_buffer_pointer >= RBL)){
-if(*ptr_Down_Load_Flag == 2) *ptr_Down_Load_Flag = 3;
-if(*ptr_Down_Load_Flag == 0) *ptr_Down_Load_Flag = 4;}break;
-
-case '$':  data_int = Hex_conversion(data_text, &UART_counter);
-EEPROM_buffer[(*ptr_EEP_buffer_pointer)++] = (data_int >> 8);
-EEPROM_buffer[(*ptr_EEP_buffer_pointer)++] = (data_int & 0x00FF);
-(*ptr_EEP_data_counter)++;
-if((*ptr_EEP_buffer_pointer >= RBL)){								
-if(*ptr_Down_Load_Flag == 2) *ptr_Down_Load_Flag = 3;
-if(*ptr_Down_Load_Flag == 0) *ptr_Down_Load_Flag = 4;}break;
-
-default: break;}
-} //LOOP 1
-
-binUnwantedChars();	
-
-switch (*ptr_Down_Load_Flag){
-case 2:	//RAM buffer only partially full:  Text and numbers or just text
-LED_1_on;
-{int n=0;\
-while ((ADDR_last_string +n) < (EEPROM)){\
-temp_char = Read_write_mem('I', (ADDR_last_string + n),EEPROM_buffer[n]);
-n++;\
-if (n==(*ptr_EEP_buffer_pointer))break;}} 
-return 1; break;
-
-case 3: //RAM buffer completely full:  Text and numbers
-LED_1_on;
-{int n=0;\
-while ((ADDR_last_string +n) < (EEPROM)){\
-temp_char = Read_write_mem('I', (ADDR_last_string + n),EEPROM_buffer[n]); 
-n++;\
-if (n==(*ptr_EEP_buffer_pointer))break;}
-if((ADDR_last_string +n) == (EEPROM)) {
-LED_1_off;	
-return 1;} } //EEPROM overflow occurs: Save text and exit
-(*ptr_EEP_buffer_pointer) = 0;  *ptr_Down_Load_Flag = 0; *ptr_Saved_UART_counter_value = UART_counter;
-return 0; break;
-
-case 0:	//RAM buffer only partially full:  End of file Numbers only
-LED_1_on;
-{int n=0;\
-while ((next_data_address +n) < (EEPROM)){\
-temp_char = Read_write_mem('I', (next_data_address + n),EEPROM_buffer[n]); 
-n++;\
-if (n==(*ptr_EEP_buffer_pointer))break;}}
-(*ptr_EEP_buffer_pointer) = 0;
-return 1;
-
-case 4: //RAM buffer completely full:  Numbers only
-LED_1_on;
-{int n=0;\
-while ((next_data_address +n) < (EEPROM)){\
-temp_char = Read_write_mem('I', (next_data_address + n),EEPROM_buffer[n]);  
-n++;\
-if (n==(*ptr_EEP_buffer_pointer))break;}
-if((next_data_address +n) == (EEPROM)){   
-return 1;}}  //EEPROM overflow occurs: Save text and exit
-(*ptr_EEP_buffer_pointer) = 0; *ptr_Down_Load_Flag = 0; *ptr_Saved_UART_counter_value = UART_counter;
-return 0;}
-return 0;}
+/****************************************************/
+char Text_from_EEPROM(int*r_a){
+return eeprom_read_byte((uint8_t*)((*r_a)++));}			//macro provided by winavr
 
 
-int decimal_conversion (char data_text, int *ptr_UART_counter){
-int char_counter=0;
-char data_string[7], num_char;
-data_string[char_counter++] = data_text;
-while(1){
-num_char = Rx_data(); (*ptr_UART_counter)++;
-if (num_char == ' ') break;
-if (num_char == '\r') break;
-if (num_char == '\n') break;
-if (num_char == '\0') break;
-if (num_char == '\t') break;
-else data_string[char_counter++] = num_char;}
-data_string[char_counter++] = '\0';
-return my_atoi_with_sign (data_string);}
 
-int Hex_conversion (char data_text, int *ptr_UART_counter){
-int char_counter=0;
-char data_string[7], num_char;
-while(1){
-num_char = Rx_data(); (*ptr_UART_counter)++;
-if (num_char == ' ') break;
-if (num_char == '\r') break;
-if (num_char == '\n') break;
-if (num_char == '\0') break;
-if (num_char == '\t') break;
-else data_string[char_counter++] = num_char;}
-data_string[char_counter++] = '\0';
-return askiX4_to_hex (data_string);}
+/*********************************************************************/
+void binUnwantedChars_dot (void){char bin_char;
+while(1){if (isCharavailable(5)==1){bin_char = receiveChar();sendChar('.');}else break;}newline();}
 
 
-void Upload_text(int EEP_address_counter){ 
-char string_char;
-int EEP_mem_counter = 0;
-EEP_mem_counter = text_start;
-while (EEP_mem_counter < EEP_address_counter){newline();sendHex (16, EEP_mem_counter); sendString ("    ");
-while(1){string_char = Read_write_mem('O',(EEP_mem_counter++),0);
-if ((string_char == '\0') || (EEP_mem_counter == EEP_address_counter))break;
-sendChar (string_char);}}}
 
-void Upload_data(int address_first_data_item, int EEP_data_counter){
-char output_counter=0;
-int data_item = 0 ;
-if(!(EEP_data_counter))return;
-newline();sendHex (16, (address_first_data_item) );
-{int n=0; while((address_first_data_item+n+1) < EEPROM){
-data_item = (  (Read_write_mem('O', address_first_data_item+n, 0x0) << 8) + Read_write_mem('O',(address_first_data_item+n+1), 0x0)  );
-if  (output_counter == 4){newline();output_counter  = 0;sendHex (16, (address_first_data_item+n) );}
-sendChar('\t'); sendHex (16, data_item ); sendChar ('\t'); sendsignedHex (data_item );output_counter++; n+=2; if(n>2*(EEP_data_counter-1)) break; }}}
 
-void Upload_data_1(int address_first_data_item, int EEP_data_counter){
-char output_counter=0;
-if(!(EEP_data_counter))return;
-int data_item = 0 ;
-newline();sendHex (16, (address_first_data_item) );
-{int n=0; while((address_first_data_item+n+1) < EEPROM){
-data_item = (  (Read_write_mem('O', address_first_data_item+n, 0x0) << 8) + Read_write_mem('O',(address_first_data_item+n+1), 0x0)  );
-if  (output_counter == 8){newline();output_counter  = 0;sendHex (16, (address_first_data_item+n) );}
-sendChar('\t');  sendsignedHex (data_item );output_counter++; n+=2; if(n>2*(EEP_data_counter-1)) break; }}}
+/*
 
-void Upload_data_2(int address_first_data_item, int EEP_data_counter){
-char output_counter=0;
-int data_item = 0 ;
-if(!(EEP_data_counter))return;
-newline();sendHex (16, (address_first_data_item) );
-{int n=0; while((address_first_data_item+n+1) < EEPROM){
-data_item = (  (Read_write_mem('O', address_first_data_item+n, 0x0) << 8) + Read_write_mem('O',(address_first_data_item+n+1), 0x0)  );
-if  (output_counter == 8){newline();output_counter  = 0;sendHex (16, (address_first_data_item+n) );}
-sendChar('\t'); sendHex (16, data_item ); output_counter++; n+=2; if(n>2*(EEP_data_counter-1)) break; }}}
+void Verify_Flash (void){
+
+
+int  line_counter = 0, print_line = 0;						//Controls printing of hex file													
+int line_no;												//Refers to the .hex file
+signed int phys_address;									//Address in flash memory
+signed int prog_counter_mem;								//Initialised with size of .hex file used for programming
+
+phys_address = 0;  read_ops=0; 
+line_no = 0; prog_counter_mem = prog_counter; 
+
+
+while(1){ if(!(prog_counter_mem))break;					//print out loop starts here, exit when finished
+		
+while(1) {													//Start reading the flash memory searching for the next hex command
+
+Hex_cmd = Read_write_mem('L',phys_address, 0x0);							
+Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
+phys_address++;        
+if (phys_address == FlashSZ)break;							//No more memory? Quit if yes
+if (Hex_cmd != 0xFFFF) break;								//If the hex command is 0xFFFF remain in this loop otherwise exit.
+LEDs_on;}
+
+LEDs_off;
+if (phys_address == FlashSZ)break;							//Exit when there is no more flash to read
+
+if ((print_line == 0)  && (!(line_no%10)))
+sendChar('*');												//Print out of hex file not required
+
+read_ops++;													//Value to be sent to PC for comparison with the hex filer size
+prog_counter_mem--;											//"prog_counter_mem" decrements to zero when the end of the file is reached
+
+
+for(int m=0; m<7; m++){    								//Read the next seven locations in the flash memory   
+
+Hex_cmd = Read_write_mem('L',phys_address, 0x0);				
+Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
+phys_address++;
+if(Hex_cmd == 0xFFFF)break;									//Read 0xFFFF: return to start of print out loop
+prog_counter_mem--;
+
+if ((print_line) &&  (!(line_counter%2))) {LEDs_on;} else {LEDs_off;} 			       
+
+read_ops++;
+
+if(phys_address==FlashSZ)break;}
+
+line_no++;
+if (phys_address == FlashSZ)break;}
+
+LEDs_off;
+newline();newline(); }
+
+*/
 
 
 
