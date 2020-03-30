@@ -130,7 +130,7 @@ volatile char T0_ovf_flag=0;								//Used by "timer_sub_with_interrupt"
 signed int EE_top;											//Max address available for user srings
 char  cal_factor=0;											//1: Use call factor	0: default cal factor
 int text_start, text_start_mem;								//Controls writing user strings to rarget EEPROM
-
+char watchdog_reset;										//Set to 1 when watchdog timeout occurs
 
 
 
@@ -141,7 +141,7 @@ OSC_CAL;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
 set_up_I_O;\
-eeprom_write_byte((uint8_t*)(0x1F9),OSCCAL);\
+eeprom_write_byte((uint8_t*)(0x1FD),OSCCAL);\
 while (!(PIND & (1 << PD1)));\
 Timer_T0_10mS_delay_x_m(5);\
 USART_init(0,16);\
@@ -151,6 +151,7 @@ LEDs_off;
 
 /*****************************************************************************/
 #define setup_watchdog; \
+if (MCUSR & (1<<WDRF)) watchdog_reset = 1;\
 wdr();\
 MCUSR &= ~(1<<WDRF);\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
@@ -163,9 +164,9 @@ WDTCSR = 0;\
 
 /*****************************************************************************/
 #define OSC_CAL; \
-if ((eeprom_read_byte((uint8_t*)0x1F7) > 0x0F)\
-&&  (eeprom_read_byte((uint8_t*)0x1F7) < 0xF0) && (eeprom_read_byte((uint8_t*)0x1F7)\
-== eeprom_read_byte((uint8_t*)0x1F8))) {OSCCAL = eeprom_read_byte((uint8_t*)0x1F7);cal_factor=1;}
+if ((eeprom_read_byte((uint8_t*)0x1FF) > 0x0F)\
+&&  (eeprom_read_byte((uint8_t*)0x1FF) < 0xF0) && (eeprom_read_byte((uint8_t*)0x1FF)\
+== eeprom_read_byte((uint8_t*)0x1FE))) {OSCCAL = eeprom_read_byte((uint8_t*)0x1FF);cal_factor=1;}
 
 
 /*****************************************************************************/
