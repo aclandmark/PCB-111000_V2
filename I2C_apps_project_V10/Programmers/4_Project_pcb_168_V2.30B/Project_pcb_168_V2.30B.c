@@ -2,18 +2,26 @@
 
 /*****ATMEGA programmer V2.30B developed specially for the bootloader pcb project 
 ********runs on the ATMEGA168 and programs the ATMEGA 328**********
-At the user prompt press P to program the OS+bootloader FW or X to program single applications
+At the user prompt press P to program the mini-OS+bootloader FW or X to program single applications
+Press R to run the mini-OS auto cal routine
+Press S to load the user prompts into the on-chip EEPROM
+
+
+
+
+
 If programming the EEPROM press 
 "E" to program addresses 5 to 0x1FF or
 "e" to program addresses 0x200 to 0x3FD or
 "D" to delete the entire EEPROM up to 0x3FD (preserves cal bytes)
 When verifying the target EEPROM press "r" or "R".
 
-ON_CHIP EEPROM:  	User cal bytes if set are stored in addresses 0x1F7 and 0x1F8.
-ATMEGA 168			Default OSCCAL (the value built into the HW) is stored in
-					address 0x1F9.
+ON_CHIP EEPROM:  	0x1FF and 0x1FE:	User cal bytes 
+ATMEGA 168			0x1FD:				Default OSCCAL (the value built into the HW) 
+					0x1FC				Set to 1 when used to program a target device, otherwise 0xFF
+					
 					Text strings required by the family of programmers are stored in 
-					addresses 0 to 0x1F6.	
+					addresses 0 to 0x1FB.	
 
 TARGET CHIP EEPROM reservations (ATMEGA 328)
 0x0	Top of programmed text space  MSB				
@@ -43,7 +51,7 @@ that it has just been programmed and ensure that the auto cal routine runs
 #include "Project_pcb_168_V2_30B_EEPROM_subs.c"
 
 #define wdr()  __asm__ __volatile__("wdr")
-#define Version "Project_pcb_168_V2.30B"
+#define Version "\r\nProject_pcb_168_V2.30B"
 
 
  void Text_to_EEPROM(int*, char);
@@ -56,57 +64,78 @@ void binUnwantedChars_dot (void);
 int main (void){ 
 unsigned int target_type = 0, target_type_M;	
 char temp_char;
-char op_code;	
-unsigned char fuse_H;
+char op_code = 0;
+unsigned char fuse_H = 0;
 int long cal_error;
 char OSCCAL_WV;
 
 
 setup_HW;
 
+if (watchdog_reset == 1)watchdog_reset = 0;
 
-/*****************Power-up and make contact with target****************************/
-op_code =0;		
-while(1){
-do{sendString("P  ");} while((isCharavailable(255) == 0)); 
-switch(receiveChar()){
-case 'P': case 'p':	fuse_H = 0xD0; 	op_code =1;break;													//FF_cmd_counter_limit = 500;
-case 'X': case 'x':	fuse_H = 0xD7; op_code =1;break; 													//FF_cmd_counter_limit = 10000;
-case 'v': case 'V': sendString (Version);newline();wdt_enable(WDTO_60MS); while(1);break;
-case 'R': case 'r':
-waiting_for_I2C_master;									
+else
+
+{if ((eeprom_read_byte((uint8_t*)0x1FC) == 1)\
+&& (MCUSR & (1 << PORF)));											//POR after programing target device
+else  {wdt_enable(WDTO_60MS); while(1);}
+
+while(1){															//User prompt is R
+do{sendString("R   ");} 
+while((isCharavailable(255) == 0)); 								//Keypress R to complete target calibration
+if(receiveChar() == 'R')break;}
+
+eeprom_write_byte((uint8_t*)0x1FC, 0xFF);  						//Clear EEPROM location set by programmer
+MCUSR &= (~(1 << PORF));
+
+waiting_for_I2C_master;												//Receive cal data over I2C bus							
 OSCCAL_WV = receive_byte_with_Ack();					
 cal_error = receive_byte_with_Ack();					
 cal_error = (cal_error << 8) + receive_byte_with_Nack();
 clear_I2C_interrupt;
 sendString("\r\nTarget cal factor  ");
 sendHex(16, OSCCAL_WV);sendChar('\t');
-sendString("error ");sendHex(10, cal_error); sendString("\r\n");break;
+sendString("error ");sendHex(10, cal_error);						//Print out cal data 
+sendString("\r\n"); wdt_enable(WDTO_60MS); while(1);}				//SW reset and jump straight to user prompt P 			
 
-case 'S': case 's': Prog_on_chip_EEPROM();wdt_enable(WDTO_60MS); while(1);break;
-default:break;}if(op_code)break;}	
+while(1){
+do{sendString("P   ");} 
+while((isCharavailable(255) == 0));								//User prompt is P
+
+
+
+switch(receiveChar()){
+case 'P': case 'p':	fuse_H = 0xD0; 	op_code =1;break;				//Program reset vector to 0x7000						
+case 'X': case 'x':	fuse_H = 0xD7; op_code =1;break; 				//Program reset vector to zero												
+case 'v': case 'V': sendString (Version);newline();				//Check on-chip program version
+wdt_enable(WDTO_60MS); while(1);break;
+case 'S': case 's': Prog_on_chip_EEPROM();							//Program on-chip EEPROM
+wdt_enable(WDTO_60MS); while(1);break;
+default:break;}if(op_code)break;}									//Only exit loop the program target	
 		
 boot_target;
-Atmel_powerup_and_target_detect;        //waits for keypress to continue  Holds target in reset state
+Atmel_powerup_and_target_detect;        
 
 newline();sendString("ATMEGA");
 switch (target){
-case 168: sendString ("168");  PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000; EE_top = 0x200; text_start = 0x5; break;		//no cal bits
-case 328: sendString ("328"); PageSZ = 0x40; PAmask = 0x3FC0; FlashSZ=0x4000; EE_top = 0x200; text_start = 0x5; break;		//For normal strings
+case 168: sendString ("168");  PageSZ = 0x40; PAmask = 0x1FC0; 
+FlashSZ=0x2000; EE_top = 0x200; text_start = 0x5; break;		
+case 328: sendString ("328"); PageSZ = 0x40; PAmask = 0x3FC0; 
+FlashSZ=0x4000; EE_top = 0x200; text_start = 0x5; break;		
 default: wdt_enable(WDTO_1S); while(1);break;}
-Text_Press_P_R_or_H;
+
+sendString("  detected.\r\n");
+
+do{sendString("P/e/E/D    ");} 
+while((isCharavailable(255) == 0));
+op_code = receiveChar(); 				
 
 while(1){
-op_code = waitforkeypress();
-if ((op_code == 'P')||(op_code == 'p'))  {Atmel_powerup; Atmel_config(Prog_enable_h, 0); break;}}
 
-Text_SendEorAOK
-
-while(1){
-op_code = waitforkeypress();
 switch (op_code){
-case 'e':	if(target==328){EE_top = 0x400; text_start = 0x200;}Prog_Target_EEPROM(); break;		//Place backup strings between 0x200 and 0x400
-case 'E':  Prog_Target_EEPROM(); break;//No return from here
+case 'e':	if(target==328){EE_top = 0x400; text_start = 0x200;}
+Prog_Target_EEPROM(); break;	
+case 'E':  Prog_Target_EEPROM(); break;
 
 case 'D':
 sendString("Reset target EEPROM! D or AOK");newline();
@@ -114,16 +143,19 @@ if(waitforkeypress() == 'D'){
 sendString("10 sec wait");
 if(target == 168){for (int m = 0; m <= 0x1FF;m++)
 {Read_write_mem('I', m, 0xFF);}}
-if(target == 328){for (int m = 0; m <= 0x3FD;m++)			//Do not delete Cal data
+if(target == 328){for (int m = 0; m <= 0x3FD;m++)			
 {Read_write_mem('I', m, 0xFF);}}
 sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
 
 case 'p': 
-case 'P': sendString ("8MHz");break;
+case 'P': break;
 case 'x':
 case 'X': wdt_enable(WDTO_60MS); while(1);break;
 default: break;} 
-if ((op_code == 'P') || (op_code == 'p')) break;}		
+
+
+if ((op_code == 'P') || (op_code == 'p')) break;
+op_code = waitforkeypress();}		
 
 temp_char = (Atmel_config(Chip_erase_h, 0)); 
 Atmel_config(write_fuse_bits_H_h,fuse_H );
@@ -144,6 +176,8 @@ UCSR0B |= (1<<RXCIE0); sei();
 Program_Flash();
 Verify_Flash();  
 Read_write_mem('I', 0x3F9, 1); 				//EXTRA LINE: See notes above
+eeprom_write_byte((uint8_t*)0x1FC, 0x01);  
+MCUSR &= (~(1 << PORF));
 
 newline();
 sendString (Version);newline();
@@ -164,8 +198,7 @@ sendHex(10,prog_counter); sendString(" in:"); sendSpace();
 sendHex(10,read_ops); sendString(" out");newline();
 
 sendString("Power cycle then press -r- to auto cal the target device.\r\n");
-
-wdt_enable(WDTO_60MS); while(1);
+while(1);
 return 1;  }
 
 
@@ -307,13 +340,13 @@ if (!( star_counter - 200)){sendChar('*' + offset);star_counter = 0;}}}
 
 /***************************************************************************************************************************************************/
 void Prog_on_chip_EEPROM(void){
-char User_response, next_char, text;
+char next_char, text;
 int EEP_read_address=0,EEP_write_address = 0;
 
-sendString("Set baud rate to 2.4k then AK\r\n");	
+sendString("Set baud rate to 2.4k then press AK\r\n");	
 USART_init(1,160);
-User_prompt;
-//waitforkeypress();
+//User_prompt;
+waitforkeypress();
 sendString("Send message file\r\n");
 
 
