@@ -91,16 +91,6 @@ my_chartoa(radix, CHR, print_out_string); sendString(print_out_string);sendStrin
 
 
 /*******************************************************************************************/
-void Read_on_chip_EEPROM(int EEPROM_address){
-char temp_char, read_counter = 0;
-while(1){
-temp_char =  eeprom_read_byte((uint8_t*)(EEPROM_address++));
-if ((temp_char != '\0') && (++read_counter <= 70)) sendChar(temp_char);
-else break;}}
-
-
-
-/*******************************************************************************************/
 void USART_init (unsigned char UBRROH_N, unsigned char UBRR0L_N ){
 {twenty_msec_delay;}	
 UCSR0B = 0;
