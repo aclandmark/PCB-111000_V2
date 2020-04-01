@@ -14,6 +14,10 @@ Following POR check cal factor and perform auto clock recovery if necassary
 0x3FB	If 0 use multiplexter (T0) period of 4ms else use period of 2mS (std)
 0x3FA	POR Cal_mode	==0xFF mode is UP 	==0 mode is down.
 0x3F9	==1 Set by programmer; or = 0xFF default value
+0x3F8
+0x3F7
+0x3F6	Reserved
+Zero to 0x3F5: For user strings and data
 ***********************/
 
 # include "I2C_V20_0_CA.h"
