@@ -1,5 +1,6 @@
 
 //Prototypes required for "Project_pcb_168_V2.30B.c"
+void Read_on_chip_EEPROM(int);
 void Prog_Target_EEPROM(void);
 void Prog_on_chip_EEPROM(void);
 void Program_Flash (void);
@@ -43,7 +44,6 @@ void sendChar(char);
 void sendString(char*);
 void sendHex(char, unsigned int);
 void sendCharasASKI(char, unsigned char);
-void Read_on_chip_EEPROM(int);
 void USART_init (unsigned char, unsigned char);
 void my_utoa(char, unsigned int, char*, char);
 void my_chartoa(char, unsigned char, char*);
@@ -84,10 +84,6 @@ void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
 #define inc_r_pointer;\
 r_pointer++;\
 r_pointer = r_pointer & 0b00011111;
-
-
-
-
 
 
 int  cmd_counter;											//Counts commands as they are downloaded from the PC
@@ -169,6 +165,7 @@ if ((eeprom_read_byte((uint8_t*)0x1FF) > 0x0F)\
 == eeprom_read_byte((uint8_t*)0x1FE))) {OSCCAL = eeprom_read_byte((uint8_t*)0x1FF);cal_factor=1;}
 
 
+
 /*****************************************************************************/
 #define set_up_I_O;\
 MCUCR &= (~(1 << PUD));\
@@ -179,6 +176,16 @@ PORTB = 0xFF;\
 PORTC = 0xFF;\
 PORTD = 0xFF;\
 PORTC &= (~(1 << PC3));	
+
+
+
+/************************************************************************************************************************************/
+#define Initialise_variables_for_programming_flash \
+prog_counter=0;  prog_led_control = 0; cmd_counter = 0; record_length_old=0;\
+Flash_flag = 0;  HW_address = 0;  section_break = 0; orphan = 0;\
+w_pointer = 0; r_pointer = 0; short_record=0;\
+counter = 1;
+
 
 
 /*****************************************************************************/
@@ -223,6 +230,7 @@ PORTC &= (~(1 << PC3));
 #define Chip_erase 0xAC800000
 #define Chip_erase_h 0xAC80
 
+
 /*****************************************************************************/
 #define PGD_cmd_H PORTB |= cmd_pin
 #define PGD_cmd_L PORTB &= ~(cmd_pin)
@@ -261,7 +269,7 @@ Reset_L;\
 #define Atmel_powerup_and_target_detect;\
 Atmel_powerup;\
 while(1){if((Atmel_config(Prog_enable_h, 0)==0x53) && (Atmel_config(signature_bit_1_h, 0) == 0x1E))break;\
-else {Text_Target_not_detected; wdt_enable(WDTO_120MS);while(1);}}\
+else {sendString("TTND"); wdt_enable(WDTO_120MS);while(1);}}\
 target_type_M = Atmel_config(signature_bit_2_h, signature_bit_2_l);\
 target_type = Atmel_config(signature_bit_3_h, signature_bit_3_l);\
 switch(target_type) {\
@@ -274,7 +282,7 @@ case 0x14:\
 case 0x0F: if(target_type_M == 0x95) target = 328; else target = 88; break;\
 case 0x06:\
 case 0x0B: if(target_type_M == 0x94)target = 168; if(target_type_M == 0x93)target = 15;break;\
-default: newline(); Text_Target_not_detected; newline(); wdt_enable(WDTO_120MS);while(1);break;}
+default: newline(); sendString("TTND"); newline(); wdt_enable(WDTO_120MS);while(1);break;}
 
 
 
@@ -289,24 +297,26 @@ if(((Hex_cmd & 0x00FF)>=0x20) && ((Hex_cmd & 0x00FF)<=0x7E)){sendCharasASKI(16, 
 
 
 /*****************************************************************************/
-#define Text_Ext_target newline(); Read_on_chip_EEPROM(0x0);newline();			//5 added
-#define Text_Press_P_R_or_H Read_on_chip_EEPROM(0x2D);
-#define Text_SendEorAOK newline(); Read_on_chip_EEPROM(0x49);newline();
-#define Text_Send_Hex Read_on_chip_EEPROM(0x86);newline();
-#define Text_XorAOK Read_on_chip_EEPROM(0x99);
-#define Text_ATMEGA8_configBits Read_on_chip_EEPROM(0xBD);newline();
-#define Text_calBits Read_on_chip_EEPROM(0xE3);newline();
-#define Text_ATMEGA168_configBits Read_on_chip_EEPROM(0xFE);
-#define Text_BaudRate_19k2 Read_on_chip_EEPROM(0x12F);
-#define Text_Target_not_detected Read_on_chip_EEPROM(0x152);newline();
-#define Text_Local_Target Read_on_chip_EEPROM(0x166);newline();
-#define Text_Send_Text_File newline(); Read_on_chip_EEPROM(0x173); sendString ("  ");
-#define Text_on_chip_cal_bit Read_on_chip_EEPROM(0x183);
-#define Text_Hex_file_size Read_on_chip_EEPROM(0x199);
-#define Text_Press_W_or_R  Read_on_chip_EEPROM(0x1AB);newline();
-#define Text_Send_file_again  Read_on_chip_EEPROM(0x1E2); sendString ("  ");
-#define Text_int_0_FF; Read_on_chip_EEPROM(0x1E9);
-#define Text_PRH; newline(); Read_on_chip_EEPROM(0x3E);
+#define Text_Atmega; newline(); Read_on_chip_EEPROM(0x0);
+#define Text_detected; Read_on_chip_EEPROM(0x8); newline();
+#define Text_Press_P_or_E; Read_on_chip_EEPROM(0x12);newline();
+#define Text_Send_HexF; newline(); Read_on_chip_EEPROM(0x5D); newline();
+#define Text_EEP_reset; Read_on_chip_EEPROM(0x7E); newline();
+#define Text_10_sec_wait; Read_on_chip_EEPROM(0x98);
+
+#define Text_Config; Read_on_chip_EEPROM(0xA4); newline();
+#define Text_on_chip_cal; Read_on_chip_EEPROM(0xD5);
+#define Text_File_size; newline(); Read_on_chip_EEPROM(0xE6);
+#define Text_Auto_cal; Read_on_chip_EEPROM(0xF6); newline();
+#define Text_target_cal; newline();Read_on_chip_EEPROM(0x130);
+#define Text__Press_W_or_R; newline(); Read_on_chip_EEPROM(0x149);
+
+#define Text_0-0xFF; Read_on_chip_EEPROM(0x17A);
+#define Text_Send_TF; Read_on_chip_EEPROM(0x189);
+#define Text_Baud_Rate_L; newline(); Read_on_chip_EEPROM(0x199); newline();
+#define Text_message_file; Read_on_chip_EEPROM(0x1BD); newline();
+#define Text_Baud_Rate_H; newline(); Read_on_chip_EEPROM(0x1CF); newline();
+
 
 
 
