@@ -1,20 +1,37 @@
 
 
-/*****ATMEGA programmer V2.30B developed specially for the bootloader pcb project 
-********runs on the ATMEGA168 and programs the ATMEGA 328**********
-At the user prompt press P to program the mini-OS+bootloader FW or X to program single applications
-Press R to run the mini-OS auto cal routine
-Press S to load the user prompts into the on-chip EEPROM
+/*****ATMEGA programmer V2.30B developed specially for the "Github_PCB-111000_V2" Project 
 
 
+********runs on the ATMEGA168 and programs the ATMEGA 328 with thre mini-Os plus bootloader**********
+
+Note: It can also program an Atmega 168 but this is not its purpose and testing for this case has been limited
 
 
+The first time the program is allowed to run press -S- at the standard user prompt "P   P   P........"
+This enables the remaining user prompts which are saved in a text file to be copied to the on-chip EEPROM
 
-If programming the EEPROM press 
-"E" to program addresses 5 to 0x1FF or
-"e" to program addresses 0x200 to 0x3FD or
-"D" to delete the entire EEPROM up to 0x3FD (preserves cal bytes)
-When verifying the target EEPROM press "r" or "R".
+Having programed the on-chip EEPROM the standard user prompt is rienstated 
+	Press "V" to retrieve version details
+	Press P to program the mini-OS+bootloader FW for which the reset vector is 0x7000
+	or press X to program single applications for which the reset vectors are zero
+	
+Mesage "ATMEGA328  detected." is displayed and the user prompt changes to "P/E/X    P/E/X....."
+
+	If programming the EEPROM press 
+	"E" or "e" to program addresses 5 to 0x3F5 if the target is an Atmega 328
+	addresses 5 to 0x1FB if the target is an Atmega 168
+	
+	Press "D" to delete user space in the target EEPROM
+	Press "d" to delete user space in the on-chip EEPROM
+	
+	Press "X" to revert to the standard prompt
+
+	Press "P" to program the target
+
+Having programmed a target device power cycle when requested and user prompt "R   R   R........" will be generated
+press R to run the mini-OS auto cal routine
+
 
 ON_CHIP EEPROM:  	0x1FF and 0x1FE:	User cal bytes 
 ATMEGA 168			0x1FD:				Default OSCCAL (the value built into the HW) 
@@ -30,13 +47,17 @@ TARGET CHIP EEPROM reservations (ATMEGA 328)
 0x3 Bottom of application EEPROM space	MSB
 0x4 Bottom of application EEPROM space	LSB
 Note: the ATMEGA 328 OS and 
-bootloaderstrings are all stored in Flash so
+bootloader strings are all stored in Flash so
 it is not essential that its EEPROM be programmed
 
 NOTE One extra line:
 This Writes to the EEPROM of the target device to indicate 
 that it has just been programmed and ensure that the auto cal routine runs
 */
+
+
+
+
 
 #include <avr/io.h>
 #include <stdlib.h>
@@ -54,7 +75,8 @@ that it has just been programmed and ensure that the auto cal routine runs
 #define Version "\r\nProject_pcb_168_V2.30B"
 
 
- void Text_to_EEPROM(int*, char);
+
+void Text_to_EEPROM(int*, char);
 char Text_from_EEPROM(int*);
 void binUnwantedChars_dot (void);
 
@@ -63,7 +85,7 @@ void binUnwantedChars_dot (void);
 
 int main (void){ 
 unsigned int target_type = 0, target_type_M;	
-char temp_char;
+char keypress;
 char op_code = 0;
 unsigned char fuse_H = 0;
 int long cal_error;
@@ -93,7 +115,8 @@ OSCCAL_WV = receive_byte_with_Ack();
 cal_error = receive_byte_with_Ack();					
 cal_error = (cal_error << 8) + receive_byte_with_Nack();
 clear_I2C_interrupt;
-sendString("\r\nTarget cal factor  ");
+
+Text_target_cal; sendString("  ");
 sendHex(16, OSCCAL_WV);sendChar('\t');
 sendString("error ");sendHex(10, cal_error);						//Print out cal data 
 sendString("\r\n"); wdt_enable(WDTO_60MS); while(1);}				//SW reset and jump straight to user prompt P 			
@@ -107,7 +130,9 @@ while((isCharavailable(255) == 0));								//User prompt is P
 switch(receiveChar()){
 case 'P': case 'p':	fuse_H = 0xD0; 	op_code =1;break;				//Program reset vector to 0x7000						
 case 'X': case 'x':	fuse_H = 0xD7; op_code =1;break; 				//Program reset vector to zero												
-case 'v': case 'V': sendString (Version);newline();				//Check on-chip program version
+case 'v': case 'V': //Text_Version;
+sendString (Version);
+newline();				//Check on-chip program version
 wdt_enable(WDTO_60MS); while(1);break;
 case 'S': case 's': Prog_on_chip_EEPROM();							//Program on-chip EEPROM
 wdt_enable(WDTO_60MS); while(1);break;
@@ -116,90 +141,113 @@ default:break;}if(op_code)break;}									//Only exit loop the program target
 boot_target;
 Atmel_powerup_and_target_detect;        
 
-newline();sendString("ATMEGA");
+
+Text_Atmega;
+
 switch (target){
 case 168: sendString ("168");  PageSZ = 0x40; PAmask = 0x1FC0; 
-FlashSZ=0x2000; EE_top = 0x200; text_start = 0x5; break;		
+FlashSZ=0x2000; EE_top = 0x1FA; text_start = 0x5; break;			//Space set aside for Cal/status data		
 case 328: sendString ("328"); PageSZ = 0x40; PAmask = 0x3FC0; 
-FlashSZ=0x4000; EE_top = 0x200; text_start = 0x5; break;		
-default: wdt_enable(WDTO_1S); while(1);break;}
+FlashSZ=0x4000; EE_top = 0x3F5; text_start = 0x5; break;			//Top 10 locations reseved for mini-OS use		
+default: wdt_enable(WDTO_1S); while(1);break;}						//First 5 locations reserved for alloccation table
 
-sendString("  detected.\r\n");
 
-do{sendString("P/e/E/D    ");} 
-while((isCharavailable(255) == 0));
-op_code = receiveChar(); 				
+Text_detected;
+Text_Press_P_or_E;
 
 while(1){
 
+do{sendString("P/E/X    ");} 
+while((isCharavailable(255) == 0));
+op_code = receiveChar(); 				
+
 switch (op_code){
-case 'e':	if(target==328){EE_top = 0x400; text_start = 0x200;}
-Prog_Target_EEPROM(); break;	
+case 'e':															//Program Target EEPROM	
 case 'E':  Prog_Target_EEPROM(); break;
 
-case 'D':
-sendString("Reset target EEPROM! D or AOK");newline();
+case 'D':															//Delete Target EEPROM
+sendString("Target "); Text_EEP_reset;	
 if(waitforkeypress() == 'D'){
-sendString("10 sec wait");
-if(target == 168){for (int m = 0; m <= 0x1FF;m++)
+Text_10_sec_wait;													//sendString("10 sec wait");
+if(target == 168){for (int m = 0; m <= 0x1FA;m++)
 {Read_write_mem('I', m, 0xFF);}}
-if(target == 328){for (int m = 0; m <= 0x3FD;m++)			
+if(target == 328){for (int m = 0; m <= 0x3F5;m++)			
 {Read_write_mem('I', m, 0xFF);}}
 sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
 
-case 'p': 
+case 'd': 
+sendString("On-chip "); Text_EEP_reset;
+if(waitforkeypress() == 'D'){
+for (int m = 0; m <= 0x1FA;m++)									//Delete on-chip EEPROM
+eeprom_write_byte((uint8_t*)(m),0xFF); 
+sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
+
+case 'p': 															//Program target
 case 'P': break;
-case 'x':
+case 'x':															//Escape
 case 'X': wdt_enable(WDTO_60MS); while(1);break;
 default: break;} 
 
+if ((op_code == 'P') || (op_code == 'p')) break;					//Enter target programming mode
+//op_code = waitforkeypress();
+}		
 
-if ((op_code == 'P') || (op_code == 'p')) break;
-op_code = waitforkeypress();}		
+Initialise_variables_for_programming_flash;
 
-temp_char = (Atmel_config(Chip_erase_h, 0)); 
-Atmel_config(write_fuse_bits_H_h,fuse_H );
-if(fuse_H == 0xD0){Atmel_config(write_extended_fuse_bits_h,0xFD );
-Atmel_config(write_fuse_bits_h,0xC2 );}
-if(fuse_H == 0xD7){Atmel_config(write_extended_fuse_bits_h,0xFF );
-Atmel_config(write_fuse_bits_h,0xE2 );}
+Text_Send_HexF;
 
-Atmel_config(write_lock_bits_h,0xEB );
 
-prog_counter=0; record_length_old=0;  cmd_counter = 0; 
-Flash_flag = 0;  HW_address = 0;  section_break = 0; orphan = 0; 
+while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
+{if (keypress == 'x'){wdt_enable(WDTO_60MS); while(1);}}			//X pressed to escape
+UCSR0B |= (1<<RXCIE0); sei();										//Enable UART interrupt
 
-newline();Text_Send_Hex
-
-UCSR0B |= (1<<RXCIE0); sei();
+(Atmel_config(Chip_erase_h, 0)); 									//Only erase flash when hex file is on its way
 
 Program_Flash();
+
+Atmel_config(write_fuse_bits_H_h,fuse_H );							//Write to config bytes
+if(fuse_H == 0xD0)
+{Atmel_config(write_extended_fuse_bits_h,0xFD );
+Atmel_config(write_fuse_bits_h,0xC2 );}
+if(fuse_H == 0xD7)
+{Atmel_config(write_extended_fuse_bits_h,0xFF );
+Atmel_config(write_fuse_bits_h,0xE2 );}
+Atmel_config(write_lock_bits_h,0xEB );								//Lock byte is non critical
+
 Verify_Flash();  
-Read_write_mem('I', 0x3F9, 1); 				//EXTRA LINE: See notes above
+
+if(fuse_H == 0xD0)													//If programming mini-OS
+{Read_write_mem('I', 0x3F9, 1); 									//trigger target cal process
 eeprom_write_byte((uint8_t*)0x1FC, 0x01);  
-MCUSR &= (~(1 << PORF));
+MCUSR &= (~(1 << PORF));}
 
 newline();
-sendString (Version);newline();
-Text_ATMEGA168_configBits; newline();  
+sendString (Version);newline();									//Print out version and config bytes
+Text_Config;
+
 sendHex(16, Atmel_config(read_extended_fuse_bits_h, 0));
-sendHex(16, Atmel_config(read_fuse_bits_H_h,0));	//Target config bits
+sendHex(16, Atmel_config(read_fuse_bits_H_h,0));	
 sendHex(16, Atmel_config(read_fuse_bits_h, 0));
 sendHex(16, Atmel_config(read_lock_bits_h, 0));
 
-Text_on_chip_cal_bit
-if (cal_factor==1) sendHex(16, OSCCAL);
+
+Text_on_chip_cal; sendString("  ");									//Print out on-chip cal byte
 sendHex(16, OSCCAL);
 
-newline();
-Text_Hex_file_size
-sendHex(10,cmd_counter); sendSpace();sendString("d'loaded:"); sendSpace();
-sendHex(10,prog_counter); sendString(" in:"); sendSpace();
-sendHex(10,read_ops); sendString(" out");newline();
+if (cal_factor==1) 
+sendString(" UC");													//User cal factor
+else sendString(" DC");												//Default calfactor
 
-sendString("Power cycle then press -r- to auto cal the target device.\r\n");
-while(1);
-return 1;  }
+Text_File_size;														//Print out file sizes
+sendHex(10,cmd_counter); sendSpace();sendString("d'loaded:"); 
+sendSpace(); sendHex(10,prog_counter); sendString(" in:"); 
+sendSpace(); sendHex(10,read_ops); sendString(" out");newline();
+
+if(fuse_H == 0xD7){wdt_enable(WDTO_60MS); while(1);}				//No cal process: Exit immediately			
+
+Text_Auto_cal;
+while(1);															//Note: mini_OS requires POR to run
+return 1;  }														//ato cal
 
 
 /***************************************************************************************************************************************************/
@@ -316,49 +364,63 @@ if(orphan) {write_page_SUB(page_address + PageSZ);}}
 
 
 /***************************************************************************************************************************************************/
-
-void Verify_Flash (void){			//short version
-int   star_counter;
+void Verify_Flash (void){	
+int star_counter, dot_counter;
 signed int phys_address;
-char offset=0;
+
+dot_counter = 0;
 read_ops = 0;
 Hex_cmd = 0;
 star_counter = 0;
 phys_address = 0;
+
 while(1){
-Hex_cmd = Read_write_mem('L',phys_address, 0x0);							//H for test mode
+Hex_cmd = Read_write_mem('L',phys_address, 0x0);	
 Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
 phys_address++; 
-star_counter++;       
+       
 if (phys_address == FlashSZ)break;
-if (Hex_cmd != 0xFFFF){
-read_ops++; if(read_ops >= prog_counter) offset = 4;}
-if (!( star_counter - 200)){sendChar('*' + offset);star_counter = 0;}}}
 
+if (Hex_cmd != 0xFFFF){
+read_ops += 1; 
+star_counter += 1;}
+else 
+{dot_counter += 1;}
+
+if (!( star_counter - 200)){sendChar('*');
+star_counter = 0;}
+
+if (!( dot_counter - 200)){sendChar('.');
+dot_counter = 0;}
+}}
 
 
 
 /***************************************************************************************************************************************************/
 void Prog_on_chip_EEPROM(void){
-char next_char, text;
+char next_char, text,char_counter;
 int EEP_read_address=0,EEP_write_address = 0;
 
-sendString("Set baud rate to 2.4k then press AK\r\n");	
+Text_Baud_Rate_L;
 USART_init(1,160);
-//User_prompt;
 waitforkeypress();
-sendString("Send message file\r\n");
+Text_message_file;
+
+if ((text = waitforkeypress()) == '"');
+else
+{while(1){if(isCharavailable(2))
+text = receiveChar(); ; 
+if (text == '"') break;}}	
 
 
-
-/***************Strings in the .txt file are saved to EEPROM**************************/
+/***************Strings in the .txt file are saved to on-chip EEPROM**************************/
 
 while(1){next_char = waitforkeypress();								//wait for first character from file
 if ((next_char != '\r') && (next_char != '\n'))						//Ignore leading carriage returns
 break;}							
-Text_to_EEPROM(&EEP_write_address, next_char);								//save first letter to EEPROM
+Text_to_EEPROM(&EEP_write_address, next_char);							//save first letter to EEPROM
 
-while(EEP_write_address < 0x1F6) 											//Exits before cal bytes can be overwritten
+while(EEP_write_address < 0x1FA) 										//Exits before cal bytes can be overwritten
 	{if(isCharavailable(2)) 											//returns 1 if a new letter is available (0 at the end of the file) 
 	{text = receiveChar(); 												//Temporary storage
 
@@ -368,32 +430,32 @@ while(EEP_write_address < 0x1F6) 											//Exits before cal bytes can be over
 		if(next_char == '\0')break; 
 		else 	{next_char = '\0'; 
 				Text_to_EEPROM(&EEP_write_address, next_char);}break;
+		case '"': break;												//Ignore the second " symbol
 		default : 	next_char = text; 									//save the letter
-					Text_to_EEPROM(&EEP_write_address, next_char);			//increments the write address
+					Text_to_EEPROM(&EEP_write_address, next_char);		//increments the write address
 					break;}
 
 	}else break; }														//End of file reached
 
-if(EEP_write_address == 0x1F6)												//If text file was too long
-{Text_to_EEPROM(&EEP_write_address, '\0');									//Place '\0' in 0x1F6 to terminate the string
+if(EEP_write_address == 0x1FA)											//If text file was too long
+{Text_to_EEPROM(&EEP_write_address, '\0');								//Place '\0' in 0x1F6 to terminate the string
 binUnwantedChars_dot();}												//Send dots to pc to indicate lost characters
 
 
 /****************Echo text file to screen with the address of each string**********************/
 
 sendHex(16, EEP_read_address); sendChar('\t');							//Send address of first line of text
-do{																		//Read back text one line at a time
-while(1){text = Text_from_EEPROM(&EEP_read_address);						//Increments the read address
-if(text)sendChar(text); else break;} 								//When '\0' is detected start next line
-newline();sendHex(16,EEP_read_address); 									//Send address of next line
+do{char_counter = 0;													//Read back text one line at a time
+while(char_counter < 150)
+{text = Text_from_EEPROM(&EEP_read_address);							//Increments the read address
+char_counter += 1;
+if(text)sendChar(text); else break;} 									//When '\0' is detected start next line
+newline();sendHex(16,EEP_read_address); 								//Send address of next line
 sendChar('\t');}
-while(EEP_read_address < EEP_write_address);									//Exit when read address equals write address
+while(EEP_read_address < EEP_write_address);							//Exit when read address equals write address
 
-
-sendString("\r\nBAUD RATE 57.6k!!\r\npress any key to continue\r\n");
-
+Text_Baud_Rate_H;
 USART_init(0,16);
-
 waitforkeypress();
 wdt_enable(WDTO_60MS); while(1);}
 
@@ -401,82 +463,21 @@ wdt_enable(WDTO_60MS); while(1);}
 
 
 /****************************************************/
-void Text_to_EEPROM(int*w_a, char byte){					//on-chip EEPROM
-eeprom_write_byte((uint8_t*)(*w_a),byte); 					//macro provided by winavr
+void Text_to_EEPROM(int*w_a, char byte){								//on-chip EEPROM
+eeprom_write_byte((uint8_t*)(*w_a),byte); 								
 *w_a = *w_a + 1;}
 
 
 
 /****************************************************/
 char Text_from_EEPROM(int*r_a){
-return eeprom_read_byte((uint8_t*)((*r_a)++));}			//macro provided by winavr
+return eeprom_read_byte((uint8_t*)((*r_a)++));}						
 
 
 
 /*********************************************************************/
 void binUnwantedChars_dot (void){char bin_char;
-while(1){if (isCharavailable(5)==1){bin_char = receiveChar();sendChar('.');}else break;}newline();}
-
-
-
-
-/*
-
-void Verify_Flash (void){
-
-
-int  line_counter = 0, print_line = 0;						//Controls printing of hex file													
-int line_no;												//Refers to the .hex file
-signed int phys_address;									//Address in flash memory
-signed int prog_counter_mem;								//Initialised with size of .hex file used for programming
-
-phys_address = 0;  read_ops=0; 
-line_no = 0; prog_counter_mem = prog_counter; 
-
-
-while(1){ if(!(prog_counter_mem))break;					//print out loop starts here, exit when finished
-		
-while(1) {													//Start reading the flash memory searching for the next hex command
-
-Hex_cmd = Read_write_mem('L',phys_address, 0x0);							
-Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
-phys_address++;        
-if (phys_address == FlashSZ)break;							//No more memory? Quit if yes
-if (Hex_cmd != 0xFFFF) break;								//If the hex command is 0xFFFF remain in this loop otherwise exit.
-LEDs_on;}
-
-LEDs_off;
-if (phys_address == FlashSZ)break;							//Exit when there is no more flash to read
-
-if ((print_line == 0)  && (!(line_no%10)))
-sendChar('*');												//Print out of hex file not required
-
-read_ops++;													//Value to be sent to PC for comparison with the hex filer size
-prog_counter_mem--;											//"prog_counter_mem" decrements to zero when the end of the file is reached
-
-
-for(int m=0; m<7; m++){    								//Read the next seven locations in the flash memory   
-
-Hex_cmd = Read_write_mem('L',phys_address, 0x0);				
-Hex_cmd = (Hex_cmd<<8) + (Read_write_mem('H',phys_address, 0x0)); 
-phys_address++;
-if(Hex_cmd == 0xFFFF)break;									//Read 0xFFFF: return to start of print out loop
-prog_counter_mem--;
-
-if ((print_line) &&  (!(line_counter%2))) {LEDs_on;} else {LEDs_off;} 			       
-
-read_ops++;
-
-if(phys_address==FlashSZ)break;}
-
-line_no++;
-if (phys_address == FlashSZ)break;}
-
-LEDs_off;
-newline();newline(); }
-
-*/
-
-
+while(1){if (isCharavailable(5)==1)
+{bin_char = receiveChar();sendChar('.');}else break;}newline();}
 
 
