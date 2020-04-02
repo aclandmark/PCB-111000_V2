@@ -79,7 +79,7 @@ void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
 #define delay_5ms 5,220
 #define delay_2ms 4,195
 
-#define RBL 127
+#define RBL 255
 
 #define inc_r_pointer;\
 r_pointer++;\
