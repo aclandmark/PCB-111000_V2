@@ -13,9 +13,10 @@ hex files to be downloaded to the user device.
 The others two are really just developmemts tools.
 
 Operation of Cal_at_Power_on_Reset():
-Switch the DPDT to the left and then power cycle.
-The mini-OS runs, detects the POR flag and runs the Cal_at_Power_on_Reset() subroutine. 
-
+This does not run at every POR
+It runs after the Atmega 328 has been programmed or at user request:
+Switch the DPDT to the left operade SW1 and then power cycle.
+Press R in response to the user prompt;
 
 Note:
 Subroutine start_T2_for_ATMEGA_168_cal() is also included.
@@ -69,13 +70,11 @@ cal_error = compute_error(0,0);
 
 
 /*****************************************************************************/
-void Cal_at_Power_on_Reset (){
-long cal_error;
+void Cal_at_Power_on_Reset (){					//Only carried after the Atmega 328 has been programmed or 
+long cal_error;									//if SW! is operated during POR
 int m;
 char POR_mode;
 
-if(((MCUSR & (1 << PORF))) || (eeprom_read_byte((uint8_t*)0x3F9) == 1));
-else return;
 MCUSR &= (~(1 << PORF));
 
 if ((eeprom_read_byte((uint8_t*)0x3FA) == 0))
