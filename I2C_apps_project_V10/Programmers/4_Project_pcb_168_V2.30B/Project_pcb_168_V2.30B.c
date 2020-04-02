@@ -53,6 +53,16 @@ it is not essential that its EEPROM be programmed
 NOTE One extra line:
 This Writes to the EEPROM of the target device to indicate 
 that it has just been programmed and ensure that the auto cal routine runs
+
+
+Possible Source of Trouble when programing the target EEPROM:  
+Too much space may have been reserved for Target EEPROM strings
+Search in .h file on RBL and reduce it to 127
+Search in EEPROM subs on EEPROM_buffer and reduce the array size to 128
+
+To run bootloader acquire the standard user prompt "P   P   P........" 
+switch the DPDT to the right and press the reset switch.
+
 */
 
 
@@ -119,7 +129,8 @@ clear_I2C_interrupt;
 Text_target_cal; sendString("  ");
 sendHex(16, OSCCAL_WV);sendChar('\t');
 sendString("error ");sendHex(10, cal_error);						//Print out cal data 
-sendString("\r\n"); wdt_enable(WDTO_60MS); while(1);}				//SW reset and jump straight to user prompt P 			
+if (cal_error < 1000)sendString(" OK\r\n");
+ wdt_enable(WDTO_60MS); while(1);}									//SW reset and jump straight to user prompt P 			
 
 while(1){
 do{sendString("P   ");} 
@@ -166,7 +177,7 @@ case 'e':															//Program Target EEPROM
 case 'E':  Prog_Target_EEPROM(); break;
 
 case 'D':															//Delete Target EEPROM
-sendString("Target "); Text_EEP_reset;	
+sendString("\r\nTarget "); Text_EEP_reset;	
 if(waitforkeypress() == 'D'){
 Text_10_sec_wait;													//sendString("10 sec wait");
 if(target == 168){for (int m = 0; m <= 0x1FA;m++)
@@ -176,7 +187,7 @@ if(target == 328){for (int m = 0; m <= 0x3F5;m++)
 sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
 
 case 'd': 
-sendString("On-chip "); Text_EEP_reset;
+sendString("\r\nOn-chip "); Text_EEP_reset;
 if(waitforkeypress() == 'D'){
 for (int m = 0; m <= 0x1FA;m++)									//Delete on-chip EEPROM
 eeprom_write_byte((uint8_t*)(m),0xFF); 
