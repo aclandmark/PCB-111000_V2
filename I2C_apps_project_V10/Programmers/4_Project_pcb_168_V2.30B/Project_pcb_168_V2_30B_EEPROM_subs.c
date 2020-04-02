@@ -68,7 +68,7 @@ else break;}}
 
 /********************************************************************************************************************************************/
 void Prog_Target_EEPROM(void){	
-unsigned char  EEPROM_buffer[130];				//265				
+unsigned char  EEPROM_buffer[256];				//265	//130			
 int EEP_pointer = 0,   file_pointer = 0,  array_pointer = 0,  data_counter = 0;
 char key_press, DL_flag = 0, DL_status, op_code_1, op_code_2;	    
 char reservation[4];
