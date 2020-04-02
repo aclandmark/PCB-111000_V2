@@ -46,8 +46,8 @@ char test_num, test_digit;
 
 char *SW_Version = "OS: I2C_V20_0_CA\r\n";
 char *SW_info = "SW information: Operating system I2C_V20_0_CA\
-  Projects V1_9 and Bootloader V4_21_CA. (Auto clock recovery at POR) \
-  External programmer V2_30A\r\n";
+  Projects V1_9 and Bootloader V4_21_CA.\
+  External programmer V2_30B\r\n";
 	
 
 /****Watchdog initiated for mode F only (user clock/stop watch with
@@ -76,8 +76,9 @@ OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);				//Save OSCALL working and defa
 
 /****************************************************/
 sei();
-if(eeprom_read_byte((uint8_t*)0x3F9) == 1)
-Cal_at_Power_on_Reset ();
+
+if(eeprom_read_byte((uint8_t*)0x3F9) == 1)					//Post programming and POR
+Cal_at_Power_on_Reset ();									//call cal routine
 /****************************************************/
 	
 if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
@@ -216,7 +217,8 @@ case 'W':	restore_168_EEPROM_strings; break;				//Used to restore AT168 EEPROM f
 
 case 'X':	cal_spot_check();break;	
 
-case 'Y':	Cal_at_Power_on_Reset(); break;	
+case 'Y':	if(MCUSR & (1 << PORF))						//User demanded calibration
+			Cal_at_Power_on_Reset(); break;					//only available following POR					
 
 case 'Z':	cal_adjust(); break;		
 }}}
