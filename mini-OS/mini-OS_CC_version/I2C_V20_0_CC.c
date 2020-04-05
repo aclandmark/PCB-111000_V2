@@ -11,10 +11,15 @@ Following POR check cal factor and perform auto clock recovery if necassary
 0x3FE	user cal if set
 0x3FD	Default cal supplied by Atmel
 0x3FC	If 1: press 'x' diagnostic mode else press 'r' normal mode
-0x3FB	If 0 use multiplexter (T0) period of 4ms else use period of 2mS (std)	?????THIS IS THE NEW FEATURE
-
-
+0x3FB	If 0 use multiplexter (T0) period of 4ms else use period of 2mS (std)
+0x3FA	POR Cal_mode	==0xFF mode is UP 	==0 mode is down.
+0x3F9	==1 Set by programmer; or = 0xFF default value
+0x3F8
+0x3F7
+0x3F6	Reserved
+Zero to 0x3F5: For user strings and data
 ***********************/
+
 
 # include "I2C_V20_0_CC.h"
 # include "I2C_V20_0_CC_display_subroutines.c"
@@ -22,7 +27,7 @@ Following POR check cal factor and perform auto clock recovery if necassary
 # include "../Resources/I2C_V20_0_IO_subroutines.c"
 # include "../Resources/I2C_V20_0_Arithmetic_subroutines.c"
 # include "../Resources/I2C_V20_0_ISR_subroutines.c"
-# include "../Resources/I2C_V20_0_osccal_calibration subroutintes.c"
+# include "../Resources/I2C_V20_0_osccal_subroutines_extended.c"
 # include "../Resources/I2C_modes_B_to_F.c"
 # include "../Resources/I2C_mode_definitions.h"
 # include "../Resources/I2C_clock_stop_watch_subroutines.c"
@@ -42,8 +47,8 @@ char test_num, test_digit;
 
 char *SW_Version = "OS: I2C_V20_0_CA\r\n";
 char *SW_info = "SW information: Operating system I2C_V20_0_CA\
-  Projects V1_9 and Bootloader V4_22_CC. (zero_SUT & auto clock recovery) \
-  External programmer V2_30A\r\n";
+  Projects V1_9 and Bootloader V4_21_CA.\
+  External programmer V2_30B\r\n";
 	
 
 /****Watchdog initiated for mode F only (user clock/stop watch with
@@ -67,18 +72,21 @@ TWBR = 32;													//gives 100KHz I2C clock for TWSR
 ASSR = (1 << AS2); 										//initialise T2 for crystal 
 timer_2_counter=0;											//Initialsise timer_2_counter to zero
 
-
-if((MCUSR & (1 << PORF)))									//If POR check OSC Calibration and recal if necessary
-{Cal_at_Power_on_Reset ();}							
 OSCCAL_WV = OSCCAL;
 OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);				//Save OSCALL working and default values
 
+/****************************************************/
+sei();
+
+if(eeprom_read_byte((uint8_t*)0x3F9) == 1)					//Post programming and POR
+Cal_at_Power_on_Reset ();									//call cal routine
+/****************************************************/
 	
 if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
 (eeprom_read_byte((uint8_t*)0x3FB) == 0x01));				
 else eeprom_write_byte((uint8_t*)0x3FB,0x01);				//set display brightness
 
-sei();	
+//sei();
 T0_interupt_cnt = 0;										//Start multiplexer
 TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
 MUX_cntl = 0;
@@ -91,7 +99,7 @@ while(1){													//main loop in which the program resides
 
 while((mode == 'F')\
 ||(mode == 'K')\
- || (mode == 'U'));	
+|| (mode == 'U'));	
 
 
 
@@ -101,7 +109,7 @@ while (!(TWCR & (1 << TWINT)));							//Wait for TWINT flag
 TWDR = 0x03;												//Address of slave (master read operation)  SLA + R
 TWCR = (1 << TWINT) | (1 << TWEN);							//Clear TWINT bit to start transmission of address
 while (!(TWCR & (1 << TWINT)));							//Wait for TWINT flag 
-if (TWSR == 0x40)break;										//SLA + R successfully transmitted ACK recveived 
+if (TWSR == 0x40)break;										//SLA + W successfully transmitted ACK recveived 
 if(clock_flag==1){refresh_clock_display;}}
 
 clock_flag=0; 
@@ -207,9 +215,14 @@ case 'V':	set_diagnostic_mode; break;						//0x3FC is set to 1 when the user ent
 
 
 case 'W':	restore_168_EEPROM_strings; break;				//Used to restore AT168 EEPROM from backup version on AT328
-	
 
-case 'Y':	spot_check_328_cal(); break;}}}
+case 'X':	cal_spot_check();break;	
+
+case 'Y':	if(MCUSR & (1 << PORF))						//User demanded calibration
+			Cal_at_Power_on_Reset(); break;					//only available following POR					
+
+//case 'Z':	cal_adjust(); break;		
+}}}
 
 
 
