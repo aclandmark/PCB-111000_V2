@@ -58,8 +58,7 @@ int accumlator;
 int interim_result;
 
 char OSCCAL_WV;
-char OSCCAL_DV, OSCCAL_UC;
-long cal_error;	
+char OSCCAL_DV;
 
 char clock_flag=0, stop_watch_flag, PIC_cmd, Ten_mS_tick_counter = 0, stop_watch_mode;
 
