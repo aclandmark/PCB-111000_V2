@@ -59,7 +59,7 @@ char result[4];
 int accumlator;
 int interim_result;
 
-//char OSCCAL_WV;
+char OSCCAL_WV;
 char OSCCAL_DV;// OSCCAL_UC;
 // 	
 
