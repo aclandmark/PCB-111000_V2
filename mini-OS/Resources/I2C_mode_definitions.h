@@ -1,4 +1,12 @@
 
+#define User_cal_at_POR \
+{if(I2C_data[0]  == 1)\
+eeprom_write_byte((uint8_t*)0x3FA, 0);\
+if(I2C_data[0]  == 2)\
+eeprom_write_byte((uint8_t*)0x3FA, 0xFF);\
+Cal_at_Power_on_Reset();} 
+
+
 
 # define I2C_Tx_BWops; \
 for (int m = 0; m < 8; m++){\
