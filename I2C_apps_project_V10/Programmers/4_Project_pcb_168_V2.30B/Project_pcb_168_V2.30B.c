@@ -127,7 +127,7 @@ cal_error = (cal_error << 8) + receive_byte_with_Nack();
 clear_I2C_interrupt;
 
 Text_target_cal; sendString("  ");
-sendHex(16, OSCCAL_WV);sendChar('\t');
+sendHex(10, OSCCAL_WV);sendChar('\t');
 sendString("error ");sendHex(10, cal_error);						//Print out cal data 
 if (cal_error < 1000)sendString(" OK\r\n");
  wdt_enable(WDTO_60MS); while(1);}									//SW reset and jump straight to user prompt P 			
