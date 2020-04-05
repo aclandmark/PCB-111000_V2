@@ -35,8 +35,8 @@ void initialise_timers_for_cal_error(void);
 void start_timers_for_cal_error(void);
 long compute_error(char, char);
 
-long fine_tune_cal(char);
-long minimise_error (char, char*);
+long fine_tune_cal(char, char*);
+long minimise_error (char, char);
 void start_T2_for_ATMEGA_168_cal(char);
 long quick_cal(void);	
 void Cal_at_Power_on_Reset (void);
@@ -71,9 +71,12 @@ cal_error = compute_error(0,0);
 
 /*****************************************************************************/
 void Cal_at_Power_on_Reset (){					//Only carried after the Atmega 328 has been programmed or 
-long cal_error;									//if SW! is operated during POR
+long cal_error = 0;									//if SW! is operated during POR
 int m;
 char POR_mode;
+
+TIMSK0 &= (!(1 << TOIE0));
+
 
 MCUSR &= (~(1 << PORF));
 
@@ -86,33 +89,34 @@ eeprom_write_byte((uint8_t*)0x3FA,0);}
 
 Timer_T1_sub(T1_delay_1sec);
 
-mode = 'S';
+mode = 'T';												
 Get_ready_to_calibrate;
 
 switch (POR_mode)
 
 {case 'D':
-m = 0xF0;
+m = 0x80;
 do{OSCCAL = m;
-cal_error = quick_cal();					//low accurracy but quick to scan up to 160 cal factors
+cal_error = compute_error(0,0);					
 m -= 1;}
-while(cal_error > 2500);break;
+while(cal_error > 750);break;				
 
 case 'U':
-m = 0x10;
+m = 0x80;
 do{OSCCAL = m;
-cal_error = quick_cal();					//low accurracy but quick to scan up to 160 cal factors
+cal_error = compute_error(0,0);					
 m += 1;}
-while(cal_error > 2500); break;}
+while(cal_error > 750); break;}			
 
 
-mode = 'T';
-cal_error = fine_tune_cal(OSCCAL);
+cal_error = fine_tune_cal(OSCCAL, &POR_mode);
 
 
 eeprom_write_byte((uint8_t*)0x3FE, OSCCAL); 
 eeprom_write_byte((uint8_t*)0x3FF, OSCCAL);
 close_calibration;
+
+OSCCAL_WV = OSCCAL;
 
 /*************************************************/
 if(eeprom_read_byte((uint8_t*)0x3F9) == 1)
@@ -124,7 +128,8 @@ Initialise_I2C_master_write;
 I2C_master_transmit(OSCCAL);
 I2C_master_transmit(cal_error >> 8);
 I2C_master_transmit(cal_error);
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
+TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+TIMSK0 |= (1 << TOIE0);}
 	
 
 
@@ -132,25 +137,25 @@ TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
 /************************************************************************************************************/
 void manual_cal_PCB_A_device(void){
 long cal_error;
-char OSCCAL_mem, OSCCAL_UV;
+char OSCCAL_UV;		//OSCCAL_mem
 
 EA_buff_ptr = 0;
-OSCCAL_mem = OSCCAL;
+//OSCCAL_mem = OSCCAL;
 		
 Get_ready_to_calibrate;
 OSCCAL -=20;											//Compute cal error for 41 values of OSCCAL
 for(int m = 0; m <= 40; m++)
 {cal_error = compute_error(1,1);OSCCAL++;}
-OSCCAL = OSCCAL_mem;
+OSCCAL = OSCCAL_WV;
 close_calibration;
 		
 Initialise_I2C_master_write;							//Transmit error values to user
 I2C_master_transmit(OSCCAL_DV);
-I2C_master_transmit(OSCCAL_mem - 20);						
+I2C_master_transmit(OSCCAL_WV - 20);						
 for(int m = 0; m <= 40; m++){							
 I2C_master_transmit(buffer[m] >> 8);
 I2C_master_transmit(buffer[m]);}
-I2C_master_transmit	(OSCCAL_mem);
+I2C_master_transmit	(OSCCAL_WV);
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);	
 	
 Initialise_I2C_master_read;								//Read OSCCAL_UV (user value)
@@ -159,7 +164,7 @@ TWCR = (1 << TWINT ) | (1 << TWEN ) | (1 << TWSTO );
 	
 /*********************************************/
 Get_ready_to_calibrate;									//Test value of OSCCAL entered by user
-if(OSCCAL_UV == 0xFF)OSCCAL = OSCCAL_DV;				//If 0xFF reinstate default value
+if(OSCCAL_UV == 0xFF)OSCCAL = OSCCAL_WV;				//If 0xFF reinstate working value
 else OSCCAL = OSCCAL_UV;								//OSCCAL test value
 calibrate_without_sign_plus_warm_up_time;								
 close_calibration;
@@ -172,7 +177,7 @@ I2C_master_transmit(cal_error);
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
 eeprom_write_byte((uint8_t*)0x3FE, 0xFF); 				//Reset OSCCAL values storred in EEPROM
 eeprom_write_byte((uint8_t*)0x3FF, 0xFF);
-OSCCAL = OSCCAL_DV;										//Reinstate default value
+OSCCAL = OSCCAL_WV;										//Reinstate default value
 return;}			
 	
 /*************************************************/
@@ -180,8 +185,9 @@ else{I2C_master_transmit('Y');							//Error resulting from User OSCCAL is less 
 	
 eeprom_write_byte((uint8_t*)0x3FE, OSCCAL_UV); 		//save user OSCCAL to EEPROM
 eeprom_write_byte((uint8_t*)0x3FF, OSCCAL_UV); 
-if(OSCCAL_UV == 0xFF) OSCCAL = OSCCAL_DV;				//Reinstate default value
-else {OSCCAL = OSCCAL_UV;}	
+if(OSCCAL_UV == 0xFF) OSCCAL = OSCCAL_WV;				//Reinstate working value
+else {OSCCAL = OSCCAL_UV;
+OSCCAL_WV = OSCCAL;}	
 	
 TWDR = eeprom_read_byte((uint8_t*)0x3FE);				//Echo values saved to EEPROM to user
 TWCR = (1 << TWINT) | (1 << TWEN);
@@ -194,22 +200,24 @@ TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}
 
 
 /************************************************************************************/
-long fine_tune_cal(char OSCCAL_init){					//Full accuracy but only tests several cal factors
+long fine_tune_cal(char OSCCAL_init, char * POR_mode){					//Full accuracy but only tests several cal factors
 long cal_error, error_mem;
 char direction, OSCCAL_temp;
+if (*POR_mode == 'U') direction = 'U';
+if (*POR_mode == 'D') direction = 'D';
 	
-error_mem = minimise_error(OSCCAL_init, &direction);
+error_mem = minimise_error(OSCCAL_init, direction);
 OSCCAL_temp = OSCCAL;									//Save initial value
 	
 switch (direction){
 case 'U':
-cal_error = minimise_error(OSCCAL_temp + 6, &direction);
+cal_error = minimise_error(OSCCAL_temp + 6, 'D');
 if (cal_error < error_mem)return cal_error;				//Improved result
 else {OSCCAL = OSCCAL_temp; return error_mem;}			//Revert to initial value
 break;
 	
 case 'D':
-cal_error = minimise_error(OSCCAL_temp - 6, &direction);
+cal_error = minimise_error(OSCCAL_temp - 6, 'U');
 if (cal_error < error_mem)return cal_error;				//Improved result
 else {OSCCAL = OSCCAL_temp; return error_mem;}			//Revert to initial value
 break;}
@@ -218,37 +226,39 @@ return 0;}
 
 
 /************************************************************************************/
-long minimise_error (char OSCCAL_init, char *direction)		
+long minimise_error (char OSCCAL_init, char direction)		
 {long cal_error, error_mem;	
 T1_OVF=0;
 OSCCAL = OSCCAL_init;		
 cal_error = compute_error(0,0);								//compute error for OSCCAL_test
 error_mem = cal_error;
 
+
+if (direction == 'U'){
 while(1){
 OSCCAL += 1;
 cal_error = compute_error(0,0);
 if ((cal_error - error_mem) > 3500)continue;
 	
 if (cal_error > (error_mem + 50)) {						//If it gets worse
-OSCCAL -=1; break;}											//decrement OSCCAL and exit							
-error_mem = cal_error;}
+OSCCAL -=1; return error_mem;}								//decrement OSCCAL and exit							
+error_mem = cal_error;}}
 
-if (OSCCAL != OSCCAL_init)	
-{*direction = 'U'; 
-return error_mem;	}										//REPLACE with OSCCAL_DV when OSCCAL_test is discarded
-
-else{														//OSCCAL is still the default value
-
+if (direction == 'D'){										//OSCCAL is still the default value
 while(1){
-OSCCAL -=1;
+OSCCAL -= 1;
 cal_error = compute_error(0,0);
 if ((cal_error - error_mem) > 3500)continue;
+	
+if (cal_error > (error_mem + 50)) {						//If it gets worse
+OSCCAL +=1; return error_mem;}								//decrement OSCCAL and exit							
+error_mem = cal_error;}}
+return 0;}
 
-if (cal_error > (error_mem + 50)){							//If it gets worse
-OSCCAL += 1; break;}											//increment OSCCAL and exit
-error_mem = cal_error;}
-{*direction = 'D'; return error_mem;	}}}
+
+
+
+
 
 
 
@@ -280,14 +290,17 @@ return error;}
 
 /*******************************************************************************************/
 void cal_plot_328(void){							//Called by Proj_9F (mode M)
+//char OSCCAL_mem;
 long cal_error;
-OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);
+
+//OSCCAL_mem = OSCCAL;
+//OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);
 for(int m = 0x10; m <= 0xF0; m++){
 		
 Get_ready_to_calibrate;
 OSCCAL = m;
 cal_error = compute_error(0,1);
-OSCCAL = OSCCAL_DV;
+OSCCAL = OSCCAL_WV;
 close_calibration;
 
 Initialise_I2C_master_write;
@@ -347,13 +360,14 @@ TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);	}
 
 
 /****************************************************************************************************/
-void cal_adjust(void){							//Called by diagnostic mode			
+/*void cal_adjust(void){							//Called by diagnostic mode			
 long cal_error;
 char OSCCAL_init, OSCCAL_mem;
+char POR_mode;
 
 OSCCAL_init = OSCCAL;
 Get_ready_to_calibrate;
-cal_error = fine_tune_cal(OSCCAL_init);			//Adjusts OSCCAL
+cal_error = fine_tune_cal(OSCCAL_init, &POR_mode);			//Adjusts OSCCAL
 OSCCAL_mem = OSCCAL;
 close_calibration;
 Initialise_I2C_master_write;
@@ -362,4 +376,4 @@ I2C_master_transmit(cal_error >> 8);
 I2C_master_transmit(cal_error);
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
 	
-
+*/
