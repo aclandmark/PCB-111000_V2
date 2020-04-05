@@ -71,8 +71,9 @@ TWBR = 32;													//gives 100KHz I2C clock for TWSR
 ASSR = (1 << AS2); 										//initialise T2 for crystal 
 timer_2_counter=0;											//Initialsise timer_2_counter to zero
 
-
+OSCCAL_WV = OSCCAL;
 OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);				//Save OSCALL working and default values
+
 
 /****************************************************/
 sei();
@@ -80,6 +81,7 @@ sei();
 if(eeprom_read_byte((uint8_t*)0x3F9) == 1)					//Post programming and POR
 Cal_at_Power_on_Reset ();									//call cal routine
 /****************************************************/
+	
 	
 if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
 (eeprom_read_byte((uint8_t*)0x3FB) == 0x01));				
@@ -217,10 +219,16 @@ case 'W':	restore_168_EEPROM_strings; break;				//Used to restore AT168 EEPROM f
 
 case 'X':	cal_spot_check();break;	
 
-case 'Y':	if(MCUSR & (1 << PORF))						//User demanded calibration
-			Cal_at_Power_on_Reset(); break;					//only available following POR					
+case 'Y':	if(MCUSR & (1 << PORF)){User_cal_at_POR;}break;						//User demanded calibration
+			
+			
+						
 
-case 'Z':	cal_adjust(); break;		
+
+
+
+
+//case 'Z':	cal_adjust(); break;		
 }}}
 
 
