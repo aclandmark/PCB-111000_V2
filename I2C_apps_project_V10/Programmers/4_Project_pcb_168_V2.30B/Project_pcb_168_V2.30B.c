@@ -114,7 +114,7 @@ else  {wdt_enable(WDTO_60MS); while(1);}
 
 while(1){															//User prompt is R
 do{sendString("R   ");} 
-while((isCharavailable(255) == 0)); 								//Keypress R to complete target calibration
+while((isCharavailable(100) == 0)); 								//Keypress R to complete target calibration
 if(receiveChar() == 'R')break;}
 
 eeprom_write_byte((uint8_t*)0x1FC, 0xFF);  						//Clear EEPROM location set by programmer
