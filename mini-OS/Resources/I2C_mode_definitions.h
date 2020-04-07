@@ -1,57 +1,11 @@
 
-#define User_cal_at_POR \
-{if(I2C_data[0]  == 1)\
-eeprom_write_byte((uint8_t*)0x3FA, 0);\
-if(I2C_data[0]  == 2)\
-eeprom_write_byte((uint8_t*)0x3FA, 0xFF);\
-Cal_at_Power_on_Reset();} 
-
-
-
-# define I2C_Tx_BWops; \
-for (int m = 0; m < 8; m++){\
-display_buf[m] = I2C_data[m];}
-
-
-# define I2C_Tx_8_byte_array; \
-for (int m = 0; m < 8; m++){\
-display_buf[m] = I2C_data[m];}
-
-
-
 /********************************************************************************************/
 #define I2C_Tx_2_integers; \
 for (int m = 0; m < 4; m++){\
 	display_buf[m] = I2C_data[m];}\
 	for (int m = 4; m < 8; m++)display_buf[m] = 0;
 	
-	
-/********************************************************************************************/
-#define I2C_Rx_get_version; \
-switch (I2C_data[0]){\
-case '0': string_to_slave_I2C(SW_Version); break;\
-case '1': string_to_slave_I2C(SW_info); break;\
-default: break;}
 
-
-
-/********************************************************************************************/
-/*# define I2C_Tx_LED_dimmer; \
-\
-eeprom_write_byte((uint8_t*)(0x3FB),\
-(eeprom_read_byte((uint8_t*)(0x3FB)) +1));\
-\
-if (eeprom_read_byte((uint8_t*)(0x3FB)) == 0)\
-eeprom_write_byte((uint8_t*)(0x3FB), 0xFD);\
-\
-T0_interupt_cnt = 0;
-*/
-
-# define I2C_Tx_LED_dimmer; \
-if(I2C_data[0] == 1)\
-{if(eeprom_read_byte((uint8_t*)0x3FB) != 0x01)\
-	{eeprom_write_byte((uint8_t*)0x3FB, 0x01);}\
-	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}
 
 /********************************************************************************************/
 #define I2C_Tx_any_segment; \
@@ -76,83 +30,6 @@ else display_buf[letter] |= (1 << digit_num);}
 
 
 /********************************************************************************************/
-#define I2C_initiate_10mS_ref; \
-TCCR2B = 2;\
-TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));\
-wdt_enable(WDTO_120MS);
-
-
-
-/********************************************************************************************/
-#define I2C_Tx_long; \
-L_number = 0;\
-for (int m = 0; m < 4; m++){\
-L_number += I2C_data[m];\
-if(m<3) L_number = L_number << 8;}\
-Display_num(L_number);
-
-
-
-/********************************************************************************************/
-#define I2C_Tx_float_num; \
-L_number = 0;\
-for (int m = 0; m < 4; m++){\
-L_number += I2C_data[m];\
-if(m<3) L_number = L_number << 8;}\
-expnt = I2C_data[4];\
-float_to_askii(L_number, expnt,Sc_Num_string);\
-TCCR2B = 2;\
-TIMSK2 |= (1 << TOIE2);
-
-
-
-
-/********************************************************************************************/
-#define I2C_displayToLong; \
-L_number=0;\
-sign = '+';\
-{int m = 7; while (!(display_buf[m]))m--;\
-if (display_buf[m] == '-') {sign = '-'; m--;}\
-while(m>=0){L_number = L_number*10 + display_buf[m] - '0'; m--;}}\
-if (sign == '-')L_number = L_number * (-1);\
-for(int m = 0; m <= 3; m++){result[3-m] = L_number; L_number = L_number >> 8;}\
-long_to_slave_I2C;
-
-
-/********************************************************************************************/
-
-#define I2C_Tx_real_num; \
-L_number = 0;\
-for (int m = 0; m < 4; m++){\
-L_number += I2C_data[m];\
-if(m<3) L_number = L_number << 8;}\
-Display_real_num(L_number);
-
-
-
-/********************************************************************************************/
-#define diagnostic_mode; \
-Initialise_I2C_master_write;\
-I2C_master_transmit(eeprom_read_byte((uint8_t*)(0x3FC)));\
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);\
-eeprom_write_byte((uint8_t*)0x3FC, 0x0);
-
-
-
-/********************************************************************************************/
-#define Read_AT328_EEPROM; \
-Initialise_I2C_master_write;\
-{int m = 0x200;\
-while (m <= 0x3F6)\
-{I2C_master_transmit(eeprom_read_byte((uint8_t*)m));\
-m++;}\
-I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FE));\
-I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FF));\
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
-
-
-
-/********************************************************************************************/
 # define I2C_Tx_8_byte_array; \
 for (int m = 0; m < 8; m++){\
 display_buf[m] = I2C_data[m];}
@@ -170,33 +47,64 @@ if (sign_bit == 'u') {Disp_CharU (output_2);}
 
 
 /********************************************************************************************/
-#define PCB_test; \
-TIMSK0 &= (~(1 << TOIE0));\
-clear_digits; clear_display;\
-Initialise_I2C_master_read;\
-test_num = I2C_master_receive(1);\
-switch(test_num){\
-case '0': zero; break;\
-case '1': one; break;\
-case '2': two; break;\
-case '3': three; break;\
-case '4': four; break;\
-case '5': five; break;\
-case '6': six; break;\
-case '7': seven; break;\
-case '8': eight; break;\
-case '9': nine; break;}\
-test_digit = I2C_master_receive(0);\
-switch(test_digit){\
-case '0': digit_0; break;\
-case '1': digit_1; break;\
-case '2': digit_2; break;\
-case '3': digit_3; break;\
-case '4': digit_4; break;\
-case '5': digit_5; break;\
-case '6': digit_6; break;\
-case '7': digit_7; break;}\
-TWCR =  (1 << TWINT ) | (1 << TWEN ) | (1 << TWSTO );
+#define I2C_Tx_long; \
+L_number = 0;\
+for (int m = 0; m < 4; m++){\
+L_number += I2C_data[m];\
+if(m<3) L_number = L_number << 8;}\
+Display_num(L_number);
+
+
+
+/********************************************************************************************/
+#define I2C_initiate_10mS_ref; \
+TCCR2B = 2;\
+TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));\
+wdt_enable(WDTO_120MS);
+
+
+
+/********************************************************************************************/
+# define I2C_Tx_BWops; \
+for (int m = 0; m < 8; m++){\
+display_buf[m] = I2C_data[m];}
+
+
+
+/********************************************************************************************/
+#define I2C_displayToLong; \
+L_number=0;\
+sign = '+';\
+{int m = 7; while (!(display_buf[m]))m--;\
+if (display_buf[m] == '-') {sign = '-'; m--;}\
+while(m>=0){L_number = L_number*10 + display_buf[m] - '0'; m--;}}\
+if (sign == '-')L_number = L_number * (-1);\
+for(int m = 0; m <= 3; m++){result[3-m] = L_number; L_number = L_number >> 8;}\
+long_to_slave_I2C;
+
+
+
+
+/********************************************************************************************/
+#define I2C_Tx_real_num; \
+L_number = 0;\
+for (int m = 0; m < 4; m++){\
+L_number += I2C_data[m];\
+if(m<3) L_number = L_number << 8;}\
+Display_real_num(L_number);
+
+
+
+/********************************************************************************************/
+#define I2C_Tx_float_num; \
+L_number = 0;\
+for (int m = 0; m < 4; m++){\
+L_number += I2C_data[m];\
+if(m<3) L_number = L_number << 8;}\
+expnt = I2C_data[4];\
+float_to_askii(L_number, expnt,Sc_Num_string);\
+TCCR2B = 2;\
+TIMSK2 |= (1 << TOIE2);
 
 
 
@@ -234,10 +142,59 @@ MUX_cntl = I2C_data[0];	\
 
 
 
+
 /********************************************************************************************/
+#define PCB_test; \
+TIMSK0 &= (~(1 << TOIE0));\
+clear_digits; clear_display;\
+Initialise_I2C_master_read;\
+test_num = I2C_master_receive(1);\
+switch(test_num){\
+case '0': zero; break;\
+case '1': one; break;\
+case '2': two; break;\
+case '3': three; break;\
+case '4': four; break;\
+case '5': five; break;\
+case '6': six; break;\
+case '7': seven; break;\
+case '8': eight; break;\
+case '9': nine; break;}\
+test_digit = I2C_master_receive(0);\
+switch(test_digit){\
+case '0': digit_0; break;\
+case '1': digit_1; break;\
+case '2': digit_2; break;\
+case '3': digit_3; break;\
+case '4': digit_4; break;\
+case '5': digit_5; break;\
+case '6': digit_6; break;\
+case '7': digit_7; break;}\
+TWCR =  (1 << TWINT ) | (1 << TWEN ) | (1 << TWSTO );
 
 
-# define set_diagnostic_mode; \
+
+
+/********************************************************************************************/
+#define I2C_Rx_get_version; \
+switch (I2C_data[0]){\
+case '0': string_to_slave_I2C(SW_Version); break;\
+case '1': string_to_slave_I2C(SW_info); break;\
+default: break;}
+
+
+
+/********************************************************************************************/
+# define I2C_Tx_LED_dimmer; \
+if(I2C_data[0] == 1)\
+{if(eeprom_read_byte((uint8_t*)0x3FB) != 0x01)\
+	{eeprom_write_byte((uint8_t*)0x3FB, 0x01);}\
+	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}
+
+
+
+/********************************************************************************************/
+#define set_diagnostic_mode; \
 Initialise_I2C_master_write;\
 I2C_master_transmit(eeprom_read_byte((uint8_t*)(0x3FC)));\
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);\
@@ -255,5 +212,38 @@ eeprom_write_byte((uint8_t*)0x3FC, 0x0);
 	I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FE));\
 	I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FF));\
 	TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}	
+
+
+
+/*************************************************************************************************/
+#define User_cal_at_POR \
+{if(I2C_data[0]  == 1)\
+eeprom_write_byte((uint8_t*)0x3FA, 0);\
+if(I2C_data[0]  == 2)\
+eeprom_write_byte((uint8_t*)0x3FA, 0xFF);\
+Cal_at_Power_on_Reset();} 
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
