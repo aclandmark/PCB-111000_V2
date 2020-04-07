@@ -14,7 +14,7 @@ Following POR check cal factor and perform auto clock recovery if necassary
 0x3FB	If 0 use multiplexter (T0) period of 4ms else use period of 2mS (std)
 0x3FA	POR Cal_mode	==0xFF mode is UP 	==0 mode is down.
 0x3F9	==1 Set by programmer; or = 0xFF default value
-0x3F8
+0x3F8	EEP_subs  PRN_8bit_GEN(). 
 0x3F7
 0x3F6	Reserved
 Zero to 0x3F5: For user strings and data
@@ -26,7 +26,7 @@ Zero to 0x3F5: For user strings and data
 # include "../Resources/I2C_V20_0_IO_subroutines.c"
 # include "../Resources/I2C_V20_0_Arithmetic_subroutines.c"
 # include "../Resources/I2C_V20_0_ISR_subroutines.c"
-# include "../Resources/I2C_V20_0_osccal_subroutines_extended.c"
+# include "../Resources/I2C_V20_0_osccal_subroutines.c"
 # include "../Resources/I2C_modes_B_to_F.c"
 # include "../Resources/I2C_mode_definitions.h"
 # include "../Resources/I2C_clock_stop_watch_subroutines.c"
@@ -87,7 +87,7 @@ if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
 (eeprom_read_byte((uint8_t*)0x3FB) == 0x01));				
 else eeprom_write_byte((uint8_t*)0x3FB,0x01);				//set display brightness
 
-//sei();
+
 T0_interupt_cnt = 0;										//Start multiplexer
 TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
 MUX_cntl = 0;
@@ -210,25 +210,20 @@ case 'Q':	I2C_Tx_LED_dimmer; break;
 case 'U':	start_T2_for_ATMEGA_168_cal(1); break;			  
 
 
-/**********Modes 'R', 'S' and 'T' are not available***************************/
+/**********Modes 'R', 'S' and 'T' are used by T2 ISR and are not available***************************/
 
 case 'V':	set_diagnostic_mode; break;						//0x3FC is set to 1 when the user enters 'x' at the p/r prompt
 
 
-case 'W':	restore_168_EEPROM_strings; break;				//Used to restore AT168 EEPROM from backup version on AT328
+case 'W':	restore_168_EEPROM_strings; break;				//Obsolete: was used to restore AT168 EEPROM from backup version on AT328
 
 case 'X':	cal_spot_check();break;	
 
-case 'Y':	if(MCUSR & (1 << PORF)){User_cal_at_POR;}break;						//User demanded calibration
+case 'Y':	if(MCUSR & (1 << PORF))
+			{User_cal_at_POR;}break;						//User demanded calibration
 			
 			
-						
-
-
-
-
-
-//case 'Z':	cal_adjust(); break;		
+//case 'Z':	cal_adjust(); break;							Obsolete	
 }}}
 
 
