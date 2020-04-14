@@ -12,6 +12,5 @@ Target device cal factor
 Press -W- or -R- to write to or read from EEPROM
 Integer(0-FF)?
 Send text file.
-Set baud rate to 2.4k then press AK
-Send message file
+Commands downloaded, programmed and read back:  
 BAUD RATE 57.6k!! & press AK to continue."
