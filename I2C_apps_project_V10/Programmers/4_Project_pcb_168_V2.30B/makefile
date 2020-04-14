@@ -37,7 +37,7 @@ MCU = atmega168
 FORMAT = ihex
 
 # Target file name (without extension).
-TARGET = Project_pcb_168_V2.30B
+TARGET = Project_pcb_168_V2.30C
 
 
 # List C source files here. (C dependencies are automatically generated.)
