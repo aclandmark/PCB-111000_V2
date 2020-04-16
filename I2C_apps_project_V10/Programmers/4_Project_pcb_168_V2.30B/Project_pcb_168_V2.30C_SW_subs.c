@@ -253,8 +253,11 @@ char OSCCAL_WV, OSCCAL_mem = 0;
 long  error_mag; 
 int limit;
 
-DDRC |= (1 << PC5);
-PORTC ^= (1 << PC5);	
+
+
+MCUSR &= (~(1 << PORF));
+DDRC |= (1 << PC2);				//Use PC2 pin 25
+PORTC ^= (1 << PC2);	
 
 ASSR = (1 << AS2); 		
 TCNT2 = 0;				
@@ -272,7 +275,7 @@ Timer_T0_10mS_delay_x_m(100);
 		OSCCAL = counter_1; error_mag = compute_error(2,0); 
 		if(counter_1 > 0xE8)continue; 
 		dot_counter += 1; dot_counter = dot_counter%5; 
-		if(!(dot_counter)){sendChar('.');PORTC ^= (1 << PC5);}
+		if(!(dot_counter)){sendChar('.');PORTC ^= (1 << PC2);}
 		if(error_mag < 1000)break;}
 		
 		OSCCAL_mem = OSCCAL;
