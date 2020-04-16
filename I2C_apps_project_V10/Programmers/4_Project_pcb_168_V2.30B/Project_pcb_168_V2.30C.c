@@ -82,7 +82,7 @@ switch the DPDT to the right and press the reset switch.
 #include "Project_pcb_168_V2_30C_EEPROM_subs.c"
 
 #define wdr()  __asm__ __volatile__("wdr")
-#define Version "\r\nProject_pcb_168_V2.30B"
+#define Version "\r\nProject_pcb_168_V2.30C"
 
 
 
@@ -118,8 +118,9 @@ char OSCCAL_WV;
 cal_factor= 0;
 setup_HW;
 
-if(cal_factor== 0){auto_cal_168();}
-
+//if(cal_factor== 0) {auto_cal_168();}
+if((cal_factor== 0) || ((MCUSR & (1 << PORF)) && ((PIND & 0x04)^0x04)))
+{while((PIND & 0x04)^0x04); auto_cal_168();}
 
 if (watchdog_reset == 1)watchdog_reset = 0;
 
