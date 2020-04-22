@@ -214,7 +214,7 @@ long  error_mag;
 int limit;
 
 //TIMSK0 &= (!(1 << TOIE0));								//Display not needed
-MCUSR &= (~(1 << PORF));								//Clear PORF
+//MCUSR &= (~(1 << PORF));								//Clear PORF
 Timer_T1_sub(T1_delay_1sec);
 
 ONE; digit_0;
