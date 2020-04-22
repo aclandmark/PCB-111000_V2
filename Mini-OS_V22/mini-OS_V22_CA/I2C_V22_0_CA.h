@@ -108,10 +108,12 @@ RHSofDP = 0;expnt_result = 0;
 #define T1_delay_1sec 5,0xE17B
 #define one_sec_delay_with_interrupts; TIMSK1 |= (1 << TOIE1);one_sec_delay; TIMSK1 &= (~(1 << TOIE1));
 
-#define	digit_3		PORTB &= (~(1 << PB0));
-#define	digit_2		PORTB &= (~(1 << PB2));
-#define	digit_1		PORTB &= (~(1 << PB3));
-#define	digit_0		PORTB &= (~(1 << PB4));
+#define	digit_3			PORTB &= (~(1 << PB0));
+#define	digit_2			PORTB &= (~(1 << PB2));
+#define	digit_1			PORTB &= (~(1 << PB3));
+#define	digit_0			PORTB &= (~(1 << PB4));
+#define	toggle_digit_0	PORTB ^= (1 << PB4);
+
 
 #define	digit_7		PORTB &= (~(1 << PB5));
 #define	digit_6		PORTC &= (~(1 << PC0));
