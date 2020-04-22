@@ -213,16 +213,18 @@ char OSCCAL_WV, OSCCAL_mem = 0;
 long  error_mag; 
 int limit;
 
-TIMSK0 &= (!(1 << TOIE0));								//Display not needed
+//TIMSK0 &= (!(1 << TOIE0));								//Display not needed
 MCUSR &= (~(1 << PORF));								//Clear PORF
 Timer_T1_sub(T1_delay_1sec);
+
+ONE; digit_0;
 	
 cal_mode = 1;
 mode = 'T';		
 Get_ready_to_calibrate;
 		
 counter_1 = 0xF1;
-while(1){
+while(1){if (!(counter_1%6))toggle_digit_0;
 counter_1 -= 1;
 OSCCAL = counter_1; error_mag = compute_error(0,2,0); 
 if(counter_1 > 0xE8)continue; 
@@ -230,28 +232,31 @@ if(error_mag < 1000)break;}
 		
 OSCCAL_mem = OSCCAL;
 counter_2 = 0;
+toggle_digit_0;
 
 cal_mode = 5;		
 limit = 1000;
-for(int m = 1; m <= 9; m++){
+for(int m = 1; m <= 9; m++){if (!(m%3))toggle_digit_0;
 limit -= 100;
 Minimise_error(limit, &counter_1, &counter_2, &error_mag, &OSCCAL_mem);}
 		
 error_mag = compute_error(0,2,0);
 OSCCAL_WV = OSCCAL;	
 close_calibration;
-eeprom_write_byte((uint8_t*)0x1FE, OSCCAL_WV); 
-eeprom_write_byte((uint8_t*)0x1FF, OSCCAL_WV);
+eeprom_write_byte((uint8_t*)0x3FE, OSCCAL_WV); 
+eeprom_write_byte((uint8_t*)0x3FF, OSCCAL_WV);
 	
 if(eeprom_read_byte((uint8_t*)0x3F9) == 1)
-eeprom_write_byte((uint8_t*)0x3F9, 0xFF); 
+{eeprom_write_byte((uint8_t*)0x3F9, 0xFF); 
 
 Initialise_I2C_master_write;
 I2C_master_transmit(OSCCAL);
 I2C_master_transmit(error_mag >> 8);
 I2C_master_transmit(error_mag);
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-TIMSK0 |= (1 << TOIE0);}								//Restore display interrupt
+TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
+//TIMSK0 |= (1 << TOIE0);
+clear_digits;
+clear_display;}							//Restore display interrupt
 
 	
 		
