@@ -71,7 +71,7 @@ TWBR = 32;													//gives 100KHz I2C clock for TWSR
 ASSR = (1 << AS2); 										//initialise T2 for crystal 
 timer_2_counter=0;											//Initialsise timer_2_counter to zero
 
-OSCCAL_WV = OSCCAL;
+
 OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);				//Save OSCALL working and default values
 
 
@@ -81,6 +81,13 @@ sei();
 if(eeprom_read_byte((uint8_t*)0x3F9) == 1)					//Post programming //and POR
 Cal_at_Power_on_Reset ();									//call cal routine
 /****************************************************/
+
+if ((PIND & (1 << PD1)) && (MCUSR & (1 << PORF)))
+Cal_at_Power_on_Reset ();//AND PORF
+
+
+OSCCAL_WV = OSCCAL;
+
 	
 	
 if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
@@ -219,11 +226,13 @@ case 'W':	restore_168_EEPROM_strings; break;				//Obsolete: was used to restore 
 
 case 'X':	cal_spot_check();break;	
 
-case 'Y':	if(MCUSR & (1 << PORF))
-			{Cal_at_Power_on_Reset();}break;						//User demanded calibration
-			
-			
-//case 'Z':	cal_adjust(); break;							Obsolete	
+case 'Y': eeprom_write_byte((uint8_t*)0x3FE,0xBC);eeprom_write_byte((uint8_t*)0x3FF,0xBC);wdt_enable(WDTO_60MS); while(1);break;
+
+case 'Z':	Initialise_I2C_master_write; I2C_master_transmit(OSCCAL);	
+			I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FE));
+			I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FF)); 
+			I2C_master_transmit(OSCCAL_WV);TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+			break;							
 }}}
 
 
