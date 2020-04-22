@@ -85,6 +85,7 @@ Cal_at_Power_on_Reset ();									//call cal routine
 if ((PIND & (1 << PD1)) && (MCUSR & (1 << PORF)))
 Cal_at_Power_on_Reset ();//AND PORF
 
+MCUSR &= (~(1 << PORF));
 
 OSCCAL_WV = OSCCAL;
 
