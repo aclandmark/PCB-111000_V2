@@ -97,18 +97,6 @@ TWCR = (1 << TWINT ) | (1 << TWEN ) | (1 << TWSTO );
 if(cal_168_mode); else start_T2_for_ATMEGA_168_cal(0);				
 break;
 
-/*case 'S': 
-TCCR1B = 0;							//Halt T1
-TCNT1_BKP = TCNT1;					//Copy the value of TCNT1
-TCNT1 = 0;							//Clear TCNT1
-TCCR1B = 1;							//Get T1 running again ASAP (Note T2 has not stopped running)
-if(EA_counter < 1)T1_OVF = 0;		//Ignore first  result
-else{switch(T1_OVF){
-case 0: error_SUM = error_SUM + (TCNT1_BKP - 62500); break;
-case 1: error_SUM = error_SUM + (TCNT1_BKP - 62500 + 65536); break;
-case 2: error_SUM = error_SUM + (TCNT1_BKP - 62500 + 131072); break;}
-T1_OVF = 0;}EA_counter++;break;*/
-
 default:
 timer_2_counter++; if(timer_2_counter == 16){timer_2_counter=0; 
 if(mode != 'F'){update_timer (); Ten_mS_tick = 41;}			//Internal clock modes 7,8 and 9
