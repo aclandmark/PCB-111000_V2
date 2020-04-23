@@ -213,12 +213,10 @@ char OSCCAL_WV, OSCCAL_mem = 0;
 long  error_mag; 
 int limit;
 
-//TIMSK0 &= (!(1 << TOIE0));								//Display not needed
-//MCUSR &= (~(1 << PORF));								//Clear PORF
+ONE; digit_0;
+
 Timer_T1_sub(T1_delay_1sec);
 
-ONE; digit_0;
-	
 cal_mode = 1;
 mode = 'T';		
 Get_ready_to_calibrate;
@@ -254,9 +252,9 @@ I2C_master_transmit(OSCCAL);
 I2C_master_transmit(error_mag >> 8);
 I2C_master_transmit(error_mag);
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
-//TIMSK0 |= (1 << TOIE0);
+
 clear_digits;
-clear_display;}							//Restore display interrupt
+clear_display;}							
 
 	
 		
