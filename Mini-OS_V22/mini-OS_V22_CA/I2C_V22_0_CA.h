@@ -6,18 +6,7 @@
 #include <avr/eeprom.h>
 
 
-volatile char payload_size;							//zero to hide clock, 1 to update 10mS 2 to update 100ms and 8 to update seconds
-volatile int disp_ptr;
-volatile char Char_received, exit_loop = 0, display_mask;		//ISR UART
-volatile char mode=1, timer_mode, inc_secs, inc_mins;					//ISR T0
-volatile char display_buf[8], clock_buf[8], stop_watch_buf[8],strobe[8];
-volatile int buf_ptr, mode_C_ptr;
-volatile char T1_ovf_flag=0, timer_2_counter;
-volatile signed char output_2;
-volatile int Ten_mS_tick = 41;
-unsigned long number[6];
-signed char exponent[3];
-
+/*********************************************************************************************************************/
 void I2C_master_transmit(char);
 char I2C_master_receive(char);
 void basic_clock (void);
@@ -31,18 +20,30 @@ void start_T2_for_ATMEGA_168_cal(char);
 
 
 
+/*********************************************************************************************************************/
+volatile char payload_size;													//zero to hide clock, 1 to update 10mS 2 to update 100ms and 8 to update seconds
+volatile int disp_ptr;
+volatile char Char_received, exit_loop = 0, display_mask;					//ISR UART
+volatile char mode=1, timer_mode, inc_secs, inc_mins;						//ISR T0
+volatile char display_buf[8], clock_buf[8], stop_watch_buf[8],strobe[8];
+volatile int buf_ptr, mode_C_ptr;
+volatile char T1_ovf_flag=0, timer_2_counter;
+volatile signed char output_2;
+volatile int Ten_mS_tick = 41;
+unsigned long number[6];
+signed char exponent[3];
+
+
 volatile char entry_point;
 char Sc_Num_string[16];
 int Sc_Num_string_length, Sc_Num_string_pointer, display_char_skip_counter;
 
 volatile int EA_counter, EA_buff_ptr;
-int buffer[41];	//Used to store "long" results, however for this application results are always less than 32000
+int buffer[41];							//Used to store "long" results, however values above 32000 are allowed to roll over
 volatile char T1_OVF;
 volatile long error_SUM;
 char OSCCAL_test;
 volatile char MUX_cntl, T0_interupt_cnt;
-
-
 
 char I2C_data[10];
 
@@ -60,13 +61,14 @@ int accumlator;
 int interim_result;
 
 char OSCCAL_WV;
-char OSCCAL_DV;// OSCCAL_UC;
-volatile char cal_mode; 	
+char OSCCAL_DV;
+volatile char cal_mode; 			//Defines number of averages used when measuring osccal_error	
 
 char clock_flag=0, stop_watch_flag, PIC_cmd, Ten_mS_tick_counter = 0, stop_watch_mode;
 
 
 
+/*********************************************************************************************************************/
 #define setup_watchdog;\
 wdr();\
 MCUSR &= ~(1<<WDRF);\
@@ -98,8 +100,7 @@ RHSofDP = 0;expnt_result = 0;
 
 
 
-
-
+/*********************************************************************************************************************/
 #define two_fifty_mS_delay; timer_T1_sub_with_interrupt(T1_delay_250ms);while (T1_ovf_flag == 0);T1_ovf_flag = 0;
 #define T1_delay_250ms 5,0xF861
 #define two_fifty_mS_delay_with_interrupts; TIMSK1 |= (1 << TOIE1);two_fifty_mS_delay; TIMSK1 &= (~(1 << TOIE1));
@@ -108,12 +109,14 @@ RHSofDP = 0;expnt_result = 0;
 #define T1_delay_1sec 5,0xE17B
 #define one_sec_delay_with_interrupts; TIMSK1 |= (1 << TOIE1);one_sec_delay; TIMSK1 &= (~(1 << TOIE1));
 
+
+
+/*********************************************************************************************************************/
 #define	digit_3			PORTB &= (~(1 << PB0));
 #define	digit_2			PORTB &= (~(1 << PB2));
 #define	digit_1			PORTB &= (~(1 << PB3));
 #define	digit_0			PORTB &= (~(1 << PB4));
 #define	toggle_digit_0	PORTB ^= (1 << PB4);
-
 
 #define	digit_7		PORTB &= (~(1 << PB5));
 #define	digit_6		PORTC &= (~(1 << PC0));
@@ -128,6 +131,8 @@ RHSofDP = 0;expnt_result = 0;
 #define	seg_f 	(1 << PD6)
 #define	seg_g 	(1 << PD7)
 
+
+/*********************************************************************************************************************/
 #define set_digit_drivers;\
 DDRB |= (1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4) | (1 << DDB5);\
 DDRC |= (1 << DDC0) | (1 << DDC1) | (1 << DDC2);\
@@ -141,6 +146,8 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 
 #define clear_display_buffer; for(int m = 0; m<=7; m++)display_buf[m] = 0;
 
+
+/*********************************************************************************************************************/
 #define one_U 	PORTD &= ~(seg_b);
 #define ONE_U 	PORTD &= ~(seg_f);
 #define one_L 	PORTD &= ~(seg_c);
@@ -181,6 +188,8 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 #define T1_delay_500ms 5,0xF0BE
 #define T1_delay_10ms 3, 0xF63C
 
+
+/*********************************************************************************************************************/
 #define refresh_clock_display;   for (int n = 0; n < 8; n++){display_buf[n] = clock_buf[n];}
 #define refresh_stop_watch_display;  for (int n = 0; n < 8; n++){display_buf[n] = stop_watch_buf[n];}
 #define initiate_stop_watch_display;  for (int n = 0; n < 8; n++){stop_watch_buf[n] = '0';}
@@ -210,6 +219,7 @@ case '1': case '2': if (clock_buf[6] > '0') clock_buf[6]--; else {clock_buf[6] =
 case '0': if (clock_buf[6] > '0') clock_buf[6]--; else {clock_buf[6] = '3';clock_buf[7] = '2';}}}}
 
 
+/*********************************************************************************************************************/
 #define Initialise_I2C_master_write;\
 	while(1){\
 	TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);\
