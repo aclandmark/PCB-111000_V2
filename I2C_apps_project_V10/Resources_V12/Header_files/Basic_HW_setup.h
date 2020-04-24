@@ -15,20 +15,11 @@ int test;
 char watch_dog_reset = 0;
 char User_response;
 
-//void Read_Hello_world_string(void);
-//unsigned int PRN_16bit_GEN(unsigned int);
-
 #define T0_delay_5ms 5,220
 #define T0_delay_4ms 4,227
 #define T0_delay_10ms 5,178
 
-
-
 #define T1_delay_250ms 5,0xF85F
-
-
-
-
 
 #define T1_delay_10ms 3, 0xF63C
 #define T1_delay_20ms 3, 0xEC79
@@ -36,7 +27,6 @@ char User_response;
 #define T1_delay_50ms 3, 0xCF31
 #define T1_delay_100ms 3, 0x9E62
 #define T1_delay_500ms 5,0xF0BE
-
 
 #define T1_delay_1sec 5,0xE17D
 #define T1_delay_2sec 5,0xC2FB
@@ -80,8 +70,9 @@ OSC_CAL;\
 USART_init(0,16);\
 \
 Timer_T0_10mS_delay_x_m(1);\
-I2C_Tx_LED_dimmer();\
-diagnostic_mode;
+if(!(watch_dog_reset))\
+{I2C_Tx_LED_dimmer();\
+diagnostic_mode;}
 
 
 
@@ -187,12 +178,6 @@ while (waitforkeypress() != 'x');\
 break;\
 case '4':I2C_Tx_display(); break;}}\
 else TWCR = (1 << TWINT);
-
-
-/*****************************************************************************/
-//#define User_cal
-//if(MCUSR & (1 << PORF)
-//{if((PIND & 0x80)^0x80)Cal_at_POR();}
 
 
 
