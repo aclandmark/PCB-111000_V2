@@ -10,12 +10,15 @@ Operation also depends on the operation of the T1 and T2 ISR's
 
 Cal_at_Power_on_Reset() should ensure that calibration is always adequate to enable
 hex files to be downloaded to the user device.
-The others two are really just developmemts tools.
+
 
 Operation of Cal_at_Power_on_Reset():
-This does not run at every POR
-It runs after the Atmega 328 has been programmed or at user request:
-Switch the DPDT to the left operade SW1 and then power cycle.
+To make this run switch the DPDT to the right and power cycle the board.
+If it is switched left the user project will start immediately.
+
+
+It also runs after the Atmega 328 has been programmed using "Project_pcb_168_V2.30C":
+Switch the DPDT to the left operate SW1 and then power cycle.
 Press R in response to the user prompt;
 
 Note:
@@ -34,8 +37,7 @@ during which time an 8MHz clock counts to 62,500
 void initialise_timers_for_cal_error(void);
 void start_timers_for_cal_error(void);
 long compute_error(char, char, char);
-
-long minimise_error (char, char);
+void Minimise_error(int, char*, char*, long*, char*, char);
 void start_T2_for_ATMEGA_168_cal(char);
 void Cal_at_Power_on_Reset (void);
 void manual_cal_PCB_A_device(void);
@@ -60,9 +62,11 @@ TIMSK1 &= (~(1 << TOIE1));
 
 #define calibrate_without_sign_plus_warm_up_time; \
 cal_mode = 5;\
-cal_error = compute_error(0,5,0);\
-cal_error = compute_error(0,5,0);\
-cal_error = compute_error(0,5,0);
+cal_error = compute_error(0,cal_mode,0);\
+cal_error = compute_error(0,cal_mode,0);\
+cal_error = compute_error(0,cal_mode,0);
+
+
 
 
 /************************************************************************************************************/
@@ -75,7 +79,7 @@ cal_mode = 5;
 Get_ready_to_calibrate;
 OSCCAL -=20;											//Compute cal error for 41 values of OSCCAL
 for(int m = 0; m <= 40; m++)
-{cal_error = compute_error(1,5,1);OSCCAL++;}
+{cal_error = compute_error(1,cal_mode,1);OSCCAL++;}
 OSCCAL = OSCCAL_WV;
 close_calibration;
 		
@@ -128,6 +132,8 @@ while (!(TWCR & (1 << TWINT)));
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}
 
 
+
+
 /*******************************************************************************************/
 void cal_plot_328(void){							//Called by Proj_9F (mode M)
 long cal_error;
@@ -136,7 +142,7 @@ cal_mode = 2;
 for(int m = 0x10; m <= 0xF0; m++){
 Get_ready_to_calibrate;
 OSCCAL = m;
-cal_error = compute_error(0,2,1);
+cal_error = compute_error(0,cal_mode,1);
 OSCCAL = OSCCAL_WV;
 close_calibration;
 
@@ -144,6 +150,8 @@ Initialise_I2C_master_write;
 I2C_master_transmit(cal_error >> 8);
 I2C_master_transmit(cal_error);
 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}
+
+
 
 
 
@@ -156,20 +164,22 @@ TCNT2=0; while(ASSR & (1 << TCN2UB));	}			//Reset TCNT2
 
 
 
+
 /************************************************************************************/
 void start_timers_for_cal_error(void)
 {TCCR2B = 1; 	
 while(ASSR & (1 << TCR2BUB));
 TCCR1B = 1;}
 	
+	
 
 
 /************************************************************************************/
-void start_T2_for_ATMEGA_168_cal(char cal_mode){
+void start_T2_for_ATMEGA_168_cal(char calibration_mode){					
 TCCR2B =  0x0;	while(ASSR & (1 << TCR2BUB));		//Halt T2
 TCCR2A = 0; while(ASSR & (1 << TCR2AUB));			//Reset T2 
 TCNT2=0; while(ASSR & (1 << TCN2UB));
-if(cal_mode){
+if(calibration_mode){
 TIMSK2 |= (1 << TOIE2);							//Set Timer 2: interrupt on overflow
 TCCR2B = 1; 										//Start T2 with a clock of 32.768Hz
 while(ASSR & (1 << TCR2BUB));}
@@ -177,13 +187,15 @@ else{TIMSK2 &= (~(1 << TOIE2));mode = 0;}}
 
 
 
+
 /*************************************************************/
-void Minimise_error(int limit, char *counter_1, char *counter_2, long *error_mag, char *OSCCAL_mem)
-{while(*counter_2 < 20){ OSCCAL = *counter_1; *error_mag = compute_error(0,2,0); 
+void Minimise_error(int limit, char *counter_1, char *counter_2, long *error_mag, char *OSCCAL_mem, char local_cal_mode )
+{while(*counter_2 < 20){ OSCCAL = *counter_1; *error_mag = compute_error(0,local_cal_mode,0); 
 		if(*error_mag < limit)break;
 		*counter_1 -= 1;
 		*counter_2 +=1;}
 		if (*counter_2 < 20)*OSCCAL_mem = OSCCAL;else OSCCAL = *OSCCAL_mem;}
+
 
 
 
@@ -206,6 +218,8 @@ long compute_error(char local_error_mode, char local_cal_mode, char sign)						/
 		return error/Num_2;}
 
 
+
+
 /*****************************************************************************************************/
 void Cal_at_Power_on_Reset (void){
 char counter_1, counter_2;		
@@ -213,18 +227,18 @@ char OSCCAL_WV, OSCCAL_mem = 0;
 long  error_mag; 
 int limit;
 
-ONE; digit_0;
+ONE; digit_0;												//Initialise display
 
-Timer_T1_sub(T1_delay_1sec);
+Timer_T1_sub(T1_delay_1sec);								//Crystal warm up time
 
 cal_mode = 1;
-mode = 'T';		
+mode = 'T';													//Required by T0 and T1 ISR	
 Get_ready_to_calibrate;
 		
 counter_1 = 0xF1;
 while(1){if (!(counter_1%6))toggle_digit_0;
 counter_1 -= 1;
-OSCCAL = counter_1; error_mag = compute_error(0,2,0); 
+OSCCAL = counter_1; error_mag = compute_error(0,cal_mode,0); 
 if(counter_1 > 0xE8)continue; 
 if(error_mag < 1000)break;}
 		
@@ -236,9 +250,9 @@ cal_mode = 5;
 limit = 1000;
 for(int m = 1; m <= 9; m++){if (!(m%3))toggle_digit_0;
 limit -= 100;
-Minimise_error(limit, &counter_1, &counter_2, &error_mag, &OSCCAL_mem);}
+Minimise_error(limit, &counter_1, &counter_2, &error_mag, &OSCCAL_mem, cal_mode);}
 		
-error_mag = compute_error(0,2,0);
+error_mag = compute_error(0,cal_mode,0);
 OSCCAL_WV = OSCCAL;	
 close_calibration;
 eeprom_write_byte((uint8_t*)0x3FE, OSCCAL_WV); 
