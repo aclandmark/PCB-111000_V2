@@ -218,7 +218,7 @@ case 'Q':	I2C_Tx_LED_dimmer; break;
 case 'U':	start_T2_for_ATMEGA_168_cal(1); break;			  
 
 
-/**********Modes 'R', 'S' and 'T' are used by T2 ISR and are not available***************************/
+/**********Mode'T' is used by Cal_at_Power_on_Reset()***************************/
 
 case 'V':	set_diagnostic_mode; break;						//0x3FC is set to 1 when the user enters 'x' at the p/r prompt
 
