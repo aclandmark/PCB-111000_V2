@@ -5,7 +5,6 @@ void check328cal (void);
 void I2C_TX_328_check(void);
 void PCB_test(void);
 void scan_328_cal_factors(void);
-//void Cal_at_POR(void);
 void shred_328_cal(void);
 
 /************************************************************************/
