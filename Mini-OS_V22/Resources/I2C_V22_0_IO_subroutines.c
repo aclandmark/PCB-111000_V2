@@ -17,6 +17,9 @@ void string_to_slave_I2C(char *);
 unsigned long Binary_points_to_Decimal_L (unsigned int, unsigned int);
 long Binary_points_to_Decimal_Signed (long);
 
+
+
+
 /*********************************************************************/
 void Disp_Hex(int n){ 
 unsigned char i; int sign;
@@ -31,6 +34,8 @@ display_buf[i] = n % 10  +  '0';
 i++;
 }while((n/=10)>0);
 if (sign < 0)display_buf[i] = '-';}}
+
+
 
 /*********************************************************************/
 void Disp_CharS(signed char n){ 
@@ -47,6 +52,8 @@ i++;
 if (sign < 0)display_buf[i] = '-';}}
 
 
+
+
 /*********************************************************************/
 void Disp_CharU(unsigned char n){ 
 unsigned char i; 
@@ -56,6 +63,8 @@ do{
 display_buf[i] = n % 10  +  '0';
 i++;
 }while((n/=10)>0);}
+
+
 
 
 /*********************************************************************/
@@ -112,6 +121,8 @@ break;}
 
 for(int p = 0; p < 8; p++)strobe[p] = 0;}					//synchronise strobe
 
+
+
 /*********************************************************************/
 void Display_num(long n){
 unsigned char i; long sign;
@@ -127,6 +138,8 @@ i++;
 if (sign < 0)display_buf[i] = '-';}
 else 
 {for(int m = 0; m <= 7; m++)display_buf[m] = '_';}}
+
+
 
 /*********************************************************************/
 void Display_real_num(long number_1){
@@ -146,11 +159,15 @@ else displayLongNum(10, ((number_1 >> 16)+1));}
 else displayLongNum(10, (number_1 >> 16));
 displayDecimal(10, RHSDP, 5);}
 
+
+
 /*********************************************************************/
 void displayLongNum(char radix, long long_num){
 char array[12];							//Long has 10 chars + sign + null terminator	
 SBtoAL(array, long_num, radix);			//calls the Binary to askii subroutine
 displayNumericString(array);}				//Prints characters in reverse order
+
+
 
 
 /*********************************************************************/
@@ -178,6 +195,8 @@ if(array[m] < 10)array[m] += '0'; else array[m] += '7';
 m++;} while ((num = num/radix) > 0);
 if (sign < 0) {array[m] = '-';m++;}}
 
+
+
 /*********************************************************************/
 void displayNumericString(char* s){					
 int n=0;
@@ -198,6 +217,8 @@ for(int k = 0; k <= (8-No_dps); k++)print_out_string[k] = ' ';
 print_out_string[9] = '.'; 
 
 {int m=8, n=0; while(display_buf[m-1]) m--; while(m) {display_buf[m-1] = print_out_string[9-n];m--, n++;}}} 
+
+
 
 /*********************************************************************/
 void float_to_askii(long number, signed char expnt, char *print_out_string)
@@ -256,6 +277,8 @@ Sc_Num_string_pointer=0;
 display_char_skip_counter = 0;}
 
 
+
+
 /*********************************************************************/
 char decimalOverflow(char radix, unsigned long Hex, int No_dps){
 long inc=1;
@@ -265,6 +288,8 @@ for(int k = 0; k < (8-No_dps); k++)inc = inc*10;
 inc = inc*5;
 Hex += inc;
 if(Hex >= 2000000000)return 0; else return 1;}
+
+
 
 
 /*********************************************************************/
@@ -298,6 +323,10 @@ TCCR2B = 0;						//Stop the clock
 TIMSK2 &= (~(1 << TOIE2));
 break;}}
 
+
+
+
+/*********************************************************************/
 void string_to_slave_I2C(char strg_ptr[]){
 int String_length;
 String_length = 0; while (strg_ptr[String_length])String_length++;
