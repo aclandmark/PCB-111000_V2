@@ -1,8 +1,9 @@
 
 char I2C_master_receive(char);
 
-/*****************************************************************************************/
 
+
+/*****************************************************************************************/
 ISR(TIMER0_OVF_vect) {
 if(eeprom_read_byte((uint8_t*)0x3FB) == 0xFF){			//Normal brightness
 switch (MUX_cntl){
@@ -53,8 +54,10 @@ case 2: T0_interupt_cnt = 3; break;
 case 3: T0_interupt_cnt = 0; break;}
 }}
 
-/*****************************************************************************************/
 
+
+
+/*****************************************************************************************/
 ISR(TIMER1_OVF_vect) {
 switch (mode){
 case 9:  
@@ -63,13 +66,14 @@ display_buf[7-mode_C_ptr] = '_';
 mode_C_ptr++; mode_C_ptr=mode_C_ptr%8;
 timer_T1_sub_with_interrupt(T1_delay_500ms);} break;
 
-case 'M':   case 'N':	case 'R':  case 'S':  
-case 'T': case 'X': case 'Y':	case 'Z': T1_OVF += 1; break;
+case 'M':   case 'N':	case 'T': case 'X':  T1_OVF += 1; break;
 
 default: T1_ovf_flag = 1; TCCR1B = 0; break;}}
 
-/*****************************************************************************************/
 
+
+
+/*****************************************************************************************/
 ISR(TIMER2_OVF_vect) {
 long TCNT1_BKP;
 char cal_168_mode;
@@ -77,7 +81,7 @@ switch (mode){
 case 'K':   timer_2_counter++; if(timer_2_counter == 3)
 {timer_2_counter=0; display_float(Sc_Num_string);} break;
 
-case 'M':     case 'N':    case 'R':   case 'S': case 'T': case 'X': case 'Y':  case 'Z':   
+case 'M':     case 'N':  case 'T': case 'X':    
 TCCR1B = 0;							//Halt T1
 TCNT1_BKP = TCNT1;					//Copy the value of TCNT1
 TCNT1 = 0;							//Clear TCNT1
@@ -104,8 +108,11 @@ if(mode == 'F') { OCR2A = 41;Ext_tick();}}break;}}
 
 
 
+
 /*****************************************************************************************/
 ISR(TIMER2_COMPA_vect){OCR2A = OCR2A + 41;  OCR2A = OCR2A%256; Ext_tick();}		//call every 10mS mode G only
+
+
 
 
 /*****************************************************************************************/
