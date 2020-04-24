@@ -11,10 +11,12 @@ void update_milli_sec_display(void);
 
 
 
+
 /*****************************************************************************************/
 void timer_T0_sub_with_interrupt(char Counter_speed, unsigned char St_point){ 
 TCNT0 = St_point;
 TCCR0B = Counter_speed;}
+
 
 
 /*****************************************************************************************/
@@ -22,6 +24,8 @@ void timer_T1_sub_with_interrupt(char Counter_speed, unsigned int Start_point){
 TCNT1H = (Start_point >> 8);
 TCNT1L = Start_point & 0x00FF;
 TCCR1B = Counter_speed;}
+
+
 
 /*****************************************************************************************/
 void Timer_T1_sub(char Counter_speed, unsigned int Start_point){ 
@@ -35,11 +39,14 @@ TCCR1B = 0;}
 
 
 
+
 /*****************************************************************************************/
 void Ext_tick(){entry_point='A';
 TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE);		//send a start condition with TWI interupt
 disp_ptr = 0;
 payload_size=0;}
+
+
 
 
 /*****************************************************************************************/
@@ -55,19 +62,14 @@ case '6': six; break;
 case '7': seven; break;
 case '8': eight; break;
 case '9': nine; break;
-/*case 'A': PORTB &= ~(seg_a); break;	
-case 'B': PORTD &= ~(seg_b); break;
-case 'C': PORTD &= ~(seg_c); break;
-case 'D': PORTD &= ~(seg_d); break;
-case 'E': PORTD &= ~(seg_e); break;
-case 'F': PORTD &= ~(seg_f); break;
-case 'G': PORTD &= ~(seg_g); break;*/
 case 'P': decimalP; break;
 case '.':
 case '_': PORTD &= ~(seg_d); break;
 case '-': PORTD &= (~(seg_g)); break;
 case 'E': case 'e':
 case 'X': PORTB &= (~(seg_a)); PORTD &= (~(seg_d | seg_e | seg_f | seg_g ));break;}} //E the exponential function
+
+
 
 
 /*****************************************************************************************/
@@ -81,7 +83,7 @@ case 4: m = 0x10; break;
 case 5: m = 0x20; break;
 case 6: m = 0x40; break;
 case 7: m = 0x80; break;}
-if (display_buf[0] & m) PORTB &= (~(seg_a));///////////////changed
+if (display_buf[0] & m) PORTB &= (~(seg_a));
 if (display_buf[1] & m) PORTD &= (~(seg_g));
 if (display_buf[2] & m) PORTD &= (~(seg_d));
 if (display_buf[3] & m) PORTD &= (~(seg_b));
@@ -90,10 +92,12 @@ if (display_buf[5] & m) PORTD &= (~(seg_e));
 if (display_buf[6] & m) PORTD &= (~(seg_f));}
 
 
+
+
 /*****************************************************************************************/
-void Display_driver()			//ISR calls this
+void Display_driver()			
 {
-//if(!(buf_ptr)){clear_digits; clear_display; }
+
 
 buf_ptr++; buf_ptr = buf_ptr%8;
 clear_digits; clear_display; 
@@ -150,6 +154,7 @@ case 7:if(output_2 & 0x40) one; if(output_2 & 0x80) ONE; break; }break;
 
 
 
+
 /********************************************************************************************/
 void update_timer (){ 
 
@@ -176,6 +181,8 @@ if (stop_watch_buf[5] < '9') stop_watch_buf[5]++; else {stop_watch_buf[5] = '0';
 if (stop_watch_buf[6] < '5') stop_watch_buf[6]++;else {stop_watch_buf[6] = '0';
 if (stop_watch_buf[7] < '9') stop_watch_buf[7]++; else {stop_watch_buf[7] = '0';}
 }}}}}}
+
+
 
 
 /*****************************************************************************************/
