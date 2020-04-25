@@ -84,9 +84,10 @@ set_up_switched_inputs;\
 Unused_I_O;\
 eeprom_write_byte((uint8_t*)(0x1FD),OSCCAL);\
 while (!(PIND & (1 << PD1)));\
-Timer_T0_10mS_delay_x_m(5);\
+Timer_T0_sub(T0_delay_5ms);\
 OSC_CAL;\
-USART_init(0,16);
+USART_init(0,16);\
+Timer_T0_10mS_delay_x_m(1);
 
 
 
