@@ -3,24 +3,6 @@
 ******************************************************************/
 
 
-/*Like Proj_9A this project generates a print out of calibration error as a function of the calibration
-factor OSCCAL and enables the user to choose a value for OSCCAL.
-
-
-IT INTRODUCES 
-
-
-Project Subroutine "I2C_Tx(1, 'N', &cal_mode)".
-This causes the mini-OS to carry out manual calibration of the ATMEGA 328.
-
-Note:  
-Calibration subroutines are not visible to the user but are similar to those used for the ATMEGA 168 
-however T2 running under crystal control provides the 7.8125 mS interrupt.
-
-There is no auto_cal_project for the Atmega 328 because this runs automatically under the control 
-of the mini-OS following a POR.
-*/
-
 
 char Decimal_from_KBD(void);
 
@@ -37,7 +19,7 @@ char  New_UC_value;
 char  Test_res;
 
 
-setup_HW;
+setup_HW_basic;
 
 String_to_PC("\r\nATMEGA 328 manual calibration (please wait 10 seconds)");
 
