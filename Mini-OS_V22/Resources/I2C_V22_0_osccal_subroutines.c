@@ -74,6 +74,7 @@ void manual_cal_PCB_A_device(void){
 long cal_error;
 char OSCCAL_UV;		
 
+TIMSK0 &= (~(1 << TOIE0));								//display not required
 EA_buff_ptr = 0;
 cal_mode = 5;		
 Get_ready_to_calibrate;
@@ -129,7 +130,9 @@ while (!(TWCR & (1 << TWINT)));
 TWDR = eeprom_read_byte((uint8_t*)0x3FF);
 TWCR = (1 << TWINT) | (1 << TWEN);
 while (!(TWCR & (1 << TWINT)));
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}
+TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
+TIMSK0 |= (1 << TOIE0);									//Restore multplexer interrupt
+}
 
 
 
@@ -137,6 +140,8 @@ TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}
 /*******************************************************************************************/
 void cal_plot_328(void){							//Called by Proj_9F (mode M)
 long cal_error;
+
+TIMSK0 &= (~(1 << TOIE0));								//display not required
 cal_mode = 2;
 
 for(int m = 0x10; m <= 0xF0; m++){
@@ -149,7 +154,9 @@ close_calibration;
 Initialise_I2C_master_write;
 I2C_master_transmit(cal_error >> 8);
 I2C_master_transmit(cal_error);
-TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}}
+TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}
+TIMSK0 |= (1 << TOIE0);									//Restore multplexer interrupt
+}
 
 
 
