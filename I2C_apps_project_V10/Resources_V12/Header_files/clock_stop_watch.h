@@ -17,20 +17,25 @@
 {if ((m==2) || (m== 5))digits[m] = ' '; else digits[m] = '0'; }\
 I2C_Tx_8_byte_array_plus_mode(7, digits);I2C_Tx_3(8, '2');}
 
-#define AT_clock_mode 7
+
+
+
+#define AT_clock_mode 'C'
 #define AT_exit_stop_watch 10, '1'
-#define AT_mode_1 4
+#define AT_mode_1 1
 
-#define display_clock 8, '1'
-#define hide_clock 8, '2'
-#define pause_clock 8, '3'
-#define increment_seconds 8, '5'
-#define decrement_minutes 8, '6'
-#define decrement_seconds 8, '7'
-#define increment_minutes 8, '8'
+#define display_clock 'D', '1'
+#define hide_clock 'D', '2'
+#define pause_clock 'D', '3'
+#define increment_seconds 'D', '5'
+#define decrement_minutes 'D', '6'
+#define decrement_seconds 'D', '7'
+#define increment_minutes 'D', '8'
 
-#define display_current_time 9, '1'
-#define display_stored_times 9, '4'
-#define store_time 9, '2'
-#define one100ms_mode 9, '1'
-#define ten_ms_mode 9, '2'
+#define display_current_time 'E', '1'
+#define display_stored_times 'E', '4'
+#define store_time 'E', '2'
+#define one100ms_mode 'E', '1'
+#define ten_ms_mode 'E', '2'
+
+
