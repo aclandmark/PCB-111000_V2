@@ -1,8 +1,8 @@
 /*
 For pcbs V2 & 3 
-sw1 is PIND7	This switch is at the corner of the pcb
+sw3 is PIND7	This switch is at the corner of the pcb
 sw2 is PINB6	This switch is between switches 1 and 3
-sw3 is PIND2	This switch is next to the DPDT switch
+sw1 is PIND2	This switch is next to the DPDT switch
 Counting from the DPDT switch the push button switches
 are placed in order 3, 2 then 1.
 
@@ -36,10 +36,10 @@ I2C_Tx_2URNs_from_IO(digits);
 
 
 /******************************************************************/
-#define switch_1_down	((PIND & 0x80)^0x80)
-#define switch_1_up		(PIND & 0x80)
-#define switch_3_down	((PIND & 0x04)^0x04)
-#define switch_3_up		(PIND & 0x04)
+#define switch_3_down	((PIND & 0x80)^0x80)
+#define switch_3_up		(PIND & 0x80)
+#define switch_1_down	((PIND & 0x04)^0x04)
+#define switch_1_up		(PIND & 0x04)
 #define switch_2_down	((PINB & 0x40)^0x40)
 #define switch_2_up		(PINB & 0x40)
 
@@ -82,10 +82,10 @@ PCICR &= (~((1 << PCIE0) | (1 << PCIE2)));
 #define pci_on_sw1_and_sw3_enabled (PCMSK2 & 0x84) == 0x84
 #define pci_on_sw1_and_sw3_disabled (PCMSK2 & 0x84) == 0x00
 
-#define enable_pci_on_sw1  	PCMSK2 |= (1 << PCINT23);
-#define disable_pci_on_sw1  PCMSK2 &= (~(1 << PCINT23));
-#define enable_pci_on_sw3  	PCMSK2 |= (1 << PCINT18);
-#define disable_pci_on_sw3  PCMSK2 &= (~(1 << PCINT18));
+#define enable_pci_on_sw3  	PCMSK2 |= (1 << PCINT23);
+#define disable_pci_on_sw3  PCMSK2 &= (~(1 << PCINT23));
+#define enable_pci_on_sw1  	PCMSK2 |= (1 << PCINT18);
+#define disable_pci_on_sw1  PCMSK2 &= (~(1 << PCINT18));
 
 /******************************************************************/
 #define enable_pci_on_sw2  PCMSK0 |= (1 << PCINT6);
