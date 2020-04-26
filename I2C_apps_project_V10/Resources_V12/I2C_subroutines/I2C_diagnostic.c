@@ -7,6 +7,9 @@ void PCB_test(void);
 void scan_328_cal_factors(void);
 void shred_328_cal(void);
 
+
+
+
 /************************************************************************/
 void I2C_Rx_get_version(char str_type){
 char num_bytes=1; char mode='P';
@@ -28,7 +31,6 @@ TWCR = (1 << TWINT);}
 void check328cal (void){									//MODE NOW DISCONTINUED
 
 char  OSCCAL_WV;  
-//char cal_mode=0;										
 int cal_error;
 char  New_UC_value;  
 
@@ -60,10 +62,6 @@ Num_to_PC(16, New_UC_value);Char_to_PC('\t');
 String_to_PC ("error  "); Num_to_PC(10, cal_error); 
 newline();
 }}
-
-
-
-
 
 
 
@@ -105,48 +103,6 @@ TWCR = (1 << TWINT);}
 
 
 /************************************************************************/
-/*void Cal_at_POR(){
-char skip;
-
-if((PIND & 0x80)^0x80){skip = 1; 
- 
-Char_to_PC ('A');}
-
-else skip = 0;Char_to_PC ('B');	//User_prompt;
-waiting_for_I2C_master;
-
-send_byte_with_Nack(skip);
-clear_I2C_interrupt;}*/
-
-
-
 void shred_328_cal(void){
-
 I2C_Tx_initiate_mode('Y');}
-
-
-/*char mode = 'Y';
-//char num_bytes=1;
-char New_UC_value;
-int cal_error;
-
-User_prompt;
-String_to_PC ("Cal_at_POR (10 sec wait) ");
-I2C_Tx_initiate_mode(mode);
-//I2C_Tx(num_bytes, mode, &cal_mode);
-
-waiting_for_I2C_master;
-New_UC_value = receive_byte_with_Ack();						//I2C_slave_receive();
-
-cal_error = receive_byte_with_Ack();						//I2C_slave_receive();
-cal_error = (cal_error << 8) + receive_byte_with_Nack();	//I2C_slave_receive();
-clear_I2C_interrupt;
-
-String_to_PC ("  OSCCAL  ");
-Num_to_PC(10, New_UC_value);Char_to_PC('\t');
-String_to_PC ("error  "); Num_to_PC(10, cal_error); 
-newline();}*/
-
-
-
 
