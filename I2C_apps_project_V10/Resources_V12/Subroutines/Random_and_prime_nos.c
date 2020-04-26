@@ -1,6 +1,8 @@
 
 char PRN_8bit_GEN(void);
 unsigned int PRN_16bit_GEN(unsigned int);
+unsigned int PRN_16bit_GEN(unsigned int);
+void I2C_Tx_snowstorm_display(void);
 void prime_no_generator(int,int, int*);
 void prime_no_generator_plus(int,int,  int*);
 int Product_search (int);
@@ -35,6 +37,18 @@ eeprom_write_byte((uint8_t*)(0x1FC),(lfsr>>8));
 eeprom_write_byte((uint8_t*)(0x1FB),lfsr);}
 
 return lfsr;}
+
+
+
+/************************************************************************/
+void I2C_Tx_snowstorm_display(void){
+
+int PRN;
+
+while(1){
+PRN = PRN_16bit_GEN (0);									//Generate a new PRN (0) tells subroutine to use the EEPROM
+I2C_Tx_2_integers(PRN, (PRN<<1));							//Display two "pseudo random numbers"
+Timer_T1_sub(T1_delay_100ms);}}
 
 
 
