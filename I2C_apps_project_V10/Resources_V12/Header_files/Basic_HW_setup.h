@@ -8,6 +8,8 @@ ATMEGA 168 EEPROM reservations
 0x1FC/B		Used by PRN_16bit_GEN()
 */
 
+//void I2C_Tx_snowstorm_display(void);
+//void Read_Hello_world_string(void);
 
 
 int Mux_cntl_2;
@@ -177,7 +179,7 @@ case '3':do\
 {Read_Hello_world_string();newline();}\
 while (waitforkeypress() != 'x');\
 break;\
-case '4':I2C_Tx_display(); break;}}\
+case '4':I2C_Tx_snowstorm_display(); break;}}\
 else TWCR = (1 << TWINT);
 
 
