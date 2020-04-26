@@ -22,7 +22,7 @@ int main (void){
 long  error; 
 
 
-setup_HW_basic;
+setup_HW;
 
 OSCCAL_WV = OSCCAL;
 
