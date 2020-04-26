@@ -9,7 +9,7 @@ int main (void){
 unsigned long PORT_1, PORT_2;
  
 
-setup_HW;					
+setup_HW_basic;					
 
 
 
