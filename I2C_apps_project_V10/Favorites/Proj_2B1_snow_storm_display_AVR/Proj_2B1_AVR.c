@@ -13,7 +13,7 @@ unsigned int PRN;                                 //Global memory location used 
 char Dimmer_control;
 
 int main (void){  
-setup_HW;
+setup_HW_basic;
 wdt_enable(WDTO_250MS);                           //Following a WD reset the PRN is re-initialised to 0xFFFF
 
 config_sw2_for_PCI;                     		  //SW1 is not used
