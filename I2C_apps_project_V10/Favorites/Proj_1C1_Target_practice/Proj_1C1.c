@@ -18,7 +18,7 @@ unsigned int PORT_1, mask;
 char switch_control;				
 
 int main (void){
-setup_HW;
+setup_HW_basic;
 config_sw2_for_PCI;								 
 
 mask = 0xFFFF;						
