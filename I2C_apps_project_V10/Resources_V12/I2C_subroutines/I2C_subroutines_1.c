@@ -14,8 +14,6 @@ void I2C_Tx_display(void);
 void I2C_Tx_LED_dimmer(void);
 void I2C_Set_Tx_Rx_speed(char);
 
-unsigned int PRN_16bit_GEN(unsigned int);
-
 char waitforkeypress(void);
 void String_to_PC(char*);
 void newline(void);
@@ -115,19 +113,6 @@ send_byte_with_Nack(mode);
 
 TWCR = (1 << TWINT) | (1 << TWEN);		//clear interrupt and leave I2C slave active
 TWCR |= (1 << TWEA) | (1 << TWIE);} 	//Slave mode with interrupt and Enable Acknowledge
-
-
-/************************************************************************/
-
-void I2C_Tx_display(void){
-
-int PRN;
-
-while(1){
-PRN = PRN_16bit_GEN (0);									//Generate a new PRN (0) tells subroutine to use the EEPROM
-I2C_Tx_2_integers(PRN, (PRN<<1));							//Display two "pseudo random numbers"
-Timer_T1_sub(T1_delay_100ms);}}
-
 
 
 /************************************************************************/
