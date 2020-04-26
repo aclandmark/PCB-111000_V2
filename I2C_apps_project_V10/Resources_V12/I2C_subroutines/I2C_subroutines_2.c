@@ -141,6 +141,6 @@ I2C_Tx(num_bytes,mode, s); break;
 case 'N': for (int m = 0; m < 8; m++)s[m] = 0;
 s[0] = '0'; num_bytes=8; mode = 'B';
 I2C_Tx(num_bytes,mode, s); break;
-default: mode = 'E'; num_bytes=9;
+default: mode = 'A'; num_bytes=9;
 s[8] = Op; I2C_Tx(num_bytes,mode, s); break;}}
 
