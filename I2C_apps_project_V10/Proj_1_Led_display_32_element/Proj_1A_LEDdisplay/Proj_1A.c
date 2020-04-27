@@ -100,7 +100,7 @@ int main (void){								//The "main" routine lies between a pair of {} brackets.
 
 unsigned int PORT_1=1;							//PORT_1 is an address in data memory initially set to 1 (binary 0000000000000001)
 												//Note: that PORT_1 holds 16 bits (binary digits) of data 
-setup_HW_basic;					
+setup_HW;					
 
 
 	for(int m = 1; m < 17; m++){				//Code between the {} brackets is repeated 16 times 						
