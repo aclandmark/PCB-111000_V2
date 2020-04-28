@@ -26,7 +26,7 @@ setup_HW;
 
 OSCCAL_WV = OSCCAL;
 
-String_to_PC("\r\nATMEGA 328 plot calibration results\r\n");
+String_to_PC("\r\nATMEGA 168 plot calibration results\r\n");
 
 sei();	
 
