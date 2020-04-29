@@ -20,8 +20,8 @@ Following POR check cal factor and perform auto clock recovery if necassary
 Zero to 0x3F5: For user strings and data
 ***********************/
 
-# include "I2C_V22_0_CA.h"
-# include "I2C_V22_0_CA_display_subroutines.c"
+# include "I2C_V22_0_CC.h"
+# include "I2C_V22_0_CC_display_subroutines.c"
 
 # include "../Resources/I2C_V22_0_IO_subroutines.c"
 # include "../Resources/I2C_V22_0_Arithmetic_subroutines.c"
