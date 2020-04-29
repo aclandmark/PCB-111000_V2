@@ -116,6 +116,8 @@ RHSofDP = 0;expnt_result = 0;
 #define	digit_2		PORTB |= (1 << PB2);
 #define	digit_1		PORTB |= (1 << PB3);
 #define	digit_0		PORTB |= (1 << PB4);
+#define	toggle_digit_0	PORTB ^= (1 << PB4);
+
 
 #define	digit_7		PORTB |= (1 << PB5);
 #define	digit_6		PORTC |= (1 << PC0);
