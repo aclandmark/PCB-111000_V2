@@ -246,7 +246,7 @@ counter_1 = 0xF1;
 while(1){if (!(counter_1%6))toggle_digit_0;
 counter_1 -= 1;
 OSCCAL = counter_1; error_mag = compute_error(0,cal_mode,0); 
-if(counter_1 > 0xE8)continue; 
+if(counter_1 > 0xE0)continue; 
 if(error_mag < 1000)break;}
 		
 OSCCAL_mem = OSCCAL;
