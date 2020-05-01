@@ -19,7 +19,7 @@ char lfsr;
 lfsr = eeprom_read_byte((uint8_t*)(0x1FB));
 bit = (( lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 4)) & 1;
 lfsr = (lfsr >> 1) | (bit << 7);
-eeprom_write_byte((uint8_t*)(0x1FC),lfsr);
+eeprom_write_byte((uint8_t*)(0x1FB),lfsr);
 return lfsr;}
 
 
