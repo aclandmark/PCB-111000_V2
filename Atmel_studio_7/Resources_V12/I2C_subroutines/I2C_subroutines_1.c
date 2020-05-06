@@ -15,7 +15,7 @@ void I2C_Tx_LED_dimmer(void);
 void I2C_Set_Tx_Rx_speed(char);
 
 char waitforkeypress(void);
-void String_to_PC(char*);
+void String_to_PC(const char*);
 void newline(void);
 
 void I2C_Tx(char, char, char*);
