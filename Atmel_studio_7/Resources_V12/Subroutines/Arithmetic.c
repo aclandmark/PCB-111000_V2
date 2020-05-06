@@ -8,6 +8,8 @@ unsigned long Binary_points_to_Decimal_Unsigned (unsigned long);
 long Fraction_to_Binary_Signed( long, long);
 long Binary_points_to_Decimal_Signed (long);
 
+void Timer_T0_10mS_delay_x_m(int);
+void Char_to_PC(char);
 
 
 /******************************************************************************/
@@ -51,12 +53,12 @@ rem = (2*(rem))%Den;}}
 
 if(mode == 0){
 for(int n = 0; n <= 15; n++){					//bit 0 is reserved for sign bit
-if ((2*(rem))/Den){(Result) |= (1 << (15-n));sendChar('1');} else sendChar('0');
+if ((2*(rem))/Den){(Result) |= (1 << (15-n));Char_to_PC('1');} else Char_to_PC('0');
 rem = (2*(rem))%Den; }
 Result = Result << 16;
 for(int n = 0; n <= 15; n++){
-if ((2*(rem))/Den){(res_LB) |= (1 << (15-n));sendChar('1');} else sendChar('0');
-rem = (2*(rem))%Den;}sendChar('\t');}
+if ((2*(rem))/Den){(res_LB) |= (1 << (15-n));Char_to_PC('1');} else Char_to_PC('0');
+rem = (2*(rem))%Den;}Char_to_PC('\t');}
 
 Result += res_LB;								//Result is not affected by the signs of rem and Den
 return Result;}
