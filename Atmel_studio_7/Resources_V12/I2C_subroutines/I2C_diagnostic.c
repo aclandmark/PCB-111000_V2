@@ -6,9 +6,9 @@ void I2C_TX_328_check(void);
 void PCB_test(void);
 void scan_328_cal_factors(void);
 void shred_328_cal(void);
+void Char_to_PC(char);
 
-
-
+void I2C_Tx_initiate_mode(char);
 
 /************************************************************************/
 void I2C_Rx_get_version(char str_type){
