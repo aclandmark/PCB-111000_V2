@@ -1,18 +1,12 @@
 /*
- * Proj_1C1_Target_practice.c
- *
- * Created: 04/05/2020 14:43:32
- * Author : Mark
- */ 
-
-/*Proj_1C1_Pin_Change_Interupt
-**************************************************************/
-
-
-/*
-A SLIGHT VARIATION ON PROGRAM 3 THE REACTION TIME TESTER.
-Test your reactions by attempting to shoot the LEDS down using the middle pcb switch (switch_2).
-*/
+ Proj_1C1_Target_practice.c
+ 
+ An attempt to introduce a bit of fun
+ 
+ It introduces two macros
+	config_sw2_for_PCI;	(Pin Change Interrupt) used to detect switch presses
+	SW_reset; This triggers a watch dog time out
+ */
 
 
 
@@ -47,7 +41,7 @@ int main (void){
 
 	/**************Routine executed every time that switch is  operated**************************************/
 	
-	ISR(PCINT0_vect) {					//This ISR momentarily interrupts the main routine
+	ISR(PCINT0_vect) {						//This ISR momentarily interrupts the main routine
 		if(switch_2_up)return;				//It notes which LED has just been shot down and
 		if (switch_control) return;			//Return if "switch_control" is not zero
 		mask &= ~PORT_1;					//writes zero at its location in the "mask" register
