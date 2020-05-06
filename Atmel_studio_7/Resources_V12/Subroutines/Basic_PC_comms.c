@@ -8,7 +8,7 @@ char wait_for_return_key(void);
 void binUnwantedChars_dot (void);
 void binUnwantedChars (void);
 void Char_to_PC(char);
-void String_to_PC(char*);
+void String_to_PC(const char*);
 void newline(void);
 
 void Num_to_PC(char, long);					//was sendLongNum()
@@ -80,7 +80,7 @@ while (!(UCSR0A & (1 << UDRE0)));
 UDR0 = data;}
 
 /*********************************************************************/
-void String_to_PC(char s[]){
+void String_to_PC(const char s[]){
 int i = 0;
 while(i < 200){
 if(s[i] == '\0') break;
