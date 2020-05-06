@@ -1,37 +1,18 @@
-/*
- * Proj_2G_Numerical_entry.c
- *
- * Created: 04/05/2020 15:40:12
- * Author : Mark
- */ 
+
+
+
 /*Proj_2G_Numerical_entry
 ******************************************************************************/
 
 
-/*A BETTER WAY OF ENTERING DIGITS WHICH INTRODUCES
+/*A BETTER WAY OF ENTERING DIGITS 
 
+Each digit is predefined as a string. 
 
-
-1.	More on the #define statement.
-This is used here to define each digit in terms of its segment letters. Each set of segment letters is known
-as a string and is stored in program memory in an array terminated in the null character '\0' or (0). When
-the compiler sees a digit name (i.e zero) it substitutes the address at which the first segment is stored.
-
-2.	The pointer symbol "*".
-In the statement 	“char* string_ptr = 0;”
-The memory location "string_ptr" is preceded by a "*".
-This tells the compiler that it will be used to hold the address of data to be operated on rather than the
-data itself (in this case the address of the first segment used to define a digit).
-
-3.	The "continue" statement.
-Note that in a loop such as "for" or "while" a "break" statement causes program execution to jump to the
-statement following the end of the loop.
-The "continue" statement causes program execution to jump to the bottom of the loop from where it repeats
-the loop again. Note that "break" is also used in the "case" construct.
-
-Note:
-"waitforkeypress()" is used here to keep things simple.  There is no WDT.
-If the number 45 is entered the number 54 gets displayed.  This is a common problem with displaying and printing numbers.*/
+Introduces subroutine "waitforkeypress()" in place of "isCharavailable()"
+"waitforkeypress()" keeps things simple but is not realy a good idea because it puts the program on pause
+until the user makes a keypress.
+*/
 
 
 
