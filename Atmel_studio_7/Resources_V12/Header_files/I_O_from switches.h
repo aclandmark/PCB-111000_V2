@@ -1,10 +1,10 @@
 /*
 For pcbs V2 & 3 
-sw3 is PIND7	This switch is at the corner of the pcb
+sw1 is PIND2	This switch is at the corner of the pcb
 sw2 is PINB6	This switch is between switches 1 and 3
-sw1 is PIND2	This switch is next to the DPDT switch
+sw3 is PIND7	This switch is next to the DPDT switch
 Counting from the DPDT switch the push button switches
-are placed in order 3, 2 then 1.
+are placed in order 1, 2 then 3.
 
 Switches sw1 and sw3 generate a call to ISR(PCINT2_vect) 
 Switch sw2 generates a call to ISR(PCINT0_vect)
