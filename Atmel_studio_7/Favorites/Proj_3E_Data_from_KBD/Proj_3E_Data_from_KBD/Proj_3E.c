@@ -49,7 +49,7 @@ do {
 	display_in_scientific_notation (Num_1, digits,mode);					//Displays result in scientific notation
 	if((!OVF)&&((Num_1 > 0xFFFFFFFF/(m+1)) || ((Num_1 * (m+1)) < 0)))		//Check for a potential overflow
 	OVF = 1;																//If A*B > 0xFFFF then A > 0xFFFF/B and overflow will occur
-																				//Also if A*B is a negative number overflow has occurred
+																			//Also if A*B is a negative number overflow has occurred
 	if (!OVF)String_to_PC(" x "); else String_to_PC(" / ");					//Finnish Printing out equation
 	Num_to_PC(10,m);String_to_PC(" = ");
 
