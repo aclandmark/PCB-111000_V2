@@ -1,22 +1,13 @@
 /*
- * Proj_3G_Char_nos.c
- *
- * Created: 05/05/2020 09:01:50
- * Author : Mark
- */ 
-
-
-/*Switch location on PCB:	 SW3 - SW2 - SW1
-
-Note:
-This project has been compiled with Optimisation level 1 in an attempt to minimise occaisional unstable operation.*/
+ Proj_3G_Char_nos.c
+ Simple project uses the display and switches
+ to illustrate  the binary number system 
+ for positive and negative integers 
+ */
 
 
 
 #include "Proj_3G_header_file.h"
-
-
-
 
 char digit=1, op, mode;
 
@@ -28,7 +19,6 @@ setup_HW;
 I2C_Tx_display_char(digit,mode);
 setup_and_enable_PCI;
 sei();
-
 
 while(1){
 switch(op){
@@ -43,9 +33,9 @@ Timer_T0_10mS_delay_x_m(15);}}
 /**************************************************************************************************/
 ISR(PCINT2_vect) {											//sw1 and sw3 interrupt
 if(switch_2_down)return;									//Ignore if sw2 is still down
-if((switch_1_up) && (switch_3_up)){op = 0; return;}		//Both switches up
+if((switch_1_up) && (switch_3_up)){op = 0; return;}			//Both switches up
 
-if(switch_1_down) {op = 1; return;}						//Digits increment
+if(switch_1_down) {op = 1; return;}							//Digits increment
 if(switch_3_down) {op = 2; return;}}						//Digits decrement
 
 
