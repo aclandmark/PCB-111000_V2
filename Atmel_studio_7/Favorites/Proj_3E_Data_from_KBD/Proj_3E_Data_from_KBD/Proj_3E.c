@@ -1,7 +1,7 @@
 /*
 Proj_3E_Data_from_KBD.c
   
-Receives data from keyboard
+Receives data from keyboard		Only works for positive integers!
 Does some simple arithmetic
 Sends result to the display and PC.
 
@@ -30,14 +30,14 @@ char digits[8], OVF;
 char User_response, mode;													
 int m;
 
-setup_HW_basic;
+setup_HW;
 User_prompt;
 if(User_response == 'r')mode = 1; else mode = 0;							//Keypress R or r at opening user prompt
 
 
 String_to_PC("Enter positive number & terminate with Return key.\r\n");
 Num_1 = Num_from_KBD_Local(digits);											//Acquires data and Echoes keypresses to screen
-Num_to_PC(10,Num_1); newline();												//Converts number back to a string and sends it to the pc.
+Num_to_PC(10,Num_1); newline();												//Converts number back to a string and sends it to the PC.
 
 String_to_PC("Scientific notation  ");newline();
 OVF=0;																		//Set to 1 when multiplication would generate overflow
@@ -73,7 +73,7 @@ for(int n = 0; n<=7; n++) digits[n] = 0; 							//Clear array
 String_to_PC("Echo keypresses ");
 
 do{keypress =  waitforkeypress();}									//wait for first keypress
-while (!(decimal_digit(keypress)));									//Ignore illegal characters
+while (!(decimal_digit(keypress)));									//Ignore illegal characters including - sign for Local version
 
 digits[0] = keypress;												//Save first one to array
 Char_to_PC(digits[0]);
@@ -133,7 +133,7 @@ while(n){														//Only calculate significant decimal places
 
 String_to_PC(" E ");Num_to_PC(10, exp);
 digits[0] = exp +'0';											//Overwrite the two LSBs of the display
-digits[1] = 'X';												//Displays 'E'.I2C_Tx_8_byte_array(digits);}
+digits[1] = 'X';}												//Displays 'E'.I2C_Tx_8_byte_array(digits);}
 
 
 
