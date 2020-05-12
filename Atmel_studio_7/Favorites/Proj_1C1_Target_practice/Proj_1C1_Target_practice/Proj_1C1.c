@@ -14,11 +14,11 @@
 
 
 
-unsigned int PORT_1, mask;
+volatile unsigned int PORT_1, mask;
 char switch_control;
 
 int main (void){
-	setup_HW_basic;
+	setup_HW;
 	config_sw2_for_PCI;
 
 	mask = 0xFFFF;
