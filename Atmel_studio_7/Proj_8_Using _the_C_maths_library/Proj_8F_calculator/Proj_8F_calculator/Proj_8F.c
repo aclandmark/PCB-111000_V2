@@ -1,9 +1,3 @@
-/*
- * Proj_8F_calculator.c
- *
- * Created: 05/05/2020 15:41:19
- * Author : Mark
- */ 
 
 /*Proj_8F_calculator
 ***********************************************************/
@@ -16,12 +10,22 @@ calculator that operates independently of the PC from a 5V source.
 
 Note: The C maths library offers much more than just multiply, divide, add and subtract.*/
 
+/*
+To enable input and printing of floating point (scientific numbers)
+
+click on project properties/Toolchain/AVR/GNU Linker/Miscellaneous
+
+Copy and paste the following line into the other linker flags dialogue box
+
+-Wl,-u,vfprintf -lprintf_flt     -Wl,-u,vfscanf -lscanf_flt
+*/
+
 
 
 #include "Proj_8F_header_file.h"
 #include <math.h>
 
-char null_display(void);
+
 
 volatile char Data_Entry_complete, digit_entry;
 char scroll_control;
@@ -37,13 +41,14 @@ int main (void){
 
 	setup_HW_basic;
 
+	
 	if((!watch_dog_reset)){
-		String_to_PC("Enter data as for Proj_8E.\r\n\
-		To enter op press sw_1 and note the location of the cursor\r\n\
-		which signifies OP as + - x / power, root, reciprocal or reset.\r\n\
-	Then enter more data\r\n");}
-
-
+String_to_PC("To enter a number press sw_1 to populate digit_0, \r\n\
+sw3 to shift the display left and sw_2 when done.\r\n");
+String_to_PC("Next press sw_1 and note the location of the cursor\r\n\
+which signifies the OP as + - x / power, root, reciprocal or reset.\r\n\
+Then enter more data if required.\r\n");}
+		
 	watch_dog_reset = 0;
 
 
@@ -127,8 +132,6 @@ int main (void){
 	ISR(PCINT0_vect){
 		char disp_bkp[8];
 		if(switch_2_up)return;					//Ignore switch release
-		 if(!(null_display()))return;				//accidental switch press
-		
 		digit_entry = 1;
 		for(int m = 0; m<=7; m++){disp_bkp[m]=digits[m]; digits[m]=0;}I2C_Tx_8_byte_array(digits);
 		Timer_T0_10mS_delay_x_m(25);			//Flash display
@@ -195,12 +198,3 @@ int main (void){
 		default: digits[0] += 1; break;}
 
 	I2C_Tx_8_byte_array(digits);}
-
-
-char null_display(void)
-{
-	for (int m = 1; m <=7; m++)
-	{if (digits[m])return 1;}
-	if(digits [0] == '0') return 0;
-	else return 1;	
-}
