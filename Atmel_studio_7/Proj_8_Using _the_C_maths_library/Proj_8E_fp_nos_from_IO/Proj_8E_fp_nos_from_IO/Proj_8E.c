@@ -29,7 +29,15 @@ IT INTRODUCES
 
 */
 
+/*
+To enable input and printing of floating point (scientific numbers)
 
+click on project properties/Toolchain/AVR/GNU Linker/Miscellaneous
+
+Copy and paste the following line into the other linker flags dialogue box
+
+-Wl,-u,vfprintf -lprintf_flt     -Wl,-u,vfscanf -lscanf_flt
+*/
 
 
 #include "Proj_8E_header_file.h"
