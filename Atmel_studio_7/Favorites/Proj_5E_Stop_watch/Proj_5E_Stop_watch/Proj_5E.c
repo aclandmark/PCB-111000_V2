@@ -39,7 +39,7 @@ volatile char T1_ovf_flag = 0;										//requires volatile label
 																	//even though "T1_ovf_flag" is used in "main" 
 int main (void){
 
-setup_HW_basic;
+setup_HW;
 User_instructions;
 
 setup_and_enable_PCI;
