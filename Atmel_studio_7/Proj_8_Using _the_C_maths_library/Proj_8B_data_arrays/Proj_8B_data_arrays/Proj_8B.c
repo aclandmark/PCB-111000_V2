@@ -17,6 +17,15 @@ At the end of the download the arithmetic and geometric means are calculated and
 Note: we slow the data rate down a bit because flow control has not been implemented.
 */
 
+/*
+To enable input and printing of floating point (scientific numbers)
+
+click on project properties/Toolchain/AVR/GNU Linker/Miscellaneous
+
+Copy and paste the following line into the other linker flags dialogue box
+
+-Wl,-u,vfprintf -lprintf_flt     -Wl,-u,vfscanf -lscanf_flt
+*/
 
 
 #include "Proj_8B_header_file.h"
