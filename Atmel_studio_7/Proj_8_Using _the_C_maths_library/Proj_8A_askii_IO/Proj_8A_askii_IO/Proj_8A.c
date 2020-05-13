@@ -1,13 +1,57 @@
 
-/*
-To enable input and printing of floating point (scientific numbers)
+/*Proj_8A_askii_IO
+********************************************/
 
-click on project properties/Toolchain/AVR/GNU Linker/Miscellaneous 
 
-Copy and paste the following line into the other linker flags dialogue box
+/*Previous projects have used project (i.e. D.I.Y.) subroutines to transfer data to and from the PC.   
+In some instances this is considered a sensible approach by many programmers.  These subroutines are 
+not necessarily particularly complex and the d.i.y. approach can offer greater flexibility.  
+However there are C libraries which provide a comprehensive range of input output subroutines.  
+They also provide many other functions which programmers should be aware of.
+In particular they provide a “maths” library which should normally be used as a first preference.  
 
--Wl,-u,vfprintf -lprintf_flt     -Wl,-u,vfscanf -lscanf_flt  
-*/
+
+Proj_8A INTRODUCES
+
+
+1.	Use of the standard C-libraries to format input/output to and from the PC.
+
+2.	Library subroutine "scanf" which converts keyboard input to a variety of different formats 
+	including string and numeric.
+
+3.	Library subroutine "printf" which converts binary data to a variety of different numeric formats 
+	and combines it with text before sending it to the PC screen.
+
+4.	Project subroutines uart_getHex(); uart_getDecimal(); and uart_getDouble(); all used to acquire 
+	data and all designed to ignore any illegal key presses.
+
+6.	Project subroutine "uart_putchar" used to send characters to the PC for display.
+
+5.	The "stdin" and "stdout" functions that determine which of the "uart" functions will be active.
+
+6.	Data streams into which characters are received from the PC and from which they are sent to the PC.
+
+7.	Input & output of strings, hex numbers, decimal numbers, long numbers and floating point numbers.
+
+8.	When using winAVR a new version of "makefile" designed to cater for floating point numbers 
+	which must be set up as follows:	
+	Click on or press the windows icon and scroll down the program listing to "WinAVR-20100110\MFILE[WinAVR]" 
+	Click on it then select the Makefile command. 
+	For both "printf()" and "scanf" options select "floating point".
+	
+	For Studio 7
+	click on project properties/Toolchain/AVR/GNU Linker/Miscellaneous
+	Copy and paste the following line into the other linker flags dialogue box
+	-Wl,-u,vfprintf -lprintf_flt     -Wl,-u,vfscanf -lscanf_flt
+
+
+Note: 
+This program is based completely on the results of internet searches.
+
+See for example:
+https://www.tutorialspoint.com/c_standard_library/c_function_scanf.htm
+ and
+https://appelsiini.net/2011/simple-usart-with-avr-lib*/
 
 
 #include "Proj_8A_header_file.h"
@@ -86,7 +130,7 @@ printf("\n");
 	break;
 	
 		
-	case 'e':																//4.5E3 for example
+	case 'e':																
 	stdin  = &uart_input_Double;
 	printf("Enter scientific number <0 or >0 (zero to escape)\nEcho:");
 	while(1){scanf("%lf", &Floating_point_num);
