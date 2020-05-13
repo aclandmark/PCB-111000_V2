@@ -31,7 +31,7 @@ int main (void){
 	
 char  Op = 'P';
 
-setup_HW_basic;
+setup_HW;
 User_instructions;
 config_sw2_for_PCI;
 
