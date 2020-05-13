@@ -1,9 +1,4 @@
-/*
- * Proj_8B_data_arrays.c
- *
- * Created: 05/05/2020 14:54:37
- * Author : Mark
- */ 
+
 
 /*Proj_8B_data_arrays
 ***********************************************************************/
@@ -15,16 +10,6 @@ As a file is downloaded the program keeps a running total of the sum and product
 At the end of the download the arithmetic and geometric means are calculated and sent to the PC.
 
 Note: we slow the data rate down a bit because flow control has not been implemented.
-*/
-
-/*
-To enable input and printing of floating point (scientific numbers)
-
-click on project properties/Toolchain/AVR/GNU Linker/Miscellaneous
-
-Copy and paste the following line into the other linker flags dialogue box
-
--Wl,-u,vfprintf -lprintf_flt     -Wl,-u,vfscanf -lscanf_flt
 */
 
 
