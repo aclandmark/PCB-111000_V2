@@ -1,9 +1,4 @@
-/*
- * Proj_8D_fp_display_driver.c
- *
- * Created: 05/05/2020 15:16:26
- * Author : Mark
- */ 
+
 
 /*Proj_8D_fp_display_driver
 ************************************************************************/
@@ -18,6 +13,9 @@
 2.	Project subroutine "NumericString_to_display_R" which sends the characters saved in "array" to 
 	the display.
 */
+
+
+/*A bit more practice with the maths library.*/
 
 
 
@@ -35,7 +33,7 @@ FILE uart_input_Double = FDEV_SETUP_STREAM(NULL, uart_getDouble, _FDEV_SETUP_REA
 
 int main (void){
 char op;
-char result_str[32];			//[24] needed to scroll 16 char array through 8 char display
+char result_str[32];			
 double result, x1, x2;			
 
 setup_HW_basic;
@@ -44,7 +42,8 @@ stdout = &mystdout;
 
 stdin = &uart_input_Double;
 printf("Enter fpn (cr) -op- fpn (cr)\r\
-Press sw1 untill display stops moving before repeating\r\
+If Display moves press sw2 to pause it\
+ and sw1 before adding new data\r\
 with new op and new data\r");
 scanf("%lf", &x1);
 
