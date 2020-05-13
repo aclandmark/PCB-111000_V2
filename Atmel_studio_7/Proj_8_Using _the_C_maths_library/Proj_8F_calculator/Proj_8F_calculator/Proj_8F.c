@@ -11,12 +11,10 @@ calculator that operates independently of the PC from a 5V source.
 Note: The C maths library offers much more than just multiply, divide, add and subtract.*/
 
 /*
+When using Atmel Studio 7:
 To enable input and printing of floating point (scientific numbers)
-
 click on project properties/Toolchain/AVR/GNU Linker/Miscellaneous
-
 Copy and paste the following line into the other linker flags dialogue box
-
 -Wl,-u,vfprintf -lprintf_flt     -Wl,-u,vfscanf -lscanf_flt
 */
 
@@ -131,7 +129,7 @@ Then enter more data if required.\r\n");}
 	/*************************************************************************/
 	ISR(PCINT0_vect){
 		char disp_bkp[8];
-		if(switch_2_up)return;					//Ignore switch release
+		if(switch_2_up)return;					
 		digit_entry = 1;
 		for(int m = 0; m<=7; m++){disp_bkp[m]=digits[m]; digits[m]=0;}I2C_Tx_8_byte_array(digits);
 		Timer_T0_10mS_delay_x_m(25);			//Flash display
@@ -149,15 +147,15 @@ Then enter more data if required.\r\n");}
 
 	/*************************************************************************/
 	void shift_display_left(void){
-		scroll_control &= (~(0x14));						//negative sign & first char disabled
+		scroll_control &= (~(0x14));												//negative sign & first char disabled
 
 		switch(digits[0]){
 			case '-':	break;
-			case '.':	scroll_control &= (~(0x3)); break;		//exponent & dp disabled
-			case 'e':	scroll_control &= (~(0xB));			//Set RHS and disable dp.
-			scroll_control |= 0x04; break;			//Enable neg sign
-			default: 	if(scroll_control & 8)					//If LHS but not RHS
-		scroll_control |= 1;break;} 			//enable exponent
+			case '.':	scroll_control &= (~(0x3)); break;							//exponent & dp disabled
+			case 'e':	scroll_control &= (~(0xB));									//Set RHS and disable dp.
+			scroll_control |= 0x04; break;											//Enable neg sign
+			default: 	if(scroll_control & 8)										//If LHS but not RHS
+		scroll_control |= 1;break;} 												//enable exponent
 
 		shift_digits_left; digits[0] = '0';
 		I2C_Tx_8_byte_array(digits);
@@ -165,35 +163,35 @@ Then enter more data if required.\r\n");}
 
 
 	/*************************************************************************/
-	void scroll_display_zero(void){ 					//display scrolls 0 to 9 then minus symbol d.p. E and back to 0
+	void scroll_display_zero(void){ 												//display scrolls 0 to 9 then minus symbol d.p. E and back to 0
 		switch (digits[0]){
 			case '9':
 			switch(scroll_control){
-				case 0b11110: digits[0] = '-'; break;				//Waiting for first character: digits[0] = '\0'
-				case 0b01010: digits[0] = '.'; break;				//Waiting for second character: negative number digits[0] = '-'
-				case 0b01000: digits[0] = '0'; break;				//LHS waiting for first digit (0 to 9)
-				case 0b01011: digits[0] = '.'; break;				//digits[0] = 0 to 9: can receive d.p. e or additional digit
-				case 0b01001: digits[0] = 'e'; break;				//Real number: can only receive e or additional digits
-				case 0b00000: digits[0] = '0'; break;				//RHS: Can only receive digits
-			case 0b00100: digits[0] = '-'; break;} break;		//RHS: can receive a - or a digit
+				case 0b11110: digits[0] = '-'; break;								//Waiting for first character: digits[0] = '\0'
+				case 0b01010: digits[0] = '.'; break;								//Waiting for second character: negative number digits[0] = '-'
+				case 0b01000: digits[0] = '0'; break;								//LHS waiting for first digit (0 to 9)
+				case 0b01011: digits[0] = '.'; break;								//digits[0] = 0 to 9: can receive d.p. e or additional digit
+				case 0b01001: digits[0] = 'e'; break;								//Real number: can only receive e or additional digits
+				case 0b00000: digits[0] = '0'; break;								//RHS: Can only receive digits
+			case 0b00100: digits[0] = '-'; break;} break;							//RHS: can receive a - or a digit
 			
 
 			case '-':
 			switch(scroll_control){
-				case 0b11110: digits[0] = '.'; break;				//Waiting for first character: digits[0] = '\0'
-			case 0b00100: digits[0] = '0'; break;} break;		//RHS: can receive a - or a digit
+				case 0b11110: digits[0] = '.'; break;								//Waiting for first character: digits[0] = '\0'
+			case 0b00100: digits[0] = '0'; break;} break;							//RHS: can receive a - or a digit
 
 			case '.':
 			switch(scroll_control){
-				case 0b11110: digits[0] = '0'; break;				//Waiting for first character: digits[0] = '\0'
-				case 0b01010: digits[0] = '0'; break;				//Waiting for second character: negative number digits[0] = '-'
-			case 0b01011: digits[0] = 'e'; break;} break;		//digits[0] = 0 to 9: can receive d.p. e or additional digit
+				case 0b11110: digits[0] = '0'; break;								//Waiting for first character: digits[0] = '\0'
+				case 0b01010: digits[0] = '0'; break;								//Waiting for second character: negative number digits[0] = '-'
+			case 0b01011: digits[0] = 'e'; break;} break;							//digits[0] = 0 to 9: can receive d.p. e or additional digit
 			
 
 			case 'e':
 			switch(scroll_control){
-				case 0b01011: digits[0] = '0'; break;				//digits[0] = 0 to 9: can receive d.p. e or additional digit
-			case 0b01001: digits[0] = '0'; break;} break;		//Real number: can only receive e or additional digits
+				case 0b01011: digits[0] = '0'; break;								//digits[0] = 0 to 9: can receive d.p. e or additional digit
+			case 0b01001: digits[0] = '0'; break;} break;							//Real number: can only receive e or additional digits
 
 		default: digits[0] += 1; break;}
 
