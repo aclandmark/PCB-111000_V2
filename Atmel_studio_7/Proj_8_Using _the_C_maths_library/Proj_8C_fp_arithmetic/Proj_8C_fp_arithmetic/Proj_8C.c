@@ -1,9 +1,4 @@
-/*
- * Proj_8C_fp_arithmetic.c
- *
- * Created: 05/05/2020 15:07:14
- * Author : Mark
- */ 
+
 
 /*Proj_8C_fp_arithmetic
 *****************************************************/
