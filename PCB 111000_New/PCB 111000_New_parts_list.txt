@@ -1,0 +1,57 @@
+Partlist
+
+Two versions of PCB 111000 are available
+
+Displays 
+146-1583	CA56-12SYKWA	with decimal point	got 6
+165-4368	CC56-21SURKWA	with colon		got 4
+
+
+PCB 2 layer board 85mm by 40mm
+	
+
+IC1      FT230XS   	RS 757-0010				Ordered from RS
+IC2      ATMEGA 168 	RS 127-8268				Ordered from RS                 
+IC3      ATMEGA 328    	RS131-0275				Ordered from RS
+L1       CHOKE		RS 724-1582 				Ordered from RS                   
+
+Transistor	275-945		ZVN3306FTA			Ordered from RS
+
+
+
+27R 		RE 62-1803		R1, R4			Got loads					
+100R 		RS 223-2120		R10			Ordered from RS					
+220R 		RS 223-2164		R19, R27, R28		Got 50				
+220R		RS 223-2164		R20-26			Got 50 
+
+560R 		RS 223-2221		R15,16			Got 12		
+
+3K9  		RS 223-2344		R5-6, R17-18		Ordered from RS					
+10K  		RS 679-1765		R2-3, R8, R14		Ordered from RS					
+22K 		RS 223-2439		R7, R9			Ordered from RS						
+
+18pF		RS 648-0935					Got loads			
+47p		RS 669-8628		C2, C5			Ordered from RS						
+10n		RS 264-4141		C1, C9, C15-17		Got loads					
+
+100n		RS 434-8104		C3, C6			Got loads		
+4.7uF		RS 691-1224		C4			Got loads					
+1uF		RS 434-8110					Got loads
+				
+Xtal		RS 226-0725					Ordered from RS					
+
+SW1		RE 76-0100 (78-0560)	DPDT			Ordered from RE							
+SW2		RE 51-0709 (51-0708)	NO push button (SM)	Got 7			
+SW3-5		RE51-0711	NO push button (with pins)	Ordered from RE		 
+
+SKT1		RS 515-1967	RE 50-1224	USB socket	Ordered from RE							
+
+LED1		RS228-5764  0r RS171-2136	CC_DUAL_LED	Ordered from RS	
+
+Solder wick							Ordered from RE
+
+
+
+Note RS is Radio Spares and RE is Rapid Electronics
+
+
