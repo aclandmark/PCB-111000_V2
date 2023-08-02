@@ -299,8 +299,8 @@ Reset_L;\
 Atmel_powerup;\
 while(1){if((Atmel_config(Prog_enable_h, 0)==0x53) && (Atmel_config(signature_bit_1_h, 0) == 0x1E))break;\
 else {sendString("TTND"); wdt_enable(WDTO_120MS);while(1);}}\
-target_type_M = Atmel_config(signature_bit_2_h, signature_bit_2_l);\
-target_type = Atmel_config(signature_bit_3_h, signature_bit_3_l);\
+target_type_M = (byte)Atmel_config(signature_bit_2_h, signature_bit_2_l);\
+target_type = (byte)Atmel_config(signature_bit_3_h, signature_bit_3_l);\
 switch(target_type) {\
 case 0x07: target = 8; break;\
 case 0x08: target = 35; break;\
@@ -308,7 +308,7 @@ case 0x05:\
 case 0x0A:\
 if (target_type_M == 0x92) target = 48; else target = 88; break;\
 case 0x14:\
-case 0x0F: if(target_type_M == 0x95) target = 328; else target = 88; break;\
+case 0x0F: if(target_type_M == 0x95) {target = 328;sendChar('B');} else target = 88; break;\
 case 0x06:\
 case 0x0B: if(target_type_M == 0x94)target = 168; if(target_type_M == 0x93)target = 15;break;\
 default: newline(); sendString("TTND"); newline(); wdt_enable(WDTO_120MS);while(1);break;}
