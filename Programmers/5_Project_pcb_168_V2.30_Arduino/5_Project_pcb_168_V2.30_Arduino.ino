@@ -407,12 +407,12 @@ phys_address = 0;
 
 while(1){
 Hex_cmd = (byte)Read_write_mem('L',phys_address, 0x0);  
-Hex_cmd = (byte)(Hex_cmd<<8) + (byte)(Read_write_mem('H',phys_address, 0x0)); 
+Hex_cmd = (Hex_cmd<<8) + (byte)(Read_write_mem('H',phys_address, 0x0)); 
 phys_address++; 
        
 if (phys_address == FlashSZ)break;
 
-if (Hex_cmd != (byte)0xFFFF){
+if (Hex_cmd != 0xFFFF){
 read_ops += 1; 
 star_counter += 1;}
 else 
