@@ -1,3 +1,8 @@
+
+*Strings for ATMEGA168 when used to program the PCB111000 mini-OS device (the Atmega328)
+
+
+
 "ATMEGA 
  detected
 Press -P- to send a program file -E- to send a text file (or X to escape).
