@@ -100,7 +100,7 @@ Read_write_mem('I', EE_size - 5, \
 
 sendString("\r\nABCDEGHJ");
 //Exit_programming_mode;                                                  //Wait for UNO reset
-UCSR0B &= (~((1 << RXEN0) | (1<< TXEN0)));
+//UCSR0B &= (~((1 << RXEN0) | (1<< TXEN0)));
 
 
 set_cal_clock();
