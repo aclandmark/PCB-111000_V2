@@ -71,8 +71,6 @@ void Prog_Target_EEPROM(void){
 unsigned char  EEPROM_buffer[256];				//265	//130			
 int EEP_pointer = 0,   file_pointer = 0,  array_pointer = 0,  data_counter = 0;
 char key_press, DL_flag = 0, DL_status, op_code_1, op_code_2;	    
-char reservation[4];
-int App_reservation;
 
 EEP_pointer = text_start;												//Start saving user strings/data at address 0x05
 
@@ -91,81 +89,42 @@ case 'r':
 case 'R':
 newline();
 
-if(((Read_write_mem('O', 0x0, 0)) ==0xFF)  &&\
-((Read_write_mem('O', 0x1, 0)) ==0xFF) &&\
-((Read_write_mem('O', 0x2, 0)) ==0xFF))
+if(((byte)(Read_write_mem('O', 0x0, 0)) ==0xFF)  &&\
+((byte)(Read_write_mem('O', 0x1, 0)) ==0xFF) &&\
+((byte)(Read_write_mem('O', 0x2, 0)) ==0xFF))
 {sendString("No Data!"); break;}										//check for unprogrammed EEPROM
 
-sendString("1,2 or 3\r\n");
+//sendString("1,2 or 3\r\n");
 
-op_code_2 =  waitforkeypress();		binUnwantedChars();		
-EE_top = (((Read_write_mem('O', 0x3, 0))<<8 ) +\
-(Read_write_mem('O', 0x4, 0)));										//Determine bottom of application reservation
-Upload_text((Read_write_mem('O', 0x0, 0x0) << 8)\
-+ Read_write_mem('O', 0x1, 0x0));										//Read text strings from EEPROM	
+//op_code_2 =  waitforkeypress();		binUnwantedChars();		
+Data_space = (((byte)(Read_write_mem('O', 0x3, 0))<<8 ) +\
+(byte)(Read_write_mem('O', 0x4, 0)));										//Determine bottom of application reservation
 
-switch (op_code_2){
-case '1':																//Display numeric data in decimal notation
-		Upload_data_1 (((Read_write_mem('O', 0x0, 0x0) << 8)\
-		+ Read_write_mem('O', 0x1, 0x0)),\
-		Read_write_mem('O', 0x2, 0x0)); break;
-case '2':																//Display numeric data in hex notation	
-		Upload_data_2 (((Read_write_mem('O', 0x0, 0x0) << 8)\
-		+ Read_write_mem('O', 0x1, 0x0)),\
-		Read_write_mem('O', 0x2, 0x0)); break;	
-default:																//Display numeric data in decimal and hex notations
-		Upload_data (((Read_write_mem('O', 0x0, 0x0) << 8) +\
-		Read_write_mem('O', 0x1, 0x0)),\
-		Read_write_mem('O', 0x2, 0x0)); break;}
 
-if ((((Read_write_mem('O', 0x3, 0)) <<8 ) +\
-(Read_write_mem('O', 0x4, 0)))  == 0xFFFF); 							//No space reserved for application: End of the read case
+Upload_text(EE_top);	
+
+
+if ((((byte)(Read_write_mem('O', 0x3, 0)) <<8 ) +\
+(byte)(Read_write_mem('O', 0x4, 0)))  == 0xFFFF); 							//No space reserved for application: End of the read case
 else																	//Print out start address of the Space reserved for the application
-{if((((Read_write_mem('O', 0x3, 0)) <<8 ) +\
-(Read_write_mem('O', 0x4, 0))) < 0x200)
+{if((((byte)(Read_write_mem('O', 0x3, 0)) <<8 ) +\
+(byte)(Read_write_mem('O', 0x4, 0))) < Data_space)
 {sendString("\r\nApp: Start addr's  ");
-sendHex(16,(((Read_write_mem('O', 0x3, 0)) <<8 ) +\
-(Read_write_mem('O', 0x4, 0))));newline();}}							//Note: as a result of the cal bytes some space is always reserved 
+sendHex(16,(((byte)(Read_write_mem('O', 0x3, 0)) <<8 ) +\
+(byte)(Read_write_mem('O', 0x4, 0))));newline();}}							//Note: as a result of the cal bytes some space is always reserved 
 break;		
 
 
 /********************************************************************************************************************************************/
 case 'W':
 case 'w':
-sendString("\r\nInteger(0-FF)?");										//Reserves space at top of EEPROM for use by the application
 
-reservation[0] = '0';													//Enter most significant digit first
-reservation[2] = '\0';													//Enter zero and pause for no reservation
-while(1){
-reservation[1] = waitforkeypress();
-if(non_numeric_char (reservation[1]))sendChar ('?'); else break;}		//Only accepts legal keypresses 0 to 9 and A to F
-
-if(isCharavailable(100)){while(1){										//If keypress made acquire it else skip to "askiX2_to_hex" subroutine
-key_press = receiveChar();
-if (non_numeric_char (key_press)) {sendChar ('?'); 					//Illegal keypress
-while (!(UCSR0A & (1 << RXC0)));}else break;}binUnwantedChars();		//Insists on legal keypress: 	
-reservation[0] = reservation[1]; 
-reservation[1] = key_press;}
-	
-App_reservation =  askiX2_to_hex(reservation);							//Convert entry to binary form
-
-if(App_reservation > 0){
-sendString("\r\nApp: Start addr's  ");
-sendHex(16, (EE_top - App_reservation));newline();						//Display first address to be used by the application
-sendString ("X to escape or AOK\r\n");
-if(waitforkeypress() == 'X') 
-{binUnwantedChars();	wdt_enable(WDTO_1S); while(1);}}				//Accidental key press: Press X to start again.
-binUnwantedChars();		
-EE_top = EE_top - App_reservation;										//Variable "EEPROM" stores highest address available for user strings and data. 
-Read_write_mem('I', 0x3, (EE_top >> 8)); 								//Save the variable "EEPROM" at the start of the EEPROM in addresses 3 and 4. 
-Read_write_mem('I', 0x4, (EE_top & 0x00FF));
-
-
+Data_space = EE_top;														//Variable "EEPROM" stores highest address available for user strings and data. 
+Read_write_mem('I', 0x3, (Data_space >> 8)); 								//Save the variable "EEPROM" at the start of the EEPROM in addresses 3 and 4. 
+Read_write_mem('I', 0x4, (Data_space & 0x00FF));
 
 //Repeat file download as many times as necessary to save text and data untill end of file reached or the EEPROM allocation is all used up.
 //This saves the need to lower the baud rate to allow time to write to EEPROM (which was considered to more awkward of the two options).
-
-
 
 sendString("\r\nSend text file.");
 
@@ -181,24 +140,25 @@ do 																		//Remain in do-loop untill text all downloaded
 	}while (!(DL_status));												//Exit at end of text (-"- detected) 
 LEDs_off;	
 
-if (DL_flag == 2)														//Download data (if any) untill EEPROM buffer is full
+/*if (DL_flag == 2)														//Download data (if any) untill EEPROM buffer is full
 	{while (!(Download_data(&EEP_pointer, &file_pointer,\
 	&DL_flag, &data_counter,&array_pointer,\
 	EEPROM_buffer)))													//Save text and data to EEPROM			
 		{LEDs_off;														//If EEPROM buffer fills						
 		sendString("  Again!");											//request additional download untill EEPROM is full
 		}
-	}
+	}*/
 binUnwantedChars ();
 LEDs_off;
 
 sendString("   AK?\r\n");	binUnwantedChars();		
-Read_write_mem('I', 0x0, (EEP_pointer >> 8));  	
-Read_write_mem('I', 0x1, (EEP_pointer & 0x00FF));						//Save address in EEPROM available for first data item
+Read_write_mem('I', 0x0, (EE_top >> 8));  	
+Read_write_mem('I', 0x1, (EE_top & 0x00FF));	
+
 Read_write_mem('I', 0x2, data_counter);									//Save number of data items (each occupy 16 bits)	
 waitforkeypress();
 Upload_text(EEP_pointer);   
-if (data_counter > 0) Upload_data (EEP_pointer, data_counter);  
+//if (data_counter > 0) Upload_data_1 (EEP_pointer, data_counter);  ///////////////////////////////////////////////////////
 break;  
 
 
@@ -207,8 +167,8 @@ break;
 case 'C':																//Check the cal bytes have not been corrupted
 case 'c':
 newline();
-{sendHex(16, Read_write_mem('O', 0x3FE, 0));
-sendChar('\t');sendHex(16, Read_write_mem('O', 0x3FF, 0));}
+{sendHex(16, (byte)Read_write_mem('O', 0x3FE, 0));
+sendChar('\t');sendHex(16, (byte)Read_write_mem('O', 0x3FF, 0));}
 break;
 
 default: break;}
@@ -293,16 +253,16 @@ if (*ptr_DL_flag == 1)													//If EEPROM buffer is full: Text download is 
 
 	LEDs_on;
 	{int n=0;															//Copy characters from "EEPROM_buffer" to the EEPROM
-	while (((*ptr_EEP_pointer) +n) < EE_top)							//Stop copying when space rerserved for the application is reached
+	while (((*ptr_EEP_pointer) +n) < Data_space)							//Stop copying when space rerserved for the application is reached
 		{Read_write_mem('I', ((*ptr_EEP_pointer) + n),\
 		EEPROM_buffer[n]); 
 		n++;
 		if(n==(*ptr_array_pointer))break;}								//Exit when the end of the "EEPROM_buffer" is reached
 
-	if (((*ptr_EEP_pointer)+n) == EE_top)								//EEPROM allocation all used? Yes:
+	if (((*ptr_EEP_pointer)+n) == Data_space)								//EEPROM allocation all used? Yes:
 		{*ptr_DL_flag = 3; 												//Set DL_flag to 3.																	
-		Read_write_mem('I', (EE_top-1), '\0'); 						//Terminate EEPROM in '\0'
-		*ptr_EEP_pointer = EE_top; 										//Set EEP_pointer to EEPROM 
+		Read_write_mem('I', (Data_space-1), '\0'); 						//Terminate EEPROM in '\0'
+		*ptr_EEP_pointer = Data_space; 										//Set EEP_pointer to EEPROM 
 		return 1;}														//Return setting the "DL_status" to 1
 
 	(*ptr_EEP_pointer) += n-1; 										//Set "EEP_pointer" to next available address in the EEPROM
@@ -318,18 +278,18 @@ else 																	//-"- char encountered to terminate text input
 	EEPROM_buffer[((*ptr_array_pointer)++)] = '\0';					//Terminate final string in a '\0'.
 	*ptr_file_pointer = UART_counter;									//Save the "UART_counter" in "file_pointer"
 	(*ptr_EEP_pointer) += (*ptr_array_pointer); 						//Set "EEP_pointer" to the address available for the first number 
-	if((*ptr_EEP_pointer) >= EE_top)									//If saving the entire string would cause the EEPROM allocation to be exceeded
+	if((*ptr_EEP_pointer) >= Data_space)									//If saving the entire string would cause the EEPROM allocation to be exceeded
 		{*ptr_DL_flag = 3; 												//set the download flag to 3
 			{int n=0;
 			while (((*ptr_EEP_pointer) - (*ptr_array_pointer) +n)\
-			< (EE_top-1))
+			< (Data_space-1))
 				{Read_write_mem('I', ((*ptr_EEP_pointer) -\
 				(*ptr_array_pointer) + n),EEPROM_buffer[n]);			//Copy as much as possible of the EEPROM buffer to the EPPROM
 				n++;
 				}
 			}
-		Read_write_mem('I', (EE_top-1), '\0'); 						//Terminate the EEPROM in '\0'
-		*ptr_EEP_pointer = EE_top; 
+		Read_write_mem('I', (Data_space-1), '\0'); 						//Terminate the EEPROM in '\0'
+		*ptr_EEP_pointer = Data_space; 
 		return 1;														//Return setting the "DL_status" to 1
 		}
 	*ptr_DL_flag = 2; 													//If overflow is not a problem set "DL_flag" to 2
@@ -341,7 +301,7 @@ else 																	//-"- char encountered to terminate text input
 
 
 /********************************************************************************************************************************************/
-char Download_data(int *ptr_EEP_pointer,int *ptr_file_pointer,\
+/*char Download_data(int *ptr_EEP_pointer,int *ptr_file_pointer,\
 char *ptr_DL_flag, int *ptr_data_counter,\
 int *ptr_array_pointer,\
 unsigned char EEPROM_buffer[])
@@ -396,7 +356,7 @@ switch (*ptr_DL_flag)
 	{case 2:															//Text download complete without causing EEPROM overflow 
 		LEDs_on;														//Subsequent data (if any) all fits into the EEPROM_buffer
 		{int n=0;\
-		while ((ADDR_last_string +n) < (EE_top))
+		while ((ADDR_last_string +n) < (Data_space))
 			{Read_write_mem('I', (ADDR_last_string + n),\
 			EEPROM_buffer[n]);											//Save remaining text and data to EEPROM untill the EEPROM is full
 			n++;														//or untill the EEPROM_buffer is empty (i.e.the download is complete)
@@ -407,12 +367,12 @@ switch (*ptr_DL_flag)
 case 3: 																//Similar to case 2 but the data occupies all the remaining  
 	LEDs_on;															//space in the EEPROM_buffer	
 	{int n=0;																																					
-	while ((ADDR_last_string +n) < (EE_top))
+	while ((ADDR_last_string +n) < (Data_space))
 		{Read_write_mem('I', (ADDR_last_string + n),EEPROM_buffer[n]); 
 		n++;
 		if (n==(*ptr_array_pointer))break;								//Exit when the EEPROM is full or the end of the EEPROM buffer is reached
 		}
-	if((ADDR_last_string +n) == (EE_top)) 								//If the EEEPROM is full return 1
+	if((ADDR_last_string +n) == (Data_space)) 								//If the EEEPROM is full return 1
 		{LEDs_off;																		
 		return 1;
 		} 
@@ -425,7 +385,7 @@ case 3: 																//Similar to case 2 but the data occupies all the remain
 case 0:																	//New file download	Contains data only
 	LEDs_on;															//RAM buffer only partially full:  End of file Numbers only
 	{int n=0;
-	while ((next_data_address +n) < (EE_top))							//Exit if EEPROM fills
+	while ((next_data_address +n) < (Data_space))							//Exit if EEPROM fills
 		{Read_write_mem('I', (next_data_address + n),\
 		EEPROM_buffer[n]); 	
 		n++;
@@ -439,13 +399,13 @@ case 0:																	//New file download	Contains data only
 case 4: 																//RAM buffer completely full:  Numbers only
 	LEDs_on;
 	{int n=0;
-	while ((next_data_address +n) < (EE_top))
+	while ((next_data_address +n) < (Data_space))
 		{Read_write_mem('I', (next_data_address + n),\
 		EEPROM_buffer[n]);  
 		n++;
 		if (n==(*ptr_array_pointer))break;
 		}
-	if((next_data_address +n) == (EE_top))  
+	if((next_data_address +n) == (Data_space))  
 		{return 1;
 		}
 	}  																	//EEPROM overflow occurs: Save text and exit
@@ -455,7 +415,7 @@ case 4: 																//RAM buffer completely full:  Numbers only
 	return 0;
 	}
 return 0;
-}
+}*/
 
 
 
@@ -507,13 +467,16 @@ void Upload_text(int EEP_pointer)
 {char string_char;
 int EEP_mem_counter = 0;
 
+//sendHex(16,EEP_pointer);
+
+
 EEP_mem_counter = text_start;
 while(EEP_mem_counter < EEP_pointer)
 	{newline();
 	sendHex (16, EEP_mem_counter); 
 	sendString ("    ");
 	while(1)
-		{string_char = Read_write_mem('O',(EEP_mem_counter++),0);
+		{string_char = (byte)Read_write_mem('O',(EEP_mem_counter++),0);
 		if(string_char == '\0') break;
 		sendChar(string_char); five_msec_delay;//timer_T0_sub(T0_delay_5ms);
 		}
@@ -524,35 +487,10 @@ while(EEP_mem_counter < EEP_pointer)
 
 
 /********************************************************************************************************************************************/
-void Upload_data(int address_first_data_item, int data_counter)
-{char output_counter=0;
-int data_item = 0 ;
-
-
-newline();
-sendHex (16, (address_first_data_item));
-	{int n=0; 
-	while((address_first_data_item+n+1) < EE_top)
-		{data_item = ((Read_write_mem('O', address_first_data_item+n, 0x0) << 8)\
-		+ Read_write_mem('O',(address_first_data_item+n+1), 0x0));
-		if((output_counter) && (!(output_counter%4)))
-			{if(output_counter==4)sendString("\tAK to continue"); 
-			waitforkeypress(); newline();
-			sendHex (16, (address_first_data_item+n));
-			}
-		sendChar('\t'); sendHex (16, data_item); 
-		sendChar ('\t'); sendsignedHex (data_item); 
-		output_counter++; n+=2; 
-		if(n>2*(data_counter-1))break; 
-		}
-	binUnwantedChars();	
-	}
-}
-
 
 
 /********************************************************************************************************************************************/
-void Upload_data_1(int address_first_data_item, int data_counter)
+/*void Upload_data_1(int address_first_data_item, int data_counter)
 {char output_counter=0;
 int data_item = 0 ;
 
@@ -560,9 +498,9 @@ int data_item = 0 ;
 newline();
 sendHex (16, (address_first_data_item));
 	{int n=0; 
-	while((address_first_data_item+n+1) < EE_top)
-		{data_item = ((Read_write_mem('O', address_first_data_item+n, 0x0) << 8)\
-		+ Read_write_mem('O',(address_first_data_item+n+1), 0x0));
+	while((address_first_data_item+n+1) < Data_space)
+		{data_item = (((byte)Read_write_mem('O', address_first_data_item+n, 0x0) << 8)\
+		+ (byte)Read_write_mem('O',(address_first_data_item+n+1), 0x0));
 		if((output_counter) && (!(output_counter%8)))
 			{if(output_counter==8)sendString("\tAK to continue"); 
 			waitforkeypress(); newline();
@@ -575,34 +513,10 @@ sendHex (16, (address_first_data_item));
 	binUnwantedChars();
 	}
 }
-
+*/
 
 
 /********************************************************************************************************************************************/
-void Upload_data_2(int address_first_data_item, int data_counter)
-{char output_counter=0;
-int data_item = 0 ;
-
-
-newline();
-sendHex (16, (address_first_data_item));
-	{int n=0; 
-	while((address_first_data_item+n+1) < EE_top)
-		{data_item = ((Read_write_mem('O', address_first_data_item+n, 0x0) << 8)\
-		+ Read_write_mem('O',(address_first_data_item+n+1), 0x0));
-		if((output_counter) && (!(output_counter%8)))
-			{if(output_counter==8)sendString("\tAK to continue"); 
-			waitforkeypress(); newline();
-			sendHex (16, (address_first_data_item+n));
-			}
-		sendChar('\t'); sendHex (16, data_item); 
-		output_counter++; n+=2; 
-		if(n>2*(data_counter-1))break; 
-		}
-	binUnwantedChars();
-	}
-}
-
 
 
 
