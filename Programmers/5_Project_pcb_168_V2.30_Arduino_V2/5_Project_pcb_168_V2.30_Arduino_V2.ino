@@ -115,30 +115,30 @@ unsigned char fuse_H = 0;
 int long cal_error;
 unsigned char OSCCAL_WV;
 
-cal_factor= 0;
+cal_factor= 0;                                          //Set to 1 by OSC_CAL if user cal is available
 setup_HW;
 
-//if(cal_factor== 0) {auto_cal_168();}
+
 if((cal_factor== 0) || ((MCUSR & (1 << PORF)) && ((PIND & 0x04)^0x04)))
 {while((PIND & 0x04)^0x04); auto_cal_168();}
 
-if (watchdog_reset == 1)watchdog_reset = 0;
+if (watchdog_reset == 1)watchdog_reset = 0;             //Set to 1 after mini-OS device has been calibrated
 
 else
 
 {if ((eeprom_read_byte((uint8_t*)0x1FC) == 1)\
-&& (MCUSR & (1 << PORF)));                      //POR after programing target device
+&& (MCUSR & (1 << PORF)));                              //POR after programing target device
 else  {wdt_enable(WDTO_60MS); while(1);}
 
-while(1){                             //User prompt is R
+while(1){                                               //User prompt is R
 do{sendString("R   ");} 
-while((isCharavailable(100) == 0));                 //Keypress R to complete target calibration
+while((isCharavailable(100) == 0));                     //Keypress R to complete target calibration
 if(receiveChar() == 'R')break;}
 
-eeprom_write_byte((uint8_t*)0x1FC, 0xFF);             //Clear EEPROM location set by programmer
+eeprom_write_byte((uint8_t*)0x1FC, 0xFF);                 //Clear EEPROM location set by programmer
 MCUSR &= (~(1 << PORF));
 
-waiting_for_I2C_master;                       //Receive cal data over I2C bus             
+waiting_for_I2C_master;                                   //Receive cal data over I2C bus             
 OSCCAL_WV = receive_byte_with_Ack();          
 cal_error = receive_byte_with_Ack();          
 cal_error = (cal_error << 8) + receive_byte_with_Nack();
@@ -146,13 +146,13 @@ clear_I2C_interrupt;
 
 Text_target_cal; sendString("  ");
 sendHex(10, OSCCAL_WV);sendChar('\t');
-sendString("error ");sendHex(10, cal_error);            //Print out cal data 
+sendString("error ");sendHex(10, cal_error);                //Print out cal data 
 if (cal_error < 1000)sendString(" OK\r\n");
- wdt_enable(WDTO_60MS); while(1);}                  //SW reset and jump straight to user prompt P       
+ wdt_enable(WDTO_60MS); while(1);}                        //SW reset and jump straight to user prompt P       
 
 while(1){
 do{sendString("P   ");} 
-while((isCharavailable(255) == 0));               //User prompt is P
+while((isCharavailable(255) == 0));                         //User prompt is P
 
 
 
@@ -163,9 +163,9 @@ case 'v': case 'V': //Text_Version;
 sendString (Version);
 newline();        //Check on-chip program version
 wdt_enable(WDTO_60MS); while(1);break;
-case 'S': case 's': Prog_on_chip_EEPROM();              //Program on-chip EEPROM
+case 'S': case 's': Prog_on_chip_EEPROM();                  //Program on-chip EEPROM
 wdt_enable(WDTO_60MS); while(1);break;
-default:break;}if(op_code)break;}                 //Only exit loop the program target 
+default:break;}if(op_code)break;}                           //Only exit loop the program target 
     
 boot_target;
 Atmel_powerup_and_target_detect;        
@@ -175,10 +175,10 @@ Text_Atmega;
 
 switch (target){
 case 168: sendString ("168");  PageSZ = 0x40; PAmask = 0x1FC0; 
-FlashSZ=0x2000; EE_top = 0x1FA; text_start = 0x5; break;      //Space set aside for Cal/status data   
+FlashSZ=0x2000; EE_top = 0x1FA; text_start = 0x5; break;            //Space set aside for Cal/status data   
 case 328: sendString ("328"); PageSZ = 0x40; PAmask = 0x3FC0; 
-FlashSZ=0x4000; EE_top = 0x3F5; text_start = 0x5; break;      //Top 10 locations reseved for mini-OS use    
-default: wdt_enable(WDTO_1S); while(1);break;}            //First 5 locations reserved for alloccation table
+FlashSZ=0x4000;break;    //EE_top = 0x3F5; text_start = 0x5;          //Top 10 locations reseved for mini-OS use    
+default: wdt_enable(WDTO_1S); while(1);break;}                      //First 5 locations reserved for alloccation table
 
 
 Text_detected;
@@ -191,13 +191,13 @@ while((isCharavailable(255) == 0));
 op_code = receiveChar();        
 
 switch (op_code){
-case 'e':                             //Program Target EEPROM 
-case 'E':  Prog_Target_EEPROM(); break;
+case 'e':   EE_top = 0x1FC; text_start = 0x5;  Prog_Target_EEPROM(); break;                                                //Program Target EEPROM 
+case 'E':  EE_top = 0x3F4; text_start = 0x1FD;Prog_Target_EEPROM(); break;
 
-case 'D':                             //Delete Target EEPROM
+case 'D':                                                     //Delete Target EEPROM
 sendString("\r\nTarget "); Text_EEP_reset;  
 if(waitforkeypress() == 'D'){
-Text_10_sec_wait;                         //sendString("10 sec wait");
+Text_10_sec_wait;                                             //sendString("10 sec wait");
 if(target == 168){for (int m = 0; m <= 0x1FA;m++)
 {Read_write_mem('I', m, 0xFF);}}
 if(target == 328){for (int m = 0; m <= 0x3F5;m++)     
@@ -207,17 +207,17 @@ sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
 case 'd': 
 sendString("\r\nOn-chip "); Text_EEP_reset;
 if(waitforkeypress() == 'D'){
-for (int m = 0; m <= 0x1FA;m++)                 //Delete on-chip EEPROM
+for (int m = 0; m <= 0x1FA;m++)                               //Delete on-chip EEPROM
 eeprom_write_byte((uint8_t*)(m),0xFF); 
 sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
 
-case 'p':                               //Program target
+case 'p':                                                       //Program target
 case 'P': break;
-case 'x':                             //Escape
+case 'x':                                                       //Escape
 case 'X': wdt_enable(WDTO_60MS); while(1);break;
 default: break;} 
 
-if ((op_code == 'P') || (op_code == 'p')) break;          //Enter target programming mode
+if ((op_code == 'P') || (op_code == 'p')) break;            //Enter target programming mode
 //op_code = waitforkeypress();
 }   
 
@@ -226,32 +226,32 @@ Initialise_variables_for_programming_flash;
 Text_Send_HexF;
 
 
-while ((keypress = waitforkeypress()) != ':')           //Ignore characters before the first ':'
+while ((keypress = waitforkeypress()) != ':')                 //Ignore characters before the first ':'
 {if (keypress == 'x'){wdt_enable(WDTO_60MS); while(1);}}      //X pressed to escape
-UCSR0B |= (1<<RXCIE0); sei();                   //Enable UART interrupt
+UCSR0B |= (1<<RXCIE0); sei();                                 //Enable UART interrupt
 
-(Atmel_config(Chip_erase_h, 0));                  //Only erase flash when hex file is on its way
+(Atmel_config(Chip_erase_h, 0));                              //Only erase flash when hex file is on its way
 
 Program_Flash();
 
-Atmel_config(write_fuse_bits_H_h,fuse_H );              //Write to config bytes
+Atmel_config(write_fuse_bits_H_h,fuse_H );                    //Write to config bytes
 if(fuse_H == 0xD0)
 {Atmel_config(write_extended_fuse_bits_h,0xFD );
 Atmel_config(write_fuse_bits_h,0xC2 );}
 if(fuse_H == 0xD7)
 {Atmel_config(write_extended_fuse_bits_h,0xFF );
 Atmel_config(write_fuse_bits_h,0xE2 );}
-Atmel_config(write_lock_bits_h,0xEB );                //Lock byte is non critical
+Atmel_config(write_lock_bits_h,0xEB );                        //Lock byte is non critical
 
 Verify_Flash();  
 
-if(fuse_H == 0xD0)                          //If programming mini-OS
-{Read_write_mem('I', 0x3F9, 1);                   //trigger target cal process
+if(fuse_H == 0xD0)                                            //If programming mini-OS
+{Read_write_mem('I', 0x3F9, 1);                               //trigger target cal process
 eeprom_write_byte((uint8_t*)0x1FC, 0x01);  
 MCUSR &= (~(1 << PORF));}
 
 newline();
-sendString (Version);newline();                 //Print out version and config bytes
+sendString (Version);newline();                               //Print out version and config bytes
 Text_Config;
 
 sendHex(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));
@@ -260,25 +260,25 @@ sendHex(16, (byte)Atmel_config(read_fuse_bits_h, 0));
 sendHex(16, (byte)Atmel_config(read_lock_bits_h, 0));
 
 
-Text_on_chip_cal; sendString("  ");                 //Print out on-chip cal byte
+Text_on_chip_cal; sendString("  ");                           //Print out on-chip cal byte
 sendHex(16, OSCCAL);
 
 if (cal_factor==1) 
-sendString(" UC");                          //User cal factor
-else sendString(" DC");                       //Default calfactor
+sendString(" UC");                                          //User cal factor
+else sendString(" DC");                                     //Default calfactor
 
 Text_File_size;
-Text_Program_Verification;                            //Print out file sizes
-sendHex(10,cmd_counter); sendSpace();//sendString("d'loaded:"); 
-sendSpace(); sendHex(10,prog_counter); //sendString(" in:"); 
-sendSpace(); sendHex(10,read_ops); //sendString(" out");
+Text_Program_Verification;                                  //Print out file sizes
+sendHex(10,cmd_counter); sendSpace();sendString("d'loaded:"); 
+sendSpace(); sendHex(10,prog_counter); sendString(" in:"); 
+sendSpace(); sendHex(10,read_ops); sendString(" out");
 newline();
 
 if(fuse_H == 0xD7){wdt_enable(WDTO_60MS); while(1);}        //No cal process: Exit immediately      
 
 Text_Auto_cal;
-while(1);                             //Note: mini_OS requires POR to run
-return 1;  }                            //ato cal
+while(1);                                                   //Note: mini_OS requires POR to run
+return 1;  }                                                //auto cal
 
 
 /***************************************************************************************************************************************************/
@@ -289,7 +289,7 @@ ISR(USART_RX_vect){
     
 Rx_askii_char = receiveChar();
 switch (Rx_askii_char){
-case '0':  Rx_Hex_char = 0x00; break;           //Convert askii chars received from hex file to binary digits
+case '0':  Rx_Hex_char = 0x00; break;                         //Convert askii chars received from hex file to binary digits
 case '1':  Rx_Hex_char = 0x01; break;
 case '2':  Rx_Hex_char = 0x02; break;
 case '3':  Rx_Hex_char = 0x03; break;
@@ -309,24 +309,24 @@ case ':':  counter = 0;  break;
 default: break;}
 
 switch (counter){
-case 0x0:   break;                      //Detect -:- at start of new line
-case 0x1:   tempInt1 = Rx_Hex_char<<4;  break;        //Acquire first digit 
-case 0x2:   tempInt1 += Rx_Hex_char;              //Acquire second digit and combine with first to obtain number of commands in line
-      char_count = 9 + ((tempInt1) *2);         //Calculate line length in terms of individual characters
-      local_pointer = w_pointer++;          //Update pointer to array "store"
-      store[local_pointer] = tempInt1; break;     //Save the number of commands in the line to the array  
-case 0x3:   tempInt1 = Rx_Hex_char<<4;  break;        //Next 4 digits give the address of the first command in the line
+case 0x0:   break;                                        //Detect -:- at start of new line
+case 0x1:   tempInt1 = Rx_Hex_char<<4;  break;            //Acquire first digit 
+case 0x2:   tempInt1 += Rx_Hex_char;                      //Acquire second digit and combine with first to obtain number of commands in line
+      char_count = 9 + ((tempInt1) *2);                   //Calculate line length in terms of individual characters
+      local_pointer = w_pointer++;                        //Update pointer to array "store"
+      store[local_pointer] = tempInt1; break;             //Save the number of commands in the line to the array  
+case 0x3:   tempInt1 = Rx_Hex_char<<4;  break;            //Next 4 digits give the address of the first command in the line
 case 0x4: tempInt1 += Rx_Hex_char; 
-      tempInt1=tempInt1<<8; break;          //Acquire second digit and combine it with first 
-case 0x5: tempInt1 += Rx_Hex_char<<4;  break;     //Continue for third digit
-case 0x6:   tempInt1 += Rx_Hex_char;            //Acquire final digit and caculate address of next command 
-      local_pointer = w_pointer++;          //Update pointers to array "store"
-      store[local_pointer] = tempInt1; break;     //Save address of next command to array "store"
-case 0x7:   break;                      //chars 7 and 8 are not used
+      tempInt1=tempInt1<<8; break;                        //Acquire second digit and combine it with first 
+case 0x5: tempInt1 += Rx_Hex_char<<4;  break;             //Continue for third digit
+case 0x6:   tempInt1 += Rx_Hex_char;                      //Acquire final digit and caculate address of next command 
+      local_pointer = w_pointer++;                        //Update pointers to array "store"
+      store[local_pointer] = tempInt1; break;             //Save address of next command to array "store"
+case 0x7:   break;                                        //chars 7 and 8 are not used
 case 0x8:   break;
 default:  break;}
 
-if ((counter > 8)&&(counter < char_count)){       //Continue to acquire, decode and store commands
+if ((counter > 8)&&(counter < char_count)){               //Continue to acquire, decode and store commands
 if ((counter & 0x03) == 0x01){tempInt1 = Rx_Hex_char<<4;} //Note: Final two chars at the end of every line are ignored
 if ((counter & 0x03) == 0x02)  {tempInt1 += Rx_Hex_char;}
 if ((counter & 0x03) == 0x03)  {tempInt2 = Rx_Hex_char<<4;}
@@ -336,7 +336,7 @@ local_pointer = w_pointer++;
 store[local_pointer] = tempInt1; cmd_counter++;}}
 
 counter++;
-w_pointer = w_pointer & 0b00011111; }             //Overwrites array after 32 entries
+w_pointer = w_pointer & 0b00011111; }                       //Overwrites array after 32 entries
 
 
 
