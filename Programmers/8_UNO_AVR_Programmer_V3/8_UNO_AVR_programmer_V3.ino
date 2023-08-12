@@ -98,13 +98,11 @@ Read_write_mem('I', EE_size - 4, \
 Read_write_mem('I', EE_size - 5, \
 (Atmel_config(signature_bit_3_h, signature_bit_3_l)));       
 
-sendString("\r\nABCDEGHJ");
-//Exit_programming_mode;                                                  //Wait for UNO reset
-//UCSR0B &= (~((1 << RXEN0) | (1<< TXEN0)));
-
-
+sendString("To calibrate set 57600 Baud and then press AK \r\n\
+UNO puts Square wave with 65.536mS period on PB5\r\n\
+else reset UNO\r\n");
+waitforkeypress();
 set_cal_clock();
-
 
 return 1;}
 
@@ -132,7 +130,7 @@ if(text_started == 3)                                           //Ignore timeout
 /***************************************************************************************************************************************************/
 void set_cal_clock(void){
 
-sendString("\r\n\r\nSquare wave with 65.536mS period on PB5\r\n");
+//sendString("\r\n\r\nSquare wave with 65.536mS period on PB5\r\n");
 UCSR0B &= (~((1 << RXEN0) | (1<< TXEN0)));
 initialise_IO;
 Set_LED_ports;
