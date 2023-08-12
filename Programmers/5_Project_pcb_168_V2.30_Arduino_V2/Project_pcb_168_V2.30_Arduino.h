@@ -1,7 +1,7 @@
 
 //Prototypes required for "Project_pcb_168_V2.30B.c"
 
-void auto_cal_168(void);
+void Auto_cal_168(char);
 void Read_on_chip_EEPROM(int);
 void Prog_Target_EEPROM(void);
 void Prog_on_chip_EEPROM(void);
@@ -75,12 +75,20 @@ void Clock_period(void);
 void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
 
 
+#define prescaller_setting      2
 
-volatile int EA_counter;//, EA_buff_ptr;
-volatile long error_SUM;
-//char OSCCAL_WV;
+#define enable_PCI_on_SCK_pin    PCICR |= (1 << PCIE0);
+#define set_PCI_mask_on_SCK     PCMSK0 |= (1 << PCINT5);
+#define disable_PCI_on_SCK_pin   PCICR &= (~(1 << PCIE0));
+#define clear_PCI_mask_on_SCK   PCMSK0 &= (~(1 << PCINT5));
+
+volatile int EA_counter, EA_buff_ptr;
+volatile long error_sum;
+volatile long TCNT1_sum;
+volatile char int_counter;
+unsigned char OSCCAL_WV, OSCCAL_DV;
 char cal_mode;
-
+long buffer[45];
 
 #define Get_ready_to_calibrate \
 TIMSK2 |= (1 << TOIE2);\
@@ -158,22 +166,21 @@ int text_start, text_start_mem;								//Controls writing user strings to rarget
 char watchdog_reset;										//Set to 1 when watchdog timeout occurs
 
 
-
 /*****************************************************************************/
 #define setup_HW \
 setup_watchdog;\
+OSCCAL_DV = OSCCAL;\
 OSC_CAL;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
 set_up_I_O;\
-eeprom_write_byte((uint8_t*)(0x1FD),OSCCAL);\
-while (!(PIND & (1 << PD1)));\
-Timer_T0_10mS_delay_x_m(5);\
+\
 USART_init(0,16);\
+Timer_T0_10mS_delay_x_m(5);\
 Set_LED_ports;\
 LEDs_off;
 
-
+//while (!(PIND & (1 << PD1)));\
 /*****************************************************************************/
 #define setup_watchdog \
 if (MCUSR & (1<<WDRF)) watchdog_reset = 1;\
@@ -193,7 +200,11 @@ if ((eeprom_read_byte((uint8_t*)0x1FF) > 0x0F)\
 &&  (eeprom_read_byte((uint8_t*)0x1FF) < 0xF0) && (eeprom_read_byte((uint8_t*)0x1FF)\
 == eeprom_read_byte((uint8_t*)0x1FE))) {OSCCAL = eeprom_read_byte((uint8_t*)0x1FF);cal_factor=1;}
 
-
+/********************************************************************************************************************************/
+void save_cal_values(unsigned char OSCCAL_user){
+eeprom_write_byte((uint8_t*)(0x1FF), OSCCAL_user); 
+eeprom_write_byte((uint8_t*)(0x1FE), OSCCAL_user); 
+eeprom_write_byte((uint8_t*)(0x1FD), OSCCAL_DV);}
 
 /*****************************************************************************/
 #define set_up_I_O \
