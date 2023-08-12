@@ -107,20 +107,33 @@ volatile char T1_OVF;
 //int limit;
 
 
+
+
+
+
+
 int main (void){ 
 unsigned int target_type = 0, target_type_M;  
 char keypress;
 char op_code = 0;
 unsigned char fuse_H = 0;
 int long cal_error;
-unsigned char OSCCAL_WV;
+//unsigned char OSCCAL_WV;
 
 cal_factor= 0;                                          //Set to 1 by OSC_CAL if user cal is available
 setup_HW;
 
+{Auto_cal_168(0);
+save_cal_values(OSCCAL_WV); 
 
-if((cal_factor== 0) || ((MCUSR & (1 << PORF)) && ((PIND & 0x04)^0x04)))
-{while((PIND & 0x04)^0x04); auto_cal_168();}
+sendString("\r\nDefault OSCCAL value ");
+sendHex(10,OSCCAL_DV);
+
+sendString("\r\nNew OSCCAL value ");
+sendHex(10,OSCCAL_WV);
+//cli();while(1);
+}
+
 
 if (watchdog_reset == 1)watchdog_reset = 0;             //Set to 1 after mini-OS device has been calibrated
 
@@ -427,7 +440,18 @@ dot_counter = 0;}
 
 
 
+/*********************************************************************************/
 
+ISR (PCINT0_vect){                                               //UNO provides time standard   Pin change interrupt on SCK pin
+                    
+      if (!(TCCR1B)) {
+      TCNT1_sum = 0;
+      TCNT1 = 0;
+      TCCR1B = prescaller_setting;}                               //1MHz clock
+  
+    else {TCCR1B = 0; int_counter += 1;
+      error_sum = error_sum + TCNT1_sum - 32768 + TCNT1;}}
+ 
 
 
 
@@ -436,7 +460,7 @@ dot_counter = 0;}
 
 
 /*********************************************************************************/
-ISR(TIMER2_OVF_vect) {
+/*ISR(TIMER2_OVF_vect) {
 long TCNT1_BKP, overflow = 0, target_res;
 
 target_res = 62500;
@@ -454,7 +478,7 @@ case 1: overflow = 65546; break;
 case 2: overflow = 131072; break;}
 error_SUM = error_SUM + (TCNT1_BKP - target_res + overflow);
 T1_OVF = 0;}
-EA_counter++;}
+EA_counter++;}*/
 
 /*************************************************************/
-ISR(TIMER1_OVF_vect) {T1_OVF += 1;}
+//ISR(TIMER1_OVF_vect) {T1_OVF += 1;}
