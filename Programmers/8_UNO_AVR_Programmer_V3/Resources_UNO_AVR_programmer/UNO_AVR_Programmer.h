@@ -97,11 +97,11 @@ LEDs_off;\
 Timer_T0_sub(T0_delay_5ms);\
 Define_programmining_pins;\
 Reset_L;\
-Config_Xtal_port;\
+\
 USART_init(0,25);\
 text_start = 0x6;
 
-
+//Config_Xtal_port;\
 
 /************************************************************************************************************************************/
 #define wdr()  __asm__ __volatile__("wdr")
@@ -227,20 +227,20 @@ while(1){if((Atmel_config(Prog_enable_h, 0)==0x53) && (Atmel_config(signature_bi
 	else {sendString("Target_not_detected\r\n"); wdt_enable(WDTO_60MS);while(1);}}\
 	\
 	set_up_target_parameters();\
-	EE_top = EE_size-0x6;
+	EE_top = EE_size;
 	
 
 
 
 
 /************************************************************************************************************************************/
-#define send_as_askii \
+/*#define send_as_askii \
 if((((Hex_cmd>>8)<0x20)||((Hex_cmd>>8)>0x7E))&&(((Hex_cmd & 0x00FF)<0x20)||((Hex_cmd & 0x00FF)>0x7E)))sendHex(16, Hex_cmd);\
 else{if(((Hex_cmd>>8)>=0x20) && ((Hex_cmd>>8)<=0x7E) && ((Hex_cmd & 0x00FF)>=0x20) && ((Hex_cmd & 0x00FF)<=0x7E))\
 {sendChar(Hex_cmd>>8); sendChar(Hex_cmd & 0x00FF);}\
 else { if(((Hex_cmd>>8)>=0x20) && ((Hex_cmd>>8)<=0x7E)){sendChar(Hex_cmd>>8); sendCharasASKI(16, (Hex_cmd & 0x00FF));}\
 if(((Hex_cmd & 0x00FF)>=0x20) && ((Hex_cmd & 0x00FF)<=0x7E)){sendCharasASKI(16, (Hex_cmd>>8)); sendChar(Hex_cmd & 0x00FF);}}}
-
+*/
 
 
 /************************************************************************************************************************************/
@@ -254,8 +254,8 @@ PORTC = 0xFF;\
 PORTD = 0xFF;\
 
 
-#define Config_Xtal_port \
-ASSR = (1 << AS2);	
+//#define Config_Xtal_port \
+//ASSR = (1 << AS2);	
 
 
 
@@ -272,12 +272,7 @@ if((User_response == 'R') || (User_response == 'r'))break;} sendString("\r\n");
 
 /**************************************************************************************************************************************/
 #define Prog_config_bytes \
-\
-switch(sig_byte_2){\
-case 0x95: if(sig_byte_3 == 0x2); else Atmel_config(write_extended_fuse_bits_h,Fuse_Ex );break;\
-case 0x91: if(sig_byte_3 == 0x9); else Atmel_config(write_extended_fuse_bits_h,Fuse_Ex );break;\
-default: Atmel_config(write_extended_fuse_bits_h,Fuse_Ex );break;}\
-\
+Atmel_config(write_extended_fuse_bits_h,Fuse_Ex );\
 Atmel_config(write_fuse_bits_H_h,Fuse_H );\
 Atmel_config(write_fuse_bits_h,Fuse_L );\
 Atmel_config(write_lock_bits_h,Lock );
@@ -287,7 +282,7 @@ Atmel_config(write_lock_bits_h,Lock );
 
 
 /*************************************************************************************************************************************/
-#define Verify_config_bytes \
+/*#define Verify_config_bytes \
 if (op_code == 'P')sendString("Config bytes (programmed): Fuses extended (if used), \
 high, low and lock\t");\
 if (op_code == 'p')sendString("Config bytes (unprogrammed): Fuses extended(if used), \
@@ -300,7 +295,18 @@ default: sendHex(16, Atmel_config(read_extended_fuse_bits_h, 0));break;}\
 \
 sendHex(16, Atmel_config(read_fuse_bits_H_h,0));\
 sendHex(16, Atmel_config(read_fuse_bits_h, 0));\
+sendHex(16, Atmel_config(read_lock_bits_h, 0));*/
+
+
+#define Verify_config_bytes \
+sendString("Config bytes: Fuses extended, \
+high, low and lock\t");\
+\
+sendHex(16, Atmel_config(read_extended_fuse_bits_h, 0));\
+sendHex(16, Atmel_config(read_fuse_bits_H_h,0));\
+sendHex(16, Atmel_config(read_fuse_bits_h, 0));\
 sendHex(16, Atmel_config(read_lock_bits_h, 0));
+
 
 
 
