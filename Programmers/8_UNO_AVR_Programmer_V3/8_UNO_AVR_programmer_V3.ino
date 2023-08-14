@@ -37,7 +37,8 @@ target which can use it to calibrate its internal RC clock in place of a watch c
 
 
 #include "UNO_AVR_programmer.h"
-#define Version "UNO_programmer_V2.0\r\n" 
+#define Version "\r\nUNO_programmer_V3.0\r\n\
+Used to program the PCB-111000_V2 Atmega168.\r\n" 
 
 int main (void){ 
 
@@ -54,14 +55,13 @@ Atmel_powerup_and_target_detect;                                  //Leave target
 
 
 sendString(" detected.\r\nPress -p- to program flash, \
--e- for EEPROM, -r- to run target or -x- to escape.");
+-e- for EEPROM, -r- to run target, -d- to clear the EEPROM or -x- to escape.");
 
 while(1){
 op_code = waitforkeypress();
 switch (op_code){
 
 case 'r': Exit_programming_mode; break;                      //Wait for UNO reset
-case 'R': Verify_Flash_Text();  SW_reset; break;
 case 'e': Prog_EEPROM(); SW_reset; break;
 case 't': set_cal_clock();break;
 
@@ -84,23 +84,24 @@ sendString("\r\nSend hex file (or x to escape).\r\n");
 Program_Flash_Hex();
 Verify_Flash_Hex();
 
-sendString("\r\nText_file? y or n\r\n");
-if (waitforkeypress() == 'y')
-{op_code = 't';                                                 //Required by UART ISR
-Program_Flash_Text();}
-
 
 sendString (Version);
 newline();
 
-Read_write_mem('I', EE_size - 4, \
-(Atmel_config(signature_bit_2_h, signature_bit_2_l)));          //Define target type on target device
-Read_write_mem('I', EE_size - 5, \
-(Atmel_config(signature_bit_3_h, signature_bit_3_l)));       
+
+if ((Read_write_mem('O', 0x1FF, 0) > 0x0F)\
+&&  (Read_write_mem('O', 0x1FF, 0) < 0xF0) && (Read_write_mem('O', 0x1FF, 0)\
+== Read_write_mem('O', 0x1FE, 0))) {
+
+  sendString("Atmega168 already calibrated. Result:  ");
+sendHex  (10, Read_write_mem('O', 0x1FE, 0));
+sendString("\r\n Press AK to repeat or reset UNO\r\n\r\n");
+  waitforkeypress();}
+
 
 sendString("To calibrate set 57600 Baud and then press AK \r\n\
 UNO puts Square wave with 65.536mS period on PB5\r\n\
-else reset UNO\r\n");
+else reset UNO\r\n\r\n");
 waitforkeypress();
 set_cal_clock();
 
@@ -111,11 +112,11 @@ return 1;}
 
 
 /***************************************************************************************************************************************************/
-ISR(USART_RX_vect){
-switch (op_code){
+ISR(USART_RX_vect){upload_hex();}
+/*switch (op_code){
 case 't': upload_text();break;
 case 'p':
-case 'P': upload_hex(); break;}}
+case 'P': upload_hex(); break;}}*/
 
 
 /***************************************************************************************************************************************************/
