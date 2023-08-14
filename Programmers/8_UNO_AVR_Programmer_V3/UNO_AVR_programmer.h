@@ -15,5 +15,4 @@
 #include "Resources_UNO_AVR_programmer\ASKII_subroutines.c"
 #include "Resources_UNO_AVR_programmer\Hex_Programmer_subs.c"
 #include "Resources_UNO_AVR_programmer\EEPROM_programmer_sub.c"
-#include "Resources_UNO_AVR_programmer\Text_programmer_subs.c"
 #include "Resources_UNO_AVR_programmer\Hex_Programmer.c"
