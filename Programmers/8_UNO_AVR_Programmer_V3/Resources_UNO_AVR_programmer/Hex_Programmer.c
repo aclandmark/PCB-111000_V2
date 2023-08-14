@@ -123,7 +123,8 @@ if((Flash_flag) && (!(orphan)))
 if(orphan) {write_page_SUB(page_address + PageSZ);}
 
 
-if (op_code == 'P'){Prog_config_bytes;}
+//if (op_code == 'P')
+{Prog_config_bytes;}
 }
   
 
@@ -132,6 +133,38 @@ if (op_code == 'P'){Prog_config_bytes;}
 
 
 /***************************************************************************************************************************************************/
+
+/*
+void Verify_Flash_Hex (void){ 
+int star_counter;
+signed int phys_address;
+signed int prog_counter_mem;										//Initialise with size of .hex file used for programming
+
+read_ops = 0;
+Hex_cmd = 0;
+star_counter = 0;
+phys_address = 0;
+
+while(1){
+Hex_cmd = (byte)Read_write_mem('L',phys_address, 0x0);  
+Hex_cmd = (Hex_cmd<<8) + (byte)(Read_write_mem('H',phys_address, 0x0)); 
+phys_address++; 
+       
+if (phys_address == FlashSZ)break;
+
+if (Hex_cmd != 0xFFFF){
+read_ops += 1; 
+star_counter += 1;}
+
+
+if (!( star_counter - 200)){sendChar('*');
+star_counter = 0;}
+}}*/
+
+
+
+
+
 void Verify_Flash_Hex (void){
 
 
@@ -139,32 +172,15 @@ int  line_counter = 0, print_line = 0;								//Controls printing of hex file
 int line_no;														//Refers to the .hex file
 signed int phys_address;											//Address in flash memory
 signed int prog_counter_mem;										//Initialise with size of .hex file used for programming
-unsigned char print_out_mode = 0;									//Print out flash contents as hex or askii characters
-char skip_lines[4];													//Enter number to limit the print out
+//unsigned char print_out_mode = 0;									//Print out flash contents as hex or askii characters
+//char skip_lines[4];													//Enter number to limit the print out
 
-sendString("\r\nPress 0 to verify flash or AOK\r\n");
-if(waitforkeypress() != '0')return;
+//sendString("\r\nPress 0 to verify flash or AOK\r\n");
+//if(waitforkeypress() != '0')return;
 
 phys_address = 0;  read_ops=0; 
-line_no = 0; prog_counter_mem = prog_counter; 
-
-sendString("Integer(0-FF)?  ");										//0 prints no lines -1-, every line, -8- prints every eighth line etc... 
-skip_lines[0] = '0';												//Acquire integer between 0 and FF
-skip_lines[1] = waitforkeypress();
-skip_lines[2] = '\0';
-Timer_T1_sub(T1_delay_500mS); 
-if (isCharavailable(1)){skip_lines[0] = skip_lines[1]; 
-skip_lines[1] = receiveChar();} 
-binUnwantedChars(); 
-print_line = askiX2_to_hex(skip_lines);
-sendHex (16,print_line); sendString("   ");
-
-if (print_line == 0);												//hex file print out not required
-else {sendString("1/2?\r\n");										//else -1- sends file as askii, -2- sends it as hex
-print_out_mode =  waitforkeypress(); 
-binUnwantedChars();     
-newline();}
-
+//line_no = 0; 
+prog_counter_mem = prog_counter; 
 
 while(1){ if(!(prog_counter_mem))break;								//print out loop starts here, exit when finished
     
@@ -183,11 +199,11 @@ if (phys_address == FlashSZ)break;									//Exit when there is no more flash to
 if ((print_line == 0)  && (!(line_no%10)))
 sendChar('*');														//Print out of hex file not required
 																	//Print a -*- every tenth line of the file
-if(print_line && (!(line_no%print_line)))							//Print out required: Print all lines or just a selection     
+/*if(print_line && (!(line_no%print_line)))							//Print out required: Print all lines or just a selection     
 {newline(); sendHex (16, (phys_address-1)*2);   
 sendString("   "); line_counter++;  
 if(print_out_mode == '1'){send_as_askii;}							//Start with the address of the first command in the line
-else sendHex (16, Hex_cmd);}										//Print first command in askii or hex
+else sendHex (16, Hex_cmd);}*/										//Print first command in askii or hex
 read_ops++;															//Value to be sent to PC for comparison with the hex filer size
 prog_counter_mem--;													//"prog_counter_mem" decrements to zero when the end of the file is reached
 
@@ -202,13 +218,13 @@ prog_counter_mem--;
 
 if ((print_line) &&  (!(line_counter%2))) {LEDs_on;} else {LEDs_off;}              
 
-if(print_line && (!(line_no%print_line)))
+/*if(print_line && (!(line_no%print_line)))
 {if(print_out_mode == '1'){send_as_askii;} 
-else sendHex (16, Hex_cmd);}
+else sendHex (16, Hex_cmd);}*/
 read_ops++;
 
 if(phys_address==FlashSZ)break;}
-if ((print_line)&&(!(line_no%print_line)) && (!(line_counter%8)))sendString("\r\n");
+//if ((print_line)&&(!(line_no%print_line)) && (!(line_counter%8)))sendString("\r\n");
 line_no++;
 if (phys_address == FlashSZ)break;}
 
