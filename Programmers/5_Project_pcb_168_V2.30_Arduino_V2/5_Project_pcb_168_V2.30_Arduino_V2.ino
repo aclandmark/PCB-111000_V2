@@ -123,6 +123,8 @@ int long cal_error;
 cal_factor= 0;                                          //Set to 1 by OSC_CAL if user cal is available
 setup_HW;
 
+
+if(!(eeprom_read_byte((uint8_t*)(0x1FC))))
 {Auto_cal_168(0);
 save_cal_values(OSCCAL_WV); 
 
@@ -131,7 +133,7 @@ sendHex(10,OSCCAL_DV);
 
 sendString("\r\nNew OSCCAL value ");
 sendHex(10,OSCCAL_WV);
-//cli();while(1);
+eeprom_write_byte((uint8_t*)(0x1FC),0xFF);
 }
 
 
