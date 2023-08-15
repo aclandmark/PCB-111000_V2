@@ -131,6 +131,8 @@ if(text_started == 3)                                           //Ignore timeout
 /***************************************************************************************************************************************************/
 void set_cal_clock(void){
 
+Read_write_mem('I', 0x1FC, 0);
+_delay_ms(10);
 //sendString("\r\n\r\nSquare wave with 65.536mS period on PB5\r\n");
 UCSR0B &= (~((1 << RXEN0) | (1<< TXEN0)));
 initialise_IO;
