@@ -178,9 +178,11 @@ set_up_I_O;\
 USART_init(0,16);\
 Timer_T0_10mS_delay_x_m(5);\
 Set_LED_ports;\
-LEDs_off;\
-eeprom_write_byte((uint8_t*)(0), (byte)(0xFC));\
-eeprom_write_byte((uint8_t*)(1), (byte)0x1);
+LEDs_off;
+
+
+//eeprom_write_byte((uint8_t*)(0), (byte)(0xFC));\
+//eeprom_write_byte((uint8_t*)(1), (byte)0x1);
 
 //while (!(PIND & (1 << PD1)));\
 /*****************************************************************************/
