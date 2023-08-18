@@ -165,58 +165,56 @@ sendString("error ");sendHex(10, cal_error);                //Print out cal data
 if (cal_error < 1000)sendString(" OK\r\n");
  wdt_enable(WDTO_60MS); while(1);}                        //SW reset and jump straight to user prompt P       
 
+
+
+
+
 while(1){
-do{sendString("P   ");} 
-while((isCharavailable(255) == 0));                         //User prompt is P
-
-
+do{sendString("P/S   ");} 
+while((isCharavailable(255) == 0));  
 
 switch(receiveChar()){
-case 'P': case 'p': fuse_H = 0xD0;  op_code =1;break;       //Program reset vector to 0x7000            
-case 'X': case 'x': fuse_H = 0xD7; op_code =1;break;        //Program reset vector to zero                        
-case 'v': case 'V': //Text_Version;
-sendString (Version);
-newline();        //Check on-chip program version
-wdt_enable(WDTO_60MS); while(1);break;
+
 case 'S': case 's': Prog_on_chip_EEPROM();                  //Program on-chip EEPROM
 wdt_enable(WDTO_60MS); while(1);break;
+
+case 'v': case 'V': sendString (Version);
+newline(); wdt_enable(WDTO_60MS); while(1);break;
+
+case 'P': case 'p': fuse_H = 0xD0;  op_code =1; break;       //Program reset vector to 0x7000            
+case 'X': case 'x': fuse_H = 0xD7; op_code =1; break;        //Program reset vector to zero                        
+
 default:break;}if(op_code)break;}                           //Only exit loop the program target 
     
 boot_target;
 Atmel_powerup_and_target_detect;        
-
-
 Text_Atmega;
 
 switch (target){
-case 168: sendString ("168");  PageSZ = 0x40; PAmask = 0x1FC0; 
-FlashSZ=0x2000; EE_top = 0x1FA; text_start = 0x5; break;            //Space set aside for Cal/status data   
+case 168: sendString ("168: Not supported"); wdt_enable(WDTO_1S); break;  
 case 328: sendString ("328"); PageSZ = 0x40; PAmask = 0x3FC0; 
-FlashSZ=0x4000;break;    //EE_top = 0x3F5; text_start = 0x5;          //Top 10 locations reseved for mini-OS use    
-default: wdt_enable(WDTO_1S); while(1);break;}                      //First 5 locations reserved for alloccation table
-
+FlashSZ=0x4000;break;      
+default: wdt_enable(WDTO_1S); while(1);break;}  
 
 Text_detected;
 Text_Press_P_or_E;
 
 while(1){
 
-do{sendString("P/E/X    ");} 
+do{sendString("P/E/e/X    ");} 
 while((isCharavailable(255) == 0));
 op_code = receiveChar();        
 
 switch (op_code){
-case 'e':   EE_top = 0x1FC; text_start = 0x5;  Prog_Target_EEPROM(); break;                                                //Program Target EEPROM 
-case 'E':  EE_top = 0x3F4; text_start = 0x1FD;Prog_Target_EEPROM(); break;
+case 'e':   EE_top = 0x1FC; text_start = 0x5;  sendString("\r\nHello World:  ");Prog_Target_EEPROM(); break;                                                //Program Target EEPROM 
+case 'E':  EE_top = 0x3F6; text_start = 0x200;sendString("\r\nOn-chip backup:  ");Prog_Target_EEPROM(); break;
 
 case 'D':                                                     //Delete Target EEPROM
 sendString("\r\nTarget "); Text_EEP_reset;  
 if(waitforkeypress() == 'D'){
 Text_10_sec_wait;                                             //sendString("10 sec wait");
-if(target == 168){for (int m = 0; m <= 0x1FA;m++)
-{Read_write_mem('I', m, 0xFF);}}
-if(target == 328){for (int m = 0; m <= 0x3F5;m++)     
-{Read_write_mem('I', m, 0xFF);}}
+for (int m = 0; m <= 0x3F5;m++)     
+{Read_write_mem('I', m, 0xFF);}
 sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
 
 case 'd': 
@@ -232,14 +230,10 @@ case 'x':                                                       //Escape
 case 'X': wdt_enable(WDTO_60MS); while(1);break;
 default: break;} 
 
-if ((op_code == 'P') || (op_code == 'p')) break;            //Enter target programming mode
-//op_code = waitforkeypress();
-}   
+if ((op_code == 'P') || (op_code == 'p')) break;}            //Enter target programming mode
 
 Initialise_variables_for_programming_flash;
-
 Text_Send_HexF;
-
 
 while ((keypress = waitforkeypress()) != ':')                 //Ignore characters before the first ':'
 {if (keypress == 'x'){wdt_enable(WDTO_60MS); while(1);}}      //X pressed to escape
