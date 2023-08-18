@@ -32,7 +32,7 @@ void set_up_target_parameters(void){
 
 
 const char *Atmega = "\r\nAtmega ";            
-//const char *ATtiny = "\r\nATtiny ";
+
 const char *Unrecognised_device = "\r\nUnrecognised_device:  ";
 
 Twd_EEPROM = 5;																            //default delay in mS
