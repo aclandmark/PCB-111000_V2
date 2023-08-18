@@ -160,7 +160,7 @@ unsigned int prog_led_control;
 
 
 volatile char T0_ovf_flag=0;								//Used by "timer_sub_with_interrupt"
-signed int EE_top, Data_space;											//Max address available for user srings
+signed int EE_top;											//Max address available for user srings
 char  cal_factor=0;											//1: Use call factor	0: default cal factor
 int text_start, text_start_mem;								//Controls writing user strings to rarget EEPROM
 char watchdog_reset;										//Set to 1 when watchdog timeout occurs
@@ -178,7 +178,9 @@ set_up_I_O;\
 USART_init(0,16);\
 Timer_T0_10mS_delay_x_m(5);\
 Set_LED_ports;\
-LEDs_off;
+LEDs_off;\
+eeprom_write_byte((uint8_t*)(0), (byte)(0xFC));\
+eeprom_write_byte((uint8_t*)(1), (byte)0x1);
 
 //while (!(PIND & (1 << PD1)));\
 /*****************************************************************************/
