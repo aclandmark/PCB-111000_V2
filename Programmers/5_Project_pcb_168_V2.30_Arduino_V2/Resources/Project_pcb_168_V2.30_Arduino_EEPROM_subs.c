@@ -119,7 +119,12 @@ case 'w':
 //Repeat file download as many times as necessary to save text and data untill end of file reached or the EEPROM allocation is all used up.
 //This saves the need to lower the baud rate to allow time to write to EEPROM (which was considered to more awkward of the two options).
 
+//eeprom_write_byte((uint8_t*)(0), (byte)(0xFC));\
+//eeprom_write_byte((uint8_t*)(1), (byte)0x1);
 
+
+Read_write_mem('I', 0x1, (0xFC)); 
+Read_write_mem('I', 0x0, (0x1)); 
 
 sendString("\r\nSend text file.");
 
