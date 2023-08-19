@@ -206,8 +206,9 @@ while((isCharavailable(255) == 0));
 op_code = receiveChar();        
 
 switch (op_code){
-case 'e':   EE_top = 0x1FC; text_start = 0x5;  sendString("\r\nHello World:  ");Prog_Target_EEPROM(); break;                                                //Program Target EEPROM 
-case 'E':  EE_top = 0x3F6; text_start = 0x200;sendString("\r\nOn-chip backup:  ");Prog_Target_EEPROM(); break;
+case 'e':   //EE_top = 0x1FC; text_start = 0x5;            
+case 'E':  EE_top = 0x3F6; text_start = 0x5; sendString("\r\nHello World:  ");Prog_Target_EEPROM(); break;  
+//sendString("\r\nOn-chip backup:  ");Prog_Target_EEPROM(); break;
 
 case 'D':                                                     //Delete Target EEPROM
 sendString("\r\nTarget "); Text_EEP_reset;  
