@@ -123,8 +123,8 @@ case 'w':
 //eeprom_write_byte((uint8_t*)(1), (byte)0x1);
 
 
-Read_write_mem('I', 0x1, (0xFC)); 
-Read_write_mem('I', 0x0, (0x1)); 
+Read_write_mem('I', 0x1, (0xF6)); 
+Read_write_mem('I', 0x0, (0x3)); 
 
 sendString("\r\nSend text file.");
 
