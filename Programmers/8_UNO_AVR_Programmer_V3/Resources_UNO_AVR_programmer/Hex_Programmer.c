@@ -135,7 +135,7 @@ if(orphan) {write_page_SUB(page_address + PageSZ);}
 /***************************************************************************************************************************************************/
 
 
-void Verify_Flash_Hex (void){
+void Verify_Flash_Hex (void){										//ALL PRINT STATEMENTS REMOVED FROM THIS VERSION
 
 
 int  line_counter = 0, print_line = 0;								//Controls printing of hex file                         
@@ -198,3 +198,42 @@ Verify_config_bytes;
 newline();
 Last_Hex_Page = (phys_address & PAmask)*2;								//LAST PAGE used by Hex
 }
+
+
+
+
+/*
+void Verify_Flash_Hex_New (void){ 
+int star_counter, dot_counter;
+signed int phys_address;
+
+dot_counter = 0;
+read_ops = 0;
+Hex_cmd = 0;
+star_counter = 0;
+phys_address = 0;
+
+while(1){
+Hex_cmd = (byte)Read_write_mem('L',phys_address, 0x0);  
+Hex_cmd = (Hex_cmd<<8) + (byte)(Read_write_mem('H',phys_address, 0x0)); 
+phys_address++; 
+       
+if (phys_address == FlashSZ)break;
+
+if (Hex_cmd != 0xFFFF){
+read_ops += 1; 
+star_counter += 1;}
+else 
+{dot_counter += 1;}
+
+if (!( star_counter - 200)){sendChar('*');
+star_counter = 0;}
+
+if (!( dot_counter - 200)){sendChar('.');
+dot_counter = 0;}
+}}*/
+
+
+
+
+
