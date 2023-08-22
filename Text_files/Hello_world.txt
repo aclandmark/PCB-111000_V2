@@ -1,27 +1,29 @@
  
  
-Room for header info.  In the absense of any info at least one space must be included before the fist quotaion mark.
+Room for header info.  
+Hello world file for PCB111000_V2
+In the absense of any info at least one space must be included before the fist quotaion mark.
  
  
 "Hello World
 Remember: writing C is a team activity, you are never alone
 Don't loose heart: Never give up
 Fantastic! Its going to work
-Not quite enough flash? A common problem!
+Not quite enough memory, IO or time? Common problems!
 Fire fighting again? This is normal
 Do it your own way! Let the others only think they know best
 C and microcontrollers: 2 large topics so take your time
 Keep it simple
-This is fantastic technolgy; but what are we going to do with it
-Want a great introductry text? Google https://epdf.tips/c-programming-for-microcontrollers.html
-Atmel Studio, Arduino: High quality compilers for Atmega devices and both free
-Atmega devices: Among the cheapest and easiest to get started with
+This is fantastic technology; but what are we going to do with it
+A great introductory text? Try https://epdf.tips/c-programming-for-microcontrollers.html
+Programmers notepad: Highly recommended download!
+Arduino compiler: great for a quick and easy start
+Atmel studio plus external programmer: release full power of the AVR device
+Want an external programmer? Give the UNO_as_an_AVR_programmer_V2 sketch a test run
+AVR devices: Among the cheapest and easiest to get started with
 PCB 111000: A new project for the Atmega 168, with lots of ready made examples for the beginner
-PCB 111000: A great pcb for exploring the Arduino and Atmel Studio development environments
-Atmel Studio/Arduino: Why not try to get familiar with each compiler?"
-
-
-A new bootloader for the UNO. Was it worth a test run?
+The CP2102 module: A must have for the electronic development engineer.
+"
 
 
 Text here is ignored.
