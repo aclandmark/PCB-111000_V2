@@ -73,6 +73,8 @@ int EEP_pointer = 0,   file_pointer = 0,  array_pointer = 0,  data_counter = 0;
 char key_press, DL_flag = 0, DL_status, op_code_1, op_code_2;	    
 char reservation[4];
 int App_reservation;
+//int test;
+
 
 EEP_pointer = text_start;												//Start saving user strings/data at address 0x05
 
@@ -123,8 +125,8 @@ case 'w':
 //eeprom_write_byte((uint8_t*)(1), (byte)0x1);
 
 
-Read_write_mem('I', 0x1, (0xF6)); 
-Read_write_mem('I', 0x0, (0x3)); 
+//Read_write_mem('I', 0x1, (0xF6));//////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+//Read_write_mem('I', 0x0, (0x3)); 
 
 sendString("\r\nSend text file.");
 
@@ -154,9 +156,15 @@ LEDs_off;
 
 sendString("   AK?\r\n");	binUnwantedChars();		
 
-//Read_write_mem('I', 0x0, (EE_top >> 8));  	
-//Read_write_mem('I', 0x1, (EE_top & 0x00FF));
+Read_write_mem('I', 0x0, (EEP_pointer >> 8));  	
+Read_write_mem('I', 0x1, (EEP_pointer));
 //Read_write_mem('I', 0x2, data_counter);									//Save number of data items (each occupy 16 bits)	
+
+//sendHex(16,(((byte)Read_write_mem('O', 0x0, 0)) << 8) + (byte)Read_write_mem('O', 0x1, 0));
+
+sendHex (16,((byte)Read_write_mem('O', 0x0, 0) << 8) + (byte)Read_write_mem('O', 0x1, 0));
+//test += (byte)Read_write_mem('O', 0x1, 0);
+//sendHex(16, test);
 
 waitforkeypress();
 Upload_text(EEP_pointer);   
