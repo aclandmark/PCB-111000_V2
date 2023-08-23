@@ -128,7 +128,7 @@ int EEP_read_address=0,EEP_write_address = 0;
 newline();sendString ("BR 2k4 then AK");newline();						//Text_Baud_Rate_L;
 //sendString ("\r\nBR 2k4 then AK\r\n");
 
-USART_init(1,160);
+USART_init(1,160);												//Try (3,40) for 1.2kB
 waitforkeypress();
 sendString ("Text file?");newline();									//Text_message_file;
 
