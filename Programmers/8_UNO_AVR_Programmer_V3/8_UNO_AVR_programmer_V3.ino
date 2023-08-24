@@ -27,14 +27,18 @@ Atmel_powerup_and_target_detect;                                  //Leave target
 
 
 sendString(" detected.\r\nPress -p- to program flash, \
--r- to run target, -d- to clear the EEPROM or -x- to escape.");
+-r- to run target, -d- to clear the target EEPROM or -x- to escape.");
 
 while(1){
 op_code = waitforkeypress();
 switch (op_code){
 
-case 'r': Exit_programming_mode; break;                      //Wait for UNO reset
-//case 'e': Prog_EEPROM(); SW_reset; break;
+case 'r':  
+sendString("\r\nSet 57600 Baud and then press AK\r\n");
+waitforkeypress();
+Exit_programming_mode;
+break;                                                           //Wait for UNO reset
+
 case 't': set_cal_clock();break;
 
 case 'd':                                                       //Delete contents of the EEPROM
@@ -42,7 +46,7 @@ sendString("\r\nReset EEPROM! D or AOK to escape");             //but leave cal 
 newline();
 if(waitforkeypress() == 'D'){
 sendString("10 sec wait");
-for (int m = 0; m <= EE_top; m++)  
+for (int m = 0; m <= EE_top; m++)                                //Includes cal bytes  
 {Read_write_mem('I', m, 0xFF);}                                 //Write 0xFF to all EEPROM loactions bar the top 3
 sendString(" Done\r\n");}
 SW_reset;break;
