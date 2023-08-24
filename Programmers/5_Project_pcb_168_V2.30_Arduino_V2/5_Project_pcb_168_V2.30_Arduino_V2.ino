@@ -118,14 +118,25 @@ char keypress;
 char op_code = 0;
 unsigned char fuse_H = 0;
 int long cal_error;
-//unsigned char OSCCAL_WV;
+long error_up, error_down, error_percent;
 
-cal_factor= 0;                                          //Set to 1 by OSC_CAL if user cal is available
+cal_factor= 0;                                                  //Set to 1 by OSC_CAL if user cal is available
 setup_HW;
 
+/*************************************UNO calibrates Atmega168 if necessary*******************************************/
 
-if(!(eeprom_read_byte((uint8_t*)(0x1FC))))
-{Auto_cal_168(0);
+if(!(eeprom_read_byte((uint8_t*)(0x1FC))))                      //Cleared by 8_UNO_AVR_Programmer_V3 
+{Auto_cal_168(0);                                                 //Search starting from 0xF0
+  OSCCAL += 1;                                                  //Check performance for OSCCAL_WV +/- 1
+  sei();
+  error_up = compute_error_UNO(0,2,0);                          //Check that OSCCAL_WV is not at a
+  OSCCAL -=2; error_down = compute_error_UNO(0,2,0);            //discontinuity on the
+  
+  OSCCAL += 1;                                                  //Restore OSCCAL to OSCCAL_WV
+  if ((error_up > 500) || (error_down > 500))
+  {sendString
+  ("\r\nPoor result: Searching for alternative value\r\n");
+  Auto_cal_168(1);} 
 save_cal_values(OSCCAL_WV); 
 
 sendString("\r\nDefault OSCCAL value ");
@@ -133,13 +144,23 @@ sendHex(10,OSCCAL_DV);
 
 sendString("\r\nNew OSCCAL value ");
 sendHex(10,OSCCAL_WV);
-eeprom_write_byte((uint8_t*)(0x1FC),0xFF);
-}
+sei();
+ error_percent = compute_error_UNO(0,2,0)*100/32768;
+ 
+ if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
+ else {sendString("\r\nError = ");sendHex(10,error_percent);}
+  sendString("%\r\n");
+eeprom_write_byte((uint8_t*)(0x1FC),0xFF);}
 
+
+
+/*************Program Entry point when Atmega 168 is fitted to PCB111000_V2************************************/
 
 if (watchdog_reset == 1)watchdog_reset = 0;             //Set to 1 after mini-OS device has been calibrated
 
 else
+
+/********************************Read Atmega 328 (mini-OS device) calibration**************************************/
 
 {if ((eeprom_read_byte((uint8_t*)0x1FC) == 1)\
 && (MCUSR & (1 << PORF)));                              //POR after programing target device
@@ -167,7 +188,7 @@ if (cal_error < 1000)sendString(" OK\r\n");
 
 
 
-
+/************************Program entry point to program mini-OS or reinstate Atmega168 eeprom*************/
 
 while(1){
 do{sendString("P/S   ");} 
@@ -201,14 +222,13 @@ Text_Press_P_or_E;
 
 while(1){
 
-do{sendString("P/E/e/X    ");} 
+do{sendString("P/E    ");} 
 while((isCharavailable(255) == 0));
 op_code = receiveChar();        
 
 switch (op_code){
 case 'e':   //EE_top = 0x1FC; text_start = 0x5;            
-case 'E':  EE_top = 0x3F6; text_start = 0x5; sendString("\r\nHello World:  ");Prog_Target_EEPROM(); break;  
-//sendString("\r\nOn-chip backup:  ");Prog_Target_EEPROM(); break;
+case 'E':  EE_top = 0x3F6; text_start = 0x5; Prog_Target_EEPROM(); break;  
 
 case 'D':                                                     //Delete Target EEPROM
 sendString("\r\nTarget "); Text_EEP_reset;  
@@ -274,8 +294,8 @@ Text_on_chip_cal; sendString("  ");                           //Print out on-chi
 sendHex(16, OSCCAL);
 
 if (cal_factor==1) 
-sendString(" UC");                                          //User cal factor
-else sendString(" DC");                                     //Default calfactor
+sendString(" User cal");                                      //User cal factor
+else sendString(" Default cal");                              //Default calfactor
 
 Text_File_size;
 Text_Program_Verification;                                  //Print out file sizes
@@ -287,8 +307,8 @@ newline();
 if(fuse_H == 0xD7){wdt_enable(WDTO_60MS); while(1);}        //No cal process: Exit immediately      
 
 Text_Auto_cal;
-while(1);                                                   //Note: mini_OS requires POR to run
-return 1;  }                                                //auto cal
+while(1);                                                   //Pause execution for print string
+return 1;}
 
 
 /***************************************************************************************************************************************************/
