@@ -128,13 +128,13 @@ int EEP_read_address=0,EEP_write_address = 0;
 newline();sendString ("BR 2k4 then AK");newline();						//Text_Baud_Rate_L;
 //sendString ("\r\nBR 2k4 then AK\r\n");
 
-USART_init(1,160);												//Try (3,40) for 1.2kB
+USART_init(1,160);				//1,160								//Try (3,64) for 1.2kB
 waitforkeypress();
 sendString ("Text file?");newline();									//Text_message_file;
 
 if ((text = waitforkeypress()) == '"');
 else
-{while(1){if(isCharavailable(2))
+{while(1){if(isCharavailable(6))
 text = receiveChar(); 
 if (text == '"') break;}}	
 
@@ -147,7 +147,7 @@ break;}
 Text_to_EEPROM(&EEP_write_address, next_char);							//save first letter to EEPROM
 
 while(EEP_write_address < 0x1FA) 										//Exits before cal bytes can be overwritten
-	{if(isCharavailable(2)) 											//returns 1 if a new letter is available (0 at the end of the file) 
+	{if(isCharavailable(6)) 											//returns 1 if a new letter is available (0 at the end of the file) 
 	{text = receiveChar(); 												//Temporary storage
 
 	switch (text){														//Test the new character	
