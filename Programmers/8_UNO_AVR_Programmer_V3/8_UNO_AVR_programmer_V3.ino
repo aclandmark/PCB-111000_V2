@@ -39,7 +39,10 @@ waitforkeypress();
 Exit_programming_mode;
 break;                                                           //Wait for UNO reset
 
-case 't': set_cal_clock();break;
+case 't': 
+sendString("\r\nSet 57600 Baud and then press AK\r\n");
+waitforkeypress();
+set_cal_clock();break;
 
 case 'd':                                                       //Delete contents of the EEPROM
 sendString("\r\nReset EEPROM! D or AOK to escape");             //but leave cal data.
