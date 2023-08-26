@@ -84,37 +84,12 @@ switch the DPDT to the right and press the reset switch.
 #define wdr()  __asm__ __volatile__("wdr")
 #define Version "\r\nProject_pcb_168_V2.30_Arduino"
 
-
-
-/*void Text_to_EEPROM(int*, char);
-char Text_from_EEPROM(int*);
-void binUnwantedChars_dot (void);
-void initialise_timers_for_cal_error(void);
-void start_timers_for_cal_error(void);
-long compute_error(char, char); 
-void Minimise_error(int, char *, char *, long *, char*);
-void auto_cal_168 (void);*/
-
-
-
-
-//char cal_mode;
 volatile char T1_OVF;
-
-//char dot_counter=0, counter_1, counter_2;   
-//char  OSCCAL_mem = 0;//OSCCAL_WV,
-//long  error_mag; 
-//int limit;
-
-
-
-
-
 
 
 int main (void){ 
 unsigned int target_type = 0, target_type_M;  
-char keypress;
+char keypress, sign;
 char op_code = 0;
 unsigned char fuse_H = 0;
 int long cal_error;
@@ -133,7 +108,7 @@ if(!(eeprom_read_byte((uint8_t*)(0x1FC))))                      //Cleared by 8_U
   OSCCAL -=2; error_down = compute_error_UNO(0,2,0);            //discontinuity on the
   
   OSCCAL += 1;                                                  //Restore OSCCAL to OSCCAL_WV
-  if ((error_up > 500) || (error_down > 500))
+  if ((error_up > 500) || (error_down > 500))                     //500
   {sendString
   ("\r\nPoor result: Searching for alternative value\r\n");
   Auto_cal_168(1);} 
@@ -144,12 +119,20 @@ sendHex(10,OSCCAL_DV);
 
 sendString("\r\nNew OSCCAL value ");
 sendHex(10,OSCCAL_WV);
+
+
 sei();
- error_percent = compute_error_UNO(0,2,0)*100/32768;
- 
+//_delay_ms(10);
+//OSCCAL -= 4;
+error_percent = compute_error_UNO(0,2,1)*100/32768;
+//OSCCAL += 4; 
+
  if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
- else {sendString("\r\nError = ");sendHex(10,error_percent);}
-  sendString("%\r\n");
+ else 
+ { if (error_percent < 0) {sendChar('A');sign = '-';error_percent *= -1;} else sign = '+';
+ sendString("\r\nError = ");sendChar (sign); sendHex(10,error_percent);
+  sendString("%\r\n");}
+  
 eeprom_write_byte((uint8_t*)(0x1FC),0xFF);}
 
 
@@ -222,13 +205,13 @@ Text_Press_P_or_E;
 
 while(1){
 
-do{sendString("P/E    ");} 
+do{sendString("p/e    ");} 
 while((isCharavailable(255) == 0));
 op_code = receiveChar();        
 
 switch (op_code){
-case 'e':   //EE_top = 0x1FC; text_start = 0x5;            
-case 'E':  EE_top = 0x3F6; text_start = 0x5; Prog_Target_EEPROM(); break;  
+           
+case 'e':  EE_top = 0x3F6; text_start = 0x5; Prog_Target_EEPROM(); break;  
 
 case 'D':                                                     //Delete Target EEPROM
 sendString("\r\nTarget "); Text_EEP_reset;  
@@ -476,26 +459,4 @@ ISR (PCINT0_vect){                                               //UNO provides 
 
 
 
-/*********************************************************************************/
-/*ISR(TIMER2_OVF_vect) {
-long TCNT1_BKP, overflow = 0, target_res;
-
-target_res = 62500;
-TCCR1B = 0;             //Halt T1
-TCNT1_BKP = TCNT1;          //Copy the value of TCNT1
-TCNT1 = 0;              //Clear TCNT1
-TCCR1B = 1;             //Get T1 running again ASAP (Note T2 has not stopped running)
-            //Get T1 running again ASAP (Note T2 has not stopped running)
-if(EA_counter < cal_mode)T1_OVF = 0;          //Ignore first 5 results
-else
-{
-switch(T1_OVF){
-case 0: overflow = 0; break;
-case 1: overflow = 65546; break;
-case 2: overflow = 131072; break;}
-error_SUM = error_SUM + (TCNT1_BKP - target_res + overflow);
-T1_OVF = 0;}
-EA_counter++;}*/
-
-/*************************************************************/
-//ISR(TIMER1_OVF_vect) {T1_OVF += 1;}
+/************************************************************************************/
