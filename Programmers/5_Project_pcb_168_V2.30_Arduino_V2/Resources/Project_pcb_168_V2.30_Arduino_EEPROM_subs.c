@@ -158,13 +158,9 @@ sendString("   AK?\r\n");	binUnwantedChars();
 
 Read_write_mem('I', 0x0, (EEP_pointer >> 8));  	
 Read_write_mem('I', 0x1, (EEP_pointer));
-//Read_write_mem('I', 0x2, data_counter);									//Save number of data items (each occupy 16 bits)	
 
-//sendHex(16,(((byte)Read_write_mem('O', 0x0, 0)) << 8) + (byte)Read_write_mem('O', 0x1, 0));
-
-sendHex (16,((byte)Read_write_mem('O', 0x0, 0) << 8) + (byte)Read_write_mem('O', 0x1, 0));
-//test += (byte)Read_write_mem('O', 0x1, 0);
-//sendHex(16, test);
+//sendHex (16,((byte)Read_write_mem('O', 0x0, 0) << 8) + (byte)Read_write_mem('O', 0x1, 0));
+Num_to_PC(16,((byte)Read_write_mem('O', 0x0, 0) << 8) + (byte)Read_write_mem('O', 0x1, 0));
 
 waitforkeypress();
 Upload_text(EEP_pointer);   
@@ -174,14 +170,15 @@ break;
 
 
 /********************************************************************************************************************************************/
-case 'C':																//Check the cal bytes have not been corrupted
+/*case 'C':																//Check the cal bytes have not been corrupted
 case 'c':
 newline();
 {sendHex(16, Read_write_mem('O', 0x3FE, 0));
 sendChar('\t');sendHex(16, Read_write_mem('O', 0x3FF, 0));}
 break;
 
-default: break;}
+default: break;*/
+}
 
 wdt_enable(WDTO_60MS); while(1);}
 
@@ -393,7 +390,8 @@ int EEP_mem_counter = 0;
 EEP_mem_counter = text_start;
 while(EEP_mem_counter < EEP_pointer)
 	{newline();
-	sendHex (16, EEP_mem_counter); 
+	//sendHex (16, EEP_mem_counter); 
+	Num_to_PC(16, EEP_mem_counter); 
 	sendString ("    ");
 	while(1)
 		{string_char = Read_write_mem('O',(EEP_mem_counter++),0);
