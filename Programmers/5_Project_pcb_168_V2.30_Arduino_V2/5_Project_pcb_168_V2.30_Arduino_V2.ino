@@ -118,10 +118,8 @@ if(!(eeprom_read_byte((uint8_t*)(0x1FC))))                      //Cleared by 8_U
 save_cal_values(OSCCAL_WV); 
 
 sendString("\r\nDefault OSCCAL value ");
-///////////sendHex(10,OSCCAL_DV);
 Num_to_PC(10,OSCCAL_DV);
 sendString("\r\nNew OSCCAL value ");
-//sendHex(10,OSCCAL_WV);
 Num_to_PC(10,OSCCAL_WV);
 
 newline();
@@ -134,17 +132,20 @@ if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
   sendString("%\r\n");}
 
 
-OSCCAL += 5;
+OSCCAL += 4;
 error_up = compute_error_UNO(0,2,1)*100/32768;
-OSCCAL -= 10;
+OSCCAL -= 8;
 error_down = compute_error_UNO(0,2,1)*100/32768;
-OSCCAL += 5;
-sendString("Error at OSCCAL +/- 5:   ");
+OSCCAL += 4;
+sendString("Error at OSCCAL +/- 4:   ");
 Num_to_PC(10,error_up);sendString("%\t");;
 Num_to_PC(10,error_down);sendString("%\r\n\r\n");;
 
 /*
-timer_T0_sub(T0_delay_20ms);
+sendString("-x- to check cal or AOK to escape\r\n\r\n");
+if (waitforkeypress() == 'x')
+
+{timer_T0_sub(T0_delay_20ms);
 OSCCAL -= 20;
 osccal_MIN = OSCCAL;                                          //Compute cal error for 41 values of OSCCAL
   for(int m = 0; m <= 40; m++)
@@ -160,27 +161,8 @@ osccal_MIN = OSCCAL;                                          //Compute cal erro
     newline();
     timer_T0_sub(T0_delay_20ms);
     timer_T0_sub(T0_delay_20ms);
-  timer_T0_sub(T0_delay_20ms);} */
-
-
-
-
-/*sei();
-_delay_ms(10);
-OSCCAL -= 4;
-error_percent = compute_error_UNO(0,2,1)*100/32768;
-OSCCAL += 4; 
-
- if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
- else 
- { if (error_percent < 0) {sendChar('A');sign = '-';error_percent *= -1;} else sign = '+';
- sendString("\r\nError = ");sendChar (sign); ///////sendHex(10,error_percent);
- Num_to_PC(10,error_percent);
-  sendString("%\r\n");}*/
-
-
-
-
+  timer_T0_sub(T0_delay_20ms);}}
+*/
   
 eeprom_write_byte((uint8_t*)(0x1FC),0xFF);}
 
@@ -213,10 +195,16 @@ cal_error = (cal_error << 8) + receive_byte_with_Nack();
 clear_I2C_interrupt;
 
 Text_target_cal; sendString("  ");
-/////////////////sendHex(10, OSCCAL_WV);
+Num_to_PC(10, OSCCAL_WV);
 sendChar('\t');
-sendString("error ");//////////sendHex(10, cal_error);                //Print out cal data 
-if (cal_error < 1000)sendString(" OK\r\n");
+sendString("error ");//Num_to_PC(10, cal_error);                //Print out cal data 
+//if (cal_error < 1000)sendString(" OK\r\n");
+ 
+ cal_error = cal_error/625;
+ if(!(cal_error))sendString("less than 1%\r\n\r\n");
+ else {Num_to_PC(10, cal_error);sendString("%\r\n\r\n");}
+ 
+ 
  wdt_enable(WDTO_60MS); while(1);}                        //SW reset and jump straight to user prompt P       
 
 
@@ -317,33 +305,41 @@ newline();
 sendString (Version);newline();                               //Print out version and config bytes
 Text_Config;
 
-////////sendHex(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));
-////////////sendHex(16, (byte)Atmel_config(read_fuse_bits_H_h,0));  
-//////////sendHex(16, (byte)Atmel_config(read_fuse_bits_h, 0));
-////////sendHex(16, (byte)Atmel_config(read_lock_bits_h, 0));
+Num_to_PC(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));sendString("  ");
+Num_to_PC(16, (byte)Atmel_config(read_fuse_bits_H_h,0));  sendString("  ");
+Num_to_PC(16, (byte)Atmel_config(read_fuse_bits_h, 0));sendString("  ");
+Num_to_PC(16, (byte)Atmel_config(read_lock_bits_h, 0));newline();
+
+/*
+sendHex(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));
+sendHex(16, (byte)Atmel_config(read_fuse_bits_H_h,0));
+sendHex(16, (byte)Atmel_config(read_fuse_bits_h, 0));
+sendHex(16, (byte)Atmel_config(read_lock_bits_h, 0));newline();
+*/
 
 
-Text_on_chip_cal; sendString("  ");                           //Print out on-chip cal byte
-//////sendHex(16, OSCCAL);
+//Text_on_chip_cal; sendString("  ");                           //Print out on-chip cal byte
+//Num_to_PC(16, OSCCAL);
 
-if (cal_factor==1) 
-sendString(" User cal");                                      //User cal factor
-else sendString(" Default cal");                              //Default calfactor
+//if (cal_factor==1) 
+//sendString(" User cal");                                      //User cal factor
+//else sendString(" Default cal");                              //Default calfactor
 
 Text_File_size;
 Text_Program_Verification;                                  //Print out file sizes
-////sendHex(10,cmd_counter); 
+Num_to_PC(10,cmd_counter); 
 sendSpace();sendString("d'loaded:"); 
 sendSpace(); 
-/////////sendHex(10,prog_counter); 
+Num_to_PC(10,prog_counter); 
 sendString(" in:"); 
 sendSpace(); 
-////////sendHex(10,read_ops); 
+Num_to_PC(10,read_ops); 
 sendString(" out");
 newline();
 
 if(fuse_H == 0xD7){wdt_enable(WDTO_60MS); while(1);}        //No cal process: Exit immediately      
 
+newline();
 Text_Auto_cal;
 while(1);                                                   //Pause execution for print string
 return 1;}
