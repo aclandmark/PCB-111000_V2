@@ -87,6 +87,7 @@ volatile long error_sum;
 volatile long TCNT1_sum;
 volatile char int_counter;
 unsigned char OSCCAL_WV, OSCCAL_DV;
+unsigned char OSCCAL_UV;
 char cal_mode;
 long buffer[45];
 
