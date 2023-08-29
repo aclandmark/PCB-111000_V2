@@ -10,6 +10,7 @@ void sendString(const char *);
 long compute_error_UNO(char, char, char);
 void Minimise_error_down(int, unsigned char *, unsigned char *, long *, unsigned char *, char );
 void Minimise_error_up(int, unsigned char *, unsigned char *, long *, unsigned char *, char );
+void Num_to_PC(char, long);
 
 
 /**********************************************************************************************************/
@@ -170,13 +171,17 @@ binUnwantedChars_dot();}												//Send dots to pc to indicate lost character
 
 /****************Echo text file to screen with the address of each string**********************/
 
-sendHex(16, EEP_read_address); sendChar('\t');							//Send address of first line of text
+//sendHex(16, EEP_read_address); sendChar('\t');							//Send address of first line of text
+Num_to_PC(16, EEP_read_address); sendChar('\t');							//Send address of first line of text
+
 do{char_counter = 0;													//Read back text one line at a time
 while(char_counter < 150)
 {text = Text_from_EEPROM(&EEP_read_address);							//Increments the read address
 char_counter += 1;
 if(text)sendChar(text); else break;} 									//When '\0' is detected start next line
-newline();sendHex(16,EEP_read_address); 								//Send address of next line
+newline();
+//sendHex(16,EEP_read_address); 											//Send address of next line
+Num_to_PC(16,EEP_read_address); 										//Send address of next line
 sendChar('\t');}
 while(EEP_read_address < EEP_write_address);							//Exit when read address equals write address
 
