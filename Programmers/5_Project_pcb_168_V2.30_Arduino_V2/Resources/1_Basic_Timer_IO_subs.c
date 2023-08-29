@@ -93,8 +93,8 @@ sendChar(s[i++]);} }
 
 
 /*******************************************************************************************/
-void sendHex(char radix, unsigned int Hex){ char print_out_string[6];
-my_utoa(radix, Hex, print_out_string, 'Z'); sendString_V(print_out_string);sendString(" ");}//include leading zeros
+//void sendHex(char radix, unsigned int Hex){ char print_out_string[6];
+//my_utoa(radix, Hex, print_out_string, 'Z'); sendString_V(print_out_string);sendString(" ");}//include leading zeros
 
 
 
@@ -110,7 +110,7 @@ UCSR0C =  (1 << UCSZ00)| (1 << UCSZ01);}
 
 
 /*******************************************************************************************/
-void my_utoa(char radix, unsigned int n, char s[], char mode){
+/*void my_utoa(char radix, unsigned int n, char s[], char mode){
 unsigned char i,sl,j,c;
 i=0; sl=0;
 do{sl++;
@@ -124,7 +124,7 @@ s[i] = '\0';
 for(i=0, j=sl-1; i<j; i++,j--){
 c=s[i];  s[i] = s[j];  s[j] = c;}}
 
-
+*/
 
 
 /*********************************************************************/
@@ -173,7 +173,7 @@ for(int m = n; m; m--)sendChar(*(s + m-1));}
 
 
 
-
+/*
 void sendsignedHex (int Hex){
 char print_out_string[6];
 char sign_char = '+';
@@ -183,7 +183,7 @@ if (sign_char == '-')
 {sendChar('-'); NumericString_to_PC(print_out_string);sendString("  ");}
 else {sendChar(' '); NumericString_to_PC(print_out_string);sendString("  ");}}
 
-
+*/
 
 
 
