@@ -123,26 +123,14 @@ sendString("\r\nNew OSCCAL value ");
 Num_to_PC(10,OSCCAL_WV);
 
 newline();
-//timer_T0_sub(T0_delay_20ms);
 
 error_percent = compute_error_UNO(0,2,1)*100/32768;
 if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
  else 
- { sendString("\r\nError = ");Num_to_PC(10,error_percent);
+ { sendString("\r\nError = "); Num_to_PC(10,error_percent);
   sendString("%\r\n");}
 
-
-OSCCAL += 4;
-error_up = compute_error_UNO(0,2,1)*100/32768;
-OSCCAL -= 8;
-error_down = compute_error_UNO(0,2,1)*100/32768;
-OSCCAL += 4;
-sendString("Error at OSCCAL +/- 4:   ");
-Num_to_PC(10,error_up);sendString("%\t");;
-Num_to_PC(10,error_down);sendString("%\r\n\r\n");;
-
-/*
-sendString("-x- to check cal or AOK to escape\r\n\r\n");
+sendString("-x- to check cal (15 Sec pause) or AOK to escape\r\n\r\n");
 if (waitforkeypress() == 'x')
 
 {timer_T0_sub(T0_delay_20ms);
@@ -162,7 +150,7 @@ osccal_MIN = OSCCAL;                                          //Compute cal erro
     timer_T0_sub(T0_delay_20ms);
     timer_T0_sub(T0_delay_20ms);
   timer_T0_sub(T0_delay_20ms);}}
-*/
+
   
 eeprom_write_byte((uint8_t*)(0x1FC),0xFF);}
 
