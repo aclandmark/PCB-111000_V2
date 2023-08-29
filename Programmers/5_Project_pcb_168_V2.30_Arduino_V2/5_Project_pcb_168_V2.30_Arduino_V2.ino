@@ -64,9 +64,12 @@ To run bootloader acquire the standard user prompt "P   P   P........"
 switch the DPDT to the right and press the reset switch.
 
 */
+unsigned char osccal_MIN;
+long  percentage_error;
 
-
-
+#define T0_delay_5ms 5,220
+#define T0_delay_20ms 5,100
+void Timer_T0_sub(char, unsigned char);
 
 
 #include <avr/io.h>
@@ -115,23 +118,69 @@ if(!(eeprom_read_byte((uint8_t*)(0x1FC))))                      //Cleared by 8_U
 save_cal_values(OSCCAL_WV); 
 
 sendString("\r\nDefault OSCCAL value ");
-sendHex(10,OSCCAL_DV);
-
+///////////sendHex(10,OSCCAL_DV);
+Num_to_PC(10,OSCCAL_DV);
 sendString("\r\nNew OSCCAL value ");
-sendHex(10,OSCCAL_WV);
+//sendHex(10,OSCCAL_WV);
+Num_to_PC(10,OSCCAL_WV);
 
+newline();
+//timer_T0_sub(T0_delay_20ms);
 
-sei();
-//_delay_ms(10);
-//OSCCAL -= 4;
 error_percent = compute_error_UNO(0,2,1)*100/32768;
-//OSCCAL += 4; 
+if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
+ else 
+ { sendString("\r\nError = ");Num_to_PC(10,error_percent);
+  sendString("%\r\n");}
+
+
+OSCCAL += 5;
+error_up = compute_error_UNO(0,2,1)*100/32768;
+OSCCAL -= 10;
+error_down = compute_error_UNO(0,2,1)*100/32768;
+OSCCAL += 5;
+sendString("Error at OSCCAL +/- 5:   ");
+Num_to_PC(10,error_up);sendString("%\t");;
+Num_to_PC(10,error_down);sendString("%\r\n\r\n");;
+
+/*
+timer_T0_sub(T0_delay_20ms);
+OSCCAL -= 20;
+osccal_MIN = OSCCAL;                                          //Compute cal error for 41 values of OSCCAL
+  for(int m = 0; m <= 40; m++)
+  {cal_error = compute_error_UNO(1,2,1);OSCCAL++;}
+  OSCCAL = OSCCAL_WV;                                           //Restore working value of OSCCAL
+  
+ for(int m = 0; m <= 40; m++)                                    //Print table of values
+  {Num_to_PC(10,osccal_MIN); osccal_MIN++;
+    sendChar('\t');Num_to_PC(10,buffer[m]);
+    sendChar('\t');
+    percentage_error = buffer[m];
+    Num_to_PC(10,percentage_error*100/32768);sendChar('%');
+    newline();
+    timer_T0_sub(T0_delay_20ms);
+    timer_T0_sub(T0_delay_20ms);
+  timer_T0_sub(T0_delay_20ms);} */
+
+
+
+
+/*sei();
+_delay_ms(10);
+OSCCAL -= 4;
+error_percent = compute_error_UNO(0,2,1)*100/32768;
+OSCCAL += 4; 
 
  if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
  else 
  { if (error_percent < 0) {sendChar('A');sign = '-';error_percent *= -1;} else sign = '+';
- sendString("\r\nError = ");sendChar (sign); sendHex(10,error_percent);
-  sendString("%\r\n");}
+ sendString("\r\nError = ");sendChar (sign); ///////sendHex(10,error_percent);
+ Num_to_PC(10,error_percent);
+  sendString("%\r\n");}*/
+
+
+
+
   
 eeprom_write_byte((uint8_t*)(0x1FC),0xFF);}
 
@@ -164,8 +213,9 @@ cal_error = (cal_error << 8) + receive_byte_with_Nack();
 clear_I2C_interrupt;
 
 Text_target_cal; sendString("  ");
-sendHex(10, OSCCAL_WV);sendChar('\t');
-sendString("error ");sendHex(10, cal_error);                //Print out cal data 
+/////////////////sendHex(10, OSCCAL_WV);
+sendChar('\t');
+sendString("error ");//////////sendHex(10, cal_error);                //Print out cal data 
 if (cal_error < 1000)sendString(" OK\r\n");
  wdt_enable(WDTO_60MS); while(1);}                        //SW reset and jump straight to user prompt P       
 
@@ -267,14 +317,14 @@ newline();
 sendString (Version);newline();                               //Print out version and config bytes
 Text_Config;
 
-sendHex(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));
-sendHex(16, (byte)Atmel_config(read_fuse_bits_H_h,0));  
-sendHex(16, (byte)Atmel_config(read_fuse_bits_h, 0));
-sendHex(16, (byte)Atmel_config(read_lock_bits_h, 0));
+////////sendHex(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));
+////////////sendHex(16, (byte)Atmel_config(read_fuse_bits_H_h,0));  
+//////////sendHex(16, (byte)Atmel_config(read_fuse_bits_h, 0));
+////////sendHex(16, (byte)Atmel_config(read_lock_bits_h, 0));
 
 
 Text_on_chip_cal; sendString("  ");                           //Print out on-chip cal byte
-sendHex(16, OSCCAL);
+//////sendHex(16, OSCCAL);
 
 if (cal_factor==1) 
 sendString(" User cal");                                      //User cal factor
@@ -282,9 +332,14 @@ else sendString(" Default cal");                              //Default calfacto
 
 Text_File_size;
 Text_Program_Verification;                                  //Print out file sizes
-sendHex(10,cmd_counter); sendSpace();sendString("d'loaded:"); 
-sendSpace(); sendHex(10,prog_counter); sendString(" in:"); 
-sendSpace(); sendHex(10,read_ops); sendString(" out");
+////sendHex(10,cmd_counter); 
+sendSpace();sendString("d'loaded:"); 
+sendSpace(); 
+/////////sendHex(10,prog_counter); 
+sendString(" in:"); 
+sendSpace(); 
+////////sendHex(10,read_ops); 
+sendString(" out");
 newline();
 
 if(fuse_H == 0xD7){wdt_enable(WDTO_60MS); while(1);}        //No cal process: Exit immediately      
@@ -452,9 +507,6 @@ ISR (PCINT0_vect){                                               //UNO provides 
     else {TCCR1B = 0; int_counter += 1;
       error_sum = error_sum + TCNT1_sum - 32768 + TCNT1;}}
  
-
-
-
 
 
 
