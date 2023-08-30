@@ -1,30 +1,11 @@
 
-/*void new_record(void); 
-void start_new_code_block(void);
-void Program_record(void);
 
-
-void write_page_SUB(int);
-char receive_byte_with_Ack(void);
-char receive_byte_with_Nack(void);
-//void Prog_on_chip_EEPROM(void);
-void Text_to_EEPROM(int*, char);
-char Text_from_EEPROM(int*);
-void binUnwantedChars_dot (void);
-void Minimise_error(int, char*, char*, long*, char*);
-void initialise_timers_for_cal_error(void);
-void start_timers_for_cal_error(void);
-long compute_error(char, char);
-void auto_cal_168 (void);
-
-*/
 void copy_cmd_to_page_buffer(void);
 void get_next_hex_cmd(void);
 
 void binUnwantedChars_dot (void);
 void Text_to_EEPROM(int*, char);
 char Text_from_EEPROM(int*);
-//long compute_error(char, char);
 void newline(void);
 void sendSpace(void);
 void sendString(const char *);
@@ -149,9 +130,8 @@ char next_char, text,char_counter;
 int EEP_read_address=0,EEP_write_address = 0;
 
 newline();sendString ("BR 2k4 then AK");newline();						//Text_Baud_Rate_L;
-//sendString ("\r\nBR 2k4 then AK\r\n");
 
-USART_init(1,160);				//1,160								//Try (3,64) for 1.2kB
+USART_init(1,160);
 waitforkeypress();
 sendString ("Text file?");newline();									//Text_message_file;
 
@@ -193,7 +173,6 @@ binUnwantedChars_dot();}												//Send dots to pc to indicate lost character
 
 /****************Echo text file to screen with the address of each string**********************/
 
-//sendHex(16, EEP_read_address); sendChar('\t');							//Send address of first line of text
 Num_to_PC(16, EEP_read_address); sendChar('\t');							//Send address of first line of text
 
 do{char_counter = 0;													//Read back text one line at a time
@@ -202,7 +181,6 @@ while(char_counter < 150)
 char_counter += 1;
 if(text)sendChar(text); else break;} 									//When '\0' is detected start next line
 newline();
-//sendHex(16,EEP_read_address); 											//Send address of next line
 Num_to_PC(16,EEP_read_address); 										//Send address of next line
 sendChar('\t');}
 while(EEP_read_address < EEP_write_address);							//Exit when read address equals write address
@@ -236,14 +214,7 @@ while(1){if (isCharavailable(5)==1)
 
 
 
-/*************************************************************/
-
-
-
 /*****************************************************************************************************/
-
-//void auto_cal_168 (void){}
-
 void Auto_cal_168 (char direction){
   unsigned char counter_1, counter_2;
   unsigned char OSCCAL_mem = 0;
@@ -255,7 +226,7 @@ void Auto_cal_168 (char direction){
   sei();
   cal_mode = 2;
    if (!(direction))
-    {//counter_1 = 0xF1;
+    {
 	counter_1 = OSCCAL_DV + 15;
     while(1){sendChar('.');
       counter_1 -= 1;
