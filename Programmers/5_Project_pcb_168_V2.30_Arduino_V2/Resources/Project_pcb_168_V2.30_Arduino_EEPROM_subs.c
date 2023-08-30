@@ -93,13 +93,6 @@ case 'r':
 case 'R':
 newline();
 
-//if((((byte)Read_write_mem('O', 0x0, 0)) ==0xFF)  &&\
-//(((byte)Read_write_mem('O', 0x1, 0)) ==0xFF) &&\
-//(((byte)Read_write_mem('O', 0x2, 0)) ==0xFF))
-//{sendString("No Data!"); break;}										//check for unprogrammed EEPROM
-
-//Data_space = EE_top;
-
 if(((byte)Read_write_mem('O', text_start, 0)) ==0xFF){sendString("No Data!\r\n");break;}
 
 Upload_text(EE_top);	
@@ -110,23 +103,6 @@ break;
 /********************************************************************************************************************************************/
 case 'W':
 case 'w':
-	
-//Data_space = EE_top;														//Variable "EEPROM" stores highest address available for user strings and data. 
-//Read_write_mem('I', 0x3, (Data_space >> 8)); 								//Save the variable "EEPROM" at the start of the EEPROM in addresses 3 and 4. 
-//Read_write_mem('I', 0x4, (Data_space & 0x00FF));
-
-//Read_write_mem('I', 0x3, (EE_top >> 8)); 								//Save the variable "EEPROM" at the start of the EEPROM in addresses 3 and 4. 
-//Read_write_mem('I', 0x4, (EE_top & 0x00FF));
-
-//Repeat file download as many times as necessary to save text and data untill end of file reached or the EEPROM allocation is all used up.
-//This saves the need to lower the baud rate to allow time to write to EEPROM (which was considered to more awkward of the two options).
-
-//eeprom_write_byte((uint8_t*)(0), (byte)(0xFC));\
-//eeprom_write_byte((uint8_t*)(1), (byte)0x1);
-
-
-//Read_write_mem('I', 0x1, (0xF6));//////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-//Read_write_mem('I', 0x0, (0x3)); 
 
 sendString("\r\nSend text file.");
 
@@ -159,26 +135,12 @@ sendString("   AK?\r\n");	binUnwantedChars();
 Read_write_mem('I', 0x0, (EEP_pointer >> 8));  	
 Read_write_mem('I', 0x1, (EEP_pointer));
 
-//sendHex (16,((byte)Read_write_mem('O', 0x0, 0) << 8) + (byte)Read_write_mem('O', 0x1, 0));
 Num_to_PC(16,((byte)Read_write_mem('O', 0x0, 0) << 8) + (byte)Read_write_mem('O', 0x1, 0));
 
 waitforkeypress();
 Upload_text(EEP_pointer);   
  
-break;  
-
-
-
-/********************************************************************************************************************************************/
-/*case 'C':																//Check the cal bytes have not been corrupted
-case 'c':
-newline();
-{sendHex(16, Read_write_mem('O', 0x3FE, 0));
-sendChar('\t');sendHex(16, Read_write_mem('O', 0x3FF, 0));}
-break;
-
-default: break;*/
-}
+break;}
 
 wdt_enable(WDTO_60MS); while(1);}
 
@@ -400,91 +362,6 @@ while(EEP_mem_counter < EEP_pointer)
 		}
 	}newline();
 }
-
-
-
-
-/********************************************************************************************************************************************/
-/*void Upload_data(int address_first_data_item, int data_counter)
-{char output_counter=0;
-int data_item = 0 ;
-
-
-newline();
-sendHex (16, (address_first_data_item));
-	{int n=0; 
-	while((address_first_data_item+n+1) < EE_top)
-		{data_item = ((Read_write_mem('O', address_first_data_item+n, 0x0) << 8)\
-		+ Read_write_mem('O',(address_first_data_item+n+1), 0x0));
-		if((output_counter) && (!(output_counter%4)))
-			{if(output_counter==4)sendString("\tAK to continue"); 
-			waitforkeypress(); newline();
-			sendHex (16, (address_first_data_item+n));
-			}
-		sendChar('\t'); sendHex (16, data_item); 
-		sendChar ('\t'); sendsignedHex (data_item); 
-		output_counter++; n+=2; 
-		if(n>2*(data_counter-1))break; 
-		}
-	binUnwantedChars();	
-	}
-}*/
-
-
-
-/********************************************************************************************************************************************/
-/*void Upload_data_1(int address_first_data_item, int data_counter)
-{char output_counter=0;
-int data_item = 0 ;
-
-
-newline();
-sendHex (16, (address_first_data_item));
-	{int n=0; 
-	while((address_first_data_item+n+1) < EE_top)
-		{data_item = ((Read_write_mem('O', address_first_data_item+n, 0x0) << 8)\
-		+ Read_write_mem('O',(address_first_data_item+n+1), 0x0));
-		if((output_counter) && (!(output_counter%8)))
-			{if(output_counter==8)sendString("\tAK to continue"); 
-			waitforkeypress(); newline();
-			sendHex (16, (address_first_data_item+n));
-			}
-		sendChar ('\t'); sendsignedHex (data_item); 
-		output_counter++; n+=2; 
-		if(n>2*(data_counter-1))break; 
-		}
-	binUnwantedChars();
-	}
-}
-*/
-
-
-
-/********************************************************************************************************************************************/
-/*void Upload_data_2(int address_first_data_item, int data_counter)
-{char output_counter=0;
-int data_item = 0 ;
-
-
-newline();
-sendHex (16, (address_first_data_item));
-	{int n=0; 
-	while((address_first_data_item+n+1) < EE_top)
-		{data_item = ((Read_write_mem('O', address_first_data_item+n, 0x0) << 8)\
-		+ Read_write_mem('O',(address_first_data_item+n+1), 0x0));
-		if((output_counter) && (!(output_counter%8)))
-			{if(output_counter==8)sendString("\tAK to continue"); 
-			waitforkeypress(); newline();
-			sendHex (16, (address_first_data_item+n));
-			}
-		sendChar('\t'); sendHex (16, data_item); 
-		output_counter++; n+=2; 
-		if(n>2*(data_counter-1))break; 
-		}
-	binUnwantedChars();
-	}
-}
-*/
 
 
 
