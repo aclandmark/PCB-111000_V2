@@ -13,20 +13,13 @@ void Verify_Flash (void);
 
 //Prototypes required for "Project_pcb_168_V2_30B_EEPROM_subs.c"
 
-void Upload_text(int);
-char Download_text(int*,int*,char*,int*, unsigned char*);
-char next_char_from_PC(void);
-char Download_data(int*,int*, char*, int*,int*, unsigned char*);
+
 /*
-
-
 int decimal_conversion (char, int*);
 int Hex_conversion (char, int*);
-
 void Upload_data(int, int);
 void Upload_data_1(int, int);
 void Upload_data_2(int, int);
-
 int askiX4_to_hex_V2 ( char*);
 */
 //Prototypes for "Project_pcb_168_V2.30B_SW_subs"
