@@ -95,7 +95,7 @@ sendString("\r\nNew OSCCAL value ");
 Num_to_PC(10,OSCCAL_WV);
 
 newline();
-
+sei();
 error_percent = compute_error_UNO(0,2,1)*100/32768;
 if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
  else 
