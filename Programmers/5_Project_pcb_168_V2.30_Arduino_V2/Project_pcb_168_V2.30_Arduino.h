@@ -11,8 +11,6 @@ void USART_init (unsigned char, unsigned char);
 void newline(void);
 void Timer_T0_sub(char, unsigned char);
 void Timer_T0_10mS_delay_x_m(int);
-void timer_T0_sub(char, unsigned char);
-void timer_T1_sub(char, unsigned int);
 char waitforkeypress(void);
 char receiveChar(void);
 char isCharavailable (int);
@@ -31,16 +29,15 @@ void Load_page(char, int, unsigned char);
 #define disable_PCI_on_SCK_pin      PCICR &= (~(1 << PCIE0));
 #define clear_PCI_mask_on_SCK       PCMSK0 &= (~(1 << PCINT5));
 
-#define two_msec_delay              timer_T0_sub(delay_2ms);
-#define five_msec_delay             timer_T0_sub(delay_5ms);
-#define ten_msec_delay              timer_T0_sub(delay_10ms);
-#define twenty_msec_delay           timer_T0_sub(delay_20ms);
+#define two_msec_delay              Timer_T0_sub(T0_delay_2ms);
+#define five_msec_delay             Timer_T0_sub(T0_delay_5ms);
+#define ten_msec_delay              Timer_T0_sub(T0_delay_10ms);
+#define twenty_msec_delay           Timer_T0_sub(T0_delay_20ms);
 
-#define T0_delay_10ms               5,178
-#define delay_20ms                  5,100
-#define delay_10ms                  5,183
-#define delay_5ms                   5,220
-#define delay_2ms                   4,195
+#define T0_delay_20ms                  5,100
+#define T0_delay_10ms                  5,178
+#define T0_delay_5ms                   5,220
+#define T0_delay_2ms                   4,195
 
 #define                           T0_delay_5ms 5,220
 #define                           T0_delay_20ms 5,100
