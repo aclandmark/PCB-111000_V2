@@ -23,23 +23,7 @@ void Upload_data_2(int, int);
 int askiX4_to_hex_V2 ( char*);
 */
 //Prototypes for "Project_pcb_168_V2.30B_SW_subs"
-void new_record(void); 
-void start_new_code_block(void);
-void Program_record(void);
-void copy_cmd_to_page_buffer(void);
-void get_next_hex_cmd(void);
-void write_page_SUB(int);
-char receive_byte_with_Ack(void);
-char receive_byte_with_Nack(void);
-//void Prog_on_chip_EEPROM(void);
-void Text_to_EEPROM(int*, char);
-char Text_from_EEPROM(int*);
-void binUnwantedChars_dot (void);
-void Minimise_error(int, char*, char*, long*, char*);
-void initialise_timers_for_cal_error(void);
-void start_timers_for_cal_error(void);
-long compute_error(char, char);
-void auto_cal_168 (void);
+
 
 //Prototypes for "1_Basic_Timer_IO_subs"
 void newline(void);
