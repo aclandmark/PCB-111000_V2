@@ -40,30 +40,17 @@ ATMEGA 168      0x1FD:        Default OSCCAL (the value built into the HW)
           Text strings required by the family of programmers are stored in 
           addresses 0 to 0x1FB. 
 
-TARGET CHIP EEPROM reservations (ATMEGA 328)
-0x0 Top of programmed text space  MSB       
-0x1 Top of programmed text space  LSB       
-0x2 Number of programmed data items         
-0x3 Bottom of application EEPROM space  MSB
-0x4 Bottom of application EEPROM space  LSB
-Note: the ATMEGA 328 OS and 
-bootloader strings are all stored in Flash so
-it is not essential that its EEPROM be programmed
-
 NOTE One extra line:
 This Writes to the EEPROM of the target device to indicate 
 that it has just been programmed and ensure that the auto cal routine runs
 
 
-Possible Source of Trouble when programing the target EEPROM:  
-Too much space may have been reserved for Target EEPROM strings
-Search in .h file on RBL and reduce it to 127
-Search in EEPROM subs on EEPROM_buffer and reduce the array size to 128
-
 To run bootloader acquire the standard user prompt "P   P   P........" 
 switch the DPDT to the right and press the reset switch.
 
 */
+
+
 unsigned char osccal_MIN;
 long  percentage_error;
 
@@ -88,6 +75,8 @@ void Timer_T0_sub(char, unsigned char);
 #define Version "\r\nProject_pcb_168_V2.30_Arduino"
 
 volatile char T1_OVF;
+
+
 
 
 int main (void){ 
