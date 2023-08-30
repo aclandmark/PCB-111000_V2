@@ -1,7 +1,15 @@
 
+#include <avr/io.h>
+#include <stdlib.h>
+#include <avr/interrupt.h>
+#include <avr/wdt.h>
+#include <avr/eeprom.h>
+
+
 void Read_on_chip_EEPROM(int);
 void USART_init (unsigned char, unsigned char);
 void newline(void);
+void Timer_T0_sub(char, unsigned char);
 void Timer_T0_10mS_delay_x_m(int);
 void timer_T0_sub(char, unsigned char);
 void timer_T1_sub(char, unsigned int);
@@ -34,15 +42,20 @@ void Load_page(char, int, unsigned char);
 #define delay_5ms                   5,220
 #define delay_2ms                   4,195
 
+#define                           T0_delay_5ms 5,220
+#define                           T0_delay_20ms 5,100
 
-volatile int EA_counter, EA_buff_ptr;
+
+volatile int  EA_counter, EA_buff_ptr;
 volatile long error_sum;
 volatile long TCNT1_sum;
 volatile char int_counter;
 unsigned char OSCCAL_WV, OSCCAL_DV;
 unsigned char OSCCAL_UV;
-char cal_mode;
-long buffer[45];
+unsigned char osccal_MIN;
+long          percentage_error;
+char          cal_mode;
+long          buffer[45];
 
 
 #define inc_r_pointer \
@@ -93,7 +106,8 @@ int text_start, text_start_mem;								            //Controls writing user strin
 char watchdog_reset;										                  //Set to 1 when watchdog timeout occurs
 
 
-/*****************************************************************************/
+
+/***************************************************************************************************************/
 #define setup_HW \
 setup_watchdog;\
 OSCCAL_DV = OSCCAL;\
@@ -109,7 +123,7 @@ LEDs_off;
 
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define setup_watchdog \
 if (MCUSR & (1<<WDRF)) watchdog_reset = 1;\
 wdr();\
@@ -118,12 +132,12 @@ WDTCSR |= (1 <<WDCE) | (1<< WDE);\
 WDTCSR = 0;\
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define set_up_I2C TWAR = 0x02;
 
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define OSC_CAL \
 if ((eeprom_read_byte((uint8_t*)0x1FF) > 0x0F)\
 &&  (eeprom_read_byte((uint8_t*)0x1FF) < 0xF0) && (eeprom_read_byte((uint8_t*)0x1FF)\
@@ -131,7 +145,7 @@ if ((eeprom_read_byte((uint8_t*)0x1FF) > 0x0F)\
 
 
 
-/********************************************************************************************************************************/
+/***************************************************************************************************************/
 void save_cal_values(unsigned char OSCCAL_user){
 eeprom_write_byte((uint8_t*)(0x1FF), OSCCAL_user); 
 eeprom_write_byte((uint8_t*)(0x1FE), OSCCAL_user); 
@@ -139,7 +153,7 @@ eeprom_write_byte((uint8_t*)(0x1FD), OSCCAL_DV);}
 
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define set_up_I_O \
 MCUCR &= (~(1 << PUD));\
 DDRB = 0;\
@@ -152,7 +166,7 @@ PORTC &= (~(1 << PC3));
 
 
 
-/************************************************************************************************************************************/
+/***************************************************************************************************************/
 #define Initialise_variables_for_programming_flash \
 prog_counter=0;  prog_led_control = 0; cmd_counter = 0; record_length_old=0;\
 Flash_flag = 0;  HW_address = 0;  section_break = 0; orphan = 0;\
@@ -161,7 +175,7 @@ counter = 1;
 
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define Prog_enable 0xAC530000
 #define Prog_enable_h 0xAC53
 
@@ -204,7 +218,7 @@ counter = 1;
 #define Chip_erase_h 0xAC80
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define PGD_cmd_H         PORTB |= cmd_pin
 #define PGD_cmd_L         PORTB &= ~(cmd_pin)
 #define PGD_resp_H        PINB & resp_pin
@@ -216,7 +230,7 @@ counter = 1;
 #define boot_target       cmd_pin =  0x08; resp_pin = 0x10; clock_pin =  0x20; reset_pin = 0x08; DDRB |= 0x28; DDRC |= 0x08;
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define Set_LED_ports	  DDRB = (1 << DDB0) | (1 << DDB1);
 #define LEDs_on         PORTB |= (1 << PB0)|(1 << PB1);
 #define LEDs_off        PORTB &= (~((1 << PB0)|(1 << PB1)));
@@ -226,6 +240,8 @@ counter = 1;
 #define LED_2_on        PORTB |= (1 << PB0);
 
 
+
+/***************************************************************************************************************/
 #define Atmel_powerup \
 {two_msec_delay;}\
 Reset_L;\
@@ -256,7 +272,7 @@ default: newline(); sendString("TTND"); newline(); wdt_enable(WDTO_120MS);while(
 
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define Text_Atmega                   newline(); Read_on_chip_EEPROM(0x0);
 #define Text_detected                 Read_on_chip_EEPROM(0x8); newline();
 #define Text_Press_P_or_E             Read_on_chip_EEPROM(0x12);newline();
@@ -277,7 +293,7 @@ default: newline(); sendString("TTND"); newline(); wdt_enable(WDTO_120MS);while(
 
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define User_prompt \
 while(1){\
 do{sendString("R?    ");}	 while((isCharavailable(250) == 0));\
@@ -286,7 +302,7 @@ if((User_response == 'R') || (User_response == 'r'))break;} sendString("\r\n");
 
 
 
-/*****************************************************************************/
+/***************************************************************************************************************/
 #define waiting_for_I2C_master \
 TWCR = (1 << TWEA) | (1 << TWEN);\
 while (!(TWCR & (1 << TWINT)));\
@@ -298,6 +314,13 @@ TWCR = (1 << TWINT);
 
 
 
+/***************************************************************************************************************/
+#include "Resources/Project_pcb_168_V2.30_Arduino_SW_subs.c"
+#include "Resources/Project_pcb_168_V2.30_Arduino_HW_subs.c"
+#include "Resources/1_Basic_Timer_IO_subs.c"
+#include "Resources/Project_pcb_168_V2.30_Arduino_EEPROM_subs.c"
 
 
-/************************************************************************************/
+
+
+/***************************************************************************************************************/
