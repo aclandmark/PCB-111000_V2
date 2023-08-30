@@ -51,30 +51,16 @@ switch the DPDT to the right and press the reset switch.
 */
 
 
-unsigned char osccal_MIN;
-long  percentage_error;
 
-#define T0_delay_5ms 5,220
-#define T0_delay_20ms 5,100
-void Timer_T0_sub(char, unsigned char);
-
-
-#include <avr/io.h>
-#include <stdlib.h>
-#include <avr/interrupt.h>
-#include <avr/wdt.h>
-#include <avr/eeprom.h>
 
 #include "Project_pcb_168_V2.30_Arduino.h"
-#include "Resources/Project_pcb_168_V2.30_Arduino_SW_subs.c"
-#include "Resources/Project_pcb_168_V2.30_Arduino_HW_subs.c"
-#include "Resources/1_Basic_Timer_IO_subs.c"
-#include "Resources/Project_pcb_168_V2.30_Arduino_EEPROM_subs.c"
+
+
 
 #define wdr()  __asm__ __volatile__("wdr")
 #define Version "\r\nProject_pcb_168_V2.30_Arduino"
 
-volatile char T1_OVF;
+//volatile char T1_OVF;
 
 
 
