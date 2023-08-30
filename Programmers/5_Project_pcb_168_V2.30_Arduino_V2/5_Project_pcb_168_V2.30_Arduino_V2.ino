@@ -105,7 +105,7 @@ if(!(error_percent)){sendString("\r\nError less than 1%\r\n");}
 sendString("-x- to check cal (15 Sec pause) or AOK to escape\r\n\r\n");
 if (waitforkeypress() == 'x')
 
-{timer_T0_sub(T0_delay_20ms);
+{Timer_T0_sub(T0_delay_20ms);
 OSCCAL -= 20;
 osccal_MIN = OSCCAL;                                          //Compute cal error for 41 values of OSCCAL
   for(int m = 0; m <= 40; m++)
@@ -119,9 +119,9 @@ osccal_MIN = OSCCAL;                                          //Compute cal erro
     percentage_error = buffer[m];
     Num_to_PC(10,percentage_error*100/32768);sendChar('%');
     newline();
-    timer_T0_sub(T0_delay_20ms);
-    timer_T0_sub(T0_delay_20ms);
-  timer_T0_sub(T0_delay_20ms);}}
+    Timer_T0_sub(T0_delay_20ms);
+    Timer_T0_sub(T0_delay_20ms);
+  Timer_T0_sub(T0_delay_20ms);}}
 
   
 eeprom_write_byte((uint8_t*)(0x1FC),0xFF);}
