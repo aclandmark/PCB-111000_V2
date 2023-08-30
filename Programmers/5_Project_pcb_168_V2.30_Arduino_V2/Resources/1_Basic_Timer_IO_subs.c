@@ -39,13 +39,6 @@ TIFR1 |= (1<<TOV1);
 TCCR1B = 0;}
 
 
-/*******************************************************************************************/
-/*void delay_with_interrupt(char Counter_speed, unsigned char St_point){
-TIMSK0 |= (1 << TOIE0); 
-timer_T0_sub_with_interrupt(Counter_speed, St_point);
-while(!(T0_ovf_flag));T0_ovf_flag = 0;
-TIMSK0 &= (~(1 << TOIE0));}
-*/
 
 
 /*******************************************************************************************/
@@ -92,11 +85,6 @@ if(s[i] == '\0') break;
 sendChar(s[i++]);} }
 
 
-/*******************************************************************************************/
-//void sendHex(char radix, unsigned int Hex){ char print_out_string[6];
-//my_utoa(radix, Hex, print_out_string, 'Z'); sendString_V(print_out_string);sendString(" ");}//include leading zeros
-
-
 
 /*******************************************************************************************/
 void USART_init (unsigned char UBRROH_N, unsigned char UBRR0L_N ){
@@ -108,23 +96,6 @@ UCSR0A = (1 << U2X0);
 UCSR0B = (1 << RXEN0) | (1<< TXEN0);
 UCSR0C =  (1 << UCSZ00)| (1 << UCSZ01);} 
 
-
-/*******************************************************************************************/
-/*void my_utoa(char radix, unsigned int n, char s[], char mode){
-unsigned char i,sl,j,c;
-i=0; sl=0;
-do{sl++;
-s[i] = n % radix;
-if (s[i] < 10) s[i]+= '0';
-else s[i] += '7';
-i++;
-}while((n/=radix)>0);
-if ((i < 4) && (mode == 'Z')){while(i < 4) {s[i++] = '0';sl++;}}	//new line
-s[i] = '\0';
-for(i=0, j=sl-1; i<j; i++,j--){
-c=s[i];  s[i] = s[j];  s[j] = c;}}
-
-*/
 
 
 /*********************************************************************/
@@ -172,18 +143,6 @@ while (s[n] != '\0')n++;									//scroll to end of string counting the number o
 for(int m = n; m; m--)sendChar(*(s + m-1));}	
 
 
-
-/*
-void sendsignedHex (int Hex){
-char print_out_string[6];
-char sign_char = '+';
-if (Hex & 0x8000) {Hex = ~Hex + 1; sign_char = '-';}
-my_utoa(10, Hex, print_out_string, 'N'); 												//Exclude leading zeros
-if (sign_char == '-')
-{sendChar('-'); NumericString_to_PC(print_out_string);sendString("  ");}
-else {sendChar(' '); NumericString_to_PC(print_out_string);sendString("  ");}}
-
-*/
 
 
 
