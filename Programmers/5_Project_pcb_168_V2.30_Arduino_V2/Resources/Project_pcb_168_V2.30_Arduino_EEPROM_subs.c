@@ -37,7 +37,10 @@ Note the following bug:		It appears that text strings are always downloaded cons
 */
 
 
-
+void Upload_text(int);
+char Download_text(int*,int*,char*,int*, unsigned char*);
+char next_char_from_PC(void);
+char Download_data(int*,int*, char*, int*,int*, unsigned char*);
 
 
 /*void Prog_Target_EEPROM(void);
