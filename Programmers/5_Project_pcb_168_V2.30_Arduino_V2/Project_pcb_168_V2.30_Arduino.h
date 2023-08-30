@@ -124,6 +124,8 @@ LEDs_off;
 
 
 /***************************************************************************************************************/
+#define wdr()  __asm__ __volatile__("wdr")
+
 #define setup_watchdog \
 if (MCUSR & (1<<WDRF)) watchdog_reset = 1;\
 wdr();\
