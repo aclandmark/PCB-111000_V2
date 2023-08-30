@@ -57,8 +57,6 @@ switch the DPDT to the right and press the reset switch.
 
 #define Version "\r\nProject_pcb_168_V2.30_Arduino"
 
-//volatile char T1_OVF;
-
 
 
 
