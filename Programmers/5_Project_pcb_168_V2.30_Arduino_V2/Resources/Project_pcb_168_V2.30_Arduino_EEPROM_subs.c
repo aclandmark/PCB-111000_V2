@@ -306,7 +306,7 @@ return 0;
 
 
 /********************************************************************************************************************************************/
-int decimal_conversion (char data_text, int *ptr_UART_counter){
+/*int decimal_conversion (char data_text, int *ptr_UART_counter){
 int char_counter=0;
 char data_string[7], num_char;
 data_string[char_counter++] = data_text;
@@ -319,13 +319,13 @@ if (num_char == '\0') break;
 if (num_char == '\t') break;
 else data_string[char_counter++] = num_char;}
 data_string[char_counter++] = '\0';
-return my_atoi_with_sign (data_string);}
+return my_atoi_with_sign (data_string);}*/
 
 
 
 
 /********************************************************************************************************************************************/
-int Hex_conversion (char data_text, int *ptr_UART_counter){
+/*int Hex_conversion (char data_text, int *ptr_UART_counter){
 int char_counter=0;
 char data_string[7], num_char;
 while(1){
@@ -337,7 +337,7 @@ if (num_char == '\0') break;
 if (num_char == '\t') break;
 else data_string[char_counter++] = num_char;}
 data_string[char_counter++] = '\0';
-return askiX4_to_hex_V2 (data_string);}
+return askiX4_to_hex_V2 (data_string);}*/
 
 
 
