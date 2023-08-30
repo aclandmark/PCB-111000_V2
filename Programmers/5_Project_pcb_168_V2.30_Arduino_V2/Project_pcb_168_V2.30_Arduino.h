@@ -1,25 +1,34 @@
 
 //Prototypes required for "Project_pcb_168_V2.30B.c"
 
-void Auto_cal_168(char);
 void Read_on_chip_EEPROM(int);
+/*
+void Auto_cal_168(char);
+
 void Prog_Target_EEPROM(void);
 void Prog_on_chip_EEPROM(void);
 void Program_Flash (void);
 void Verify_Flash (void);
+*/
 
 //Prototypes required for "Project_pcb_168_V2_30B_EEPROM_subs.c"
+
+void Upload_text(int);
 char Download_text(int*,int*,char*,int*, unsigned char*);
+char next_char_from_PC(void);
 char Download_data(int*,int*, char*, int*,int*, unsigned char*);
+/*
+
+
 int decimal_conversion (char, int*);
 int Hex_conversion (char, int*);
-void Upload_text(int);
+
 void Upload_data(int, int);
 void Upload_data_1(int, int);
 void Upload_data_2(int, int);
-char next_char_from_PC(void);
-int askiX4_to_hex_V2 ( char*);
 
+int askiX4_to_hex_V2 ( char*);
+*/
 //Prototypes for "Project_pcb_168_V2.30B_SW_subs"
 void new_record(void); 
 void start_new_code_block(void);
