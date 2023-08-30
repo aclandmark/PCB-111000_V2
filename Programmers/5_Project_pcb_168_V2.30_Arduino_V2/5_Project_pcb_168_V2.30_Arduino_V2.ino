@@ -3,7 +3,7 @@
 /*****ATMEGA programmer V2.30B developed specially for the "Github_PCB-111000_V2" Project 
 
 
-********runs on the ATMEGA168 and programs the ATMEGA 328 with thre mini-Os plus bootloader**********
+********runs on the ATMEGA168 and programs the ATMEGA 328 with the mini-Os plus bootloader**********
 
 Note: It can also program an Atmega 168 but this is not its purpose and testing for this case has been limited
 
@@ -55,9 +55,6 @@ switch the DPDT to the right and press the reset switch.
 
 #include "Project_pcb_168_V2.30_Arduino.h"
 
-
-
-#define wdr()  __asm__ __volatile__("wdr")
 #define Version "\r\nProject_pcb_168_V2.30_Arduino"
 
 //volatile char T1_OVF;
@@ -75,6 +72,8 @@ long error_up, error_down, error_percent;
 
 cal_factor= 0;                                                  //Set to 1 by OSC_CAL if user cal is available
 setup_HW;
+
+
 
 /*************************************UNO calibrates Atmega168 if necessary*******************************************/
 
@@ -134,8 +133,9 @@ eeprom_write_byte((uint8_t*)(0x1FC),0xFF);}
 /*************Program Entry point when Atmega 168 is fitted to PCB111000_V2************************************/
 
 if (watchdog_reset == 1)watchdog_reset = 0;             //Set to 1 after mini-OS device has been calibrated
-
 else
+
+
 
 /********************************Read Atmega 328 (mini-OS device) calibration**************************************/
 
@@ -354,52 +354,52 @@ w_pointer = w_pointer & 0b00011111; }                       //Overwrites array a
 /***************************************************************************************************************************************************/
 void Program_Flash (void){
 
-new_record();                         //Start reading first record which is being downloaded to array "store" 
-start_new_code_block();                   //Initialise new programming block (usually starts at address zero but not exclusivle so)
-Program_record();                     //Coppy commands from array "store" to the page_buffer                            
+new_record();                                           //Start reading first record which is being downloaded to array "store" 
+start_new_code_block();                                 //Initialise new programming block (usually starts at address zero but not exclusivle so)
+Program_record();                                       //Coppy commands from array "store" to the page_buffer                            
       
     
 while(1){   
-new_record();                       //Continue reading subsequent records
-if (record_length==0)break;                 //Escape when end of hex file is reached
+new_record();                                           //Continue reading subsequent records
+if (record_length==0)break;                             //Escape when end of hex file is reached
 
 
-if (Hex_address == HW_address){               //Normal code: Address read from hex file equals HW address and lines contains 8 commands
+if (Hex_address == HW_address){                         //Normal code: Address read from hex file equals HW address and lines contains 8 commands
 switch(short_record){
 case 0: if (space_on_page == (PageSZ - line_offset))    //If starting new page
-      {page_address = (Hex_address & PAmask);}    //get new page address
+      {page_address = (Hex_address & PAmask);}          //get new page address
       break;
 
-case 1: start_new_code_block();               //Short line with no break in file (often found in WinAVR hex files).
+case 1: start_new_code_block();                         //Short line with no break in file (often found in WinAVR hex files).
     short_record=0;break;}}
     
     
-if(Hex_address != HW_address){                //Break in file
-  if (section_break){                   //Section break: always found when two hex files are combined into one                    
+if(Hex_address != HW_address){                          //Break in file
+  if (section_break){                                   //Section break: always found when two hex files are combined into one                    
     if((Flash_flag) && (!(orphan)))
-    {write_page_SUB(page_address);}           //Burn contents of the partially full page buffer to flash
+    {write_page_SUB(page_address);}                     //Burn contents of the partially full page buffer to flash
     if(orphan) 
-    write_page_SUB(page_address + PageSZ);}       //Burn outstanding commands to the next page in flash     
+    write_page_SUB(page_address + PageSZ);}             //Burn outstanding commands to the next page in flash     
     
-  if(page_break)                      //In practice page breaks and short jumps are rarely if ever found                      
-    {if((Flash_flag) && (!(orphan)))          //Burn contents of the partially filled page buffer to flash
+  if(page_break)                                        //In practice page breaks and short jumps are rarely if ever found                      
+    {if((Flash_flag) && (!(orphan)))                    //Burn contents of the partially filled page buffer to flash
     {write_page_SUB(page_address);}                           
     orphan = 0;}
     
-  start_new_code_block();                 //A new code block is always required where there is a break in the hex file.
+  start_new_code_block();                               //A new code block is always required where there is a break in the hex file.
   short_record=0;}
     
-Program_record();}                      //Continue filling page_buffer
+Program_record();}                                      //Continue filling page_buffer
     
 
 cli();  
-UCSR0B &= (~(1<<RXCIE0));                 //download complete, disable UART Rx interrupt
+UCSR0B &= (~(1<<RXCIE0));                             //download complete, disable UART Rx interrupt
 LEDs_off;       
 while(1){if (isCharavailable(1)==1)receiveChar();
-    else break;}                    //Clear last few characters of hex file
+    else break;}                                      //Clear last few characters of hex file
   
 if((Flash_flag) && (!(orphan)))
-{write_page_SUB(page_address);}               //Burn final contents of page_buffer to flash
+{write_page_SUB(page_address);}                       //Burn final contents of page_buffer to flash
 if(orphan) {write_page_SUB(page_address + PageSZ);}}
 
 
