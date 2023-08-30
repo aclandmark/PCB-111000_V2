@@ -1,5 +1,12 @@
 
 
+#define PGClock_L  
+#define PGClock_H  Clock_period();
+
+void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
+
+
+
 char Atmel_config ( unsigned int Atmelcmd_h, unsigned int Atmelcmd_l){
 char Echo =0;
 unsigned long cmd;
