@@ -43,18 +43,6 @@ char next_char_from_PC(void);
 char Download_data(int*,int*, char*, int*,int*, unsigned char*);
 
 
-/*void Prog_Target_EEPROM(void);
-char Download_text(int *,int *,char *,int *,  unsigned char *);
-char Download_data(int *,int *,char *,int *,int *, unsigned char*);
-int decimal_conversion (char, int*);
-int Hex_conversion (char, int*);
-void Upload_text(int);
-void Upload_data(int, int);
-void Upload_data_1(int, int);
-void Upload_data_2(int, int);
-char next_char_from_PC(void);
-int askiX4_to_hex_V2 ( char*);*/
-
 
 /*******************************************************************************************/
 void Read_on_chip_EEPROM(int EEPROM_address){
@@ -76,7 +64,6 @@ int EEP_pointer = 0,   file_pointer = 0,  array_pointer = 0,  data_counter = 0;
 char key_press, DL_flag = 0, DL_status, op_code_1, op_code_2;	    
 char reservation[4];
 int App_reservation;
-//int test;
 
 
 EEP_pointer = text_start;												//Start saving user strings/data at address 0x05
@@ -304,49 +291,6 @@ return 0;
 
 
 
-
-
-
-
-/********************************************************************************************************************************************/
-/*int decimal_conversion (char data_text, int *ptr_UART_counter){
-int char_counter=0;
-char data_string[7], num_char;
-data_string[char_counter++] = data_text;
-while(1){
-num_char = next_char_from_PC(); (*ptr_UART_counter)++;
-if (num_char == ' ') break;
-if (num_char == '\r') break;
-if (num_char == '\n') break;
-if (num_char == '\0') break;
-if (num_char == '\t') break;
-else data_string[char_counter++] = num_char;}
-data_string[char_counter++] = '\0';
-return my_atoi_with_sign (data_string);}*/
-
-
-
-
-/********************************************************************************************************************************************/
-/*int Hex_conversion (char data_text, int *ptr_UART_counter){
-int char_counter=0;
-char data_string[7], num_char;
-while(1){
-num_char = next_char_from_PC(); (*ptr_UART_counter)++;
-if (num_char == ' ') break;
-if (num_char == '\r') break;
-if (num_char == '\n') break;
-if (num_char == '\0') break;
-if (num_char == '\t') break;
-else data_string[char_counter++] = num_char;}
-data_string[char_counter++] = '\0';
-return askiX4_to_hex_V2 (data_string);}*/
-
-
-
-
-
-
 /********************************************************************************************************************************************/
 void Upload_text(int EEP_pointer)
 {char string_char;
@@ -355,13 +299,12 @@ int EEP_mem_counter = 0;
 EEP_mem_counter = text_start;
 while(EEP_mem_counter < EEP_pointer)
 	{newline();
-	//sendHex (16, EEP_mem_counter); 
-	Num_to_PC(16, EEP_mem_counter); 
+		Num_to_PC(16, EEP_mem_counter); 
 	sendString ("    ");
 	while(1)
 		{string_char = Read_write_mem('O',(EEP_mem_counter++),0);
 		if(string_char == '\0') break;
-		sendChar(string_char); five_msec_delay;//timer_T0_sub(T0_delay_5ms);
+		sendChar(string_char); five_msec_delay;
 		}
 	}newline();
 }
@@ -382,14 +325,4 @@ return UDR0;}
 
 
 
-/*
 
-int askiX4_to_hex_V2 ( char a[])														//convert askii to binary integer																			
-{int m, n;  unsigned int hex;
-hex=0;n=3;
-for(m=0; m<=3; m++){ 
-if (a[m]=='\0') {  hex = hex >> (4*(n+1)); return hex;}
-if(non_numeric_char(a[m])) return 0;
-a[m] = a[m] - '0'; if (a[m] >=17)a[m] = a[m]-7;
-hex = hex + (a[m] << (4*n)); n--;}
-return hex;}*/
