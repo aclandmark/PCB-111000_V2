@@ -1,4 +1,26 @@
 
+/*void new_record(void); 
+void start_new_code_block(void);
+void Program_record(void);
+
+
+void write_page_SUB(int);
+char receive_byte_with_Ack(void);
+char receive_byte_with_Nack(void);
+//void Prog_on_chip_EEPROM(void);
+void Text_to_EEPROM(int*, char);
+char Text_from_EEPROM(int*);
+void binUnwantedChars_dot (void);
+void Minimise_error(int, char*, char*, long*, char*);
+void initialise_timers_for_cal_error(void);
+void start_timers_for_cal_error(void);
+long compute_error(char, char);
+void auto_cal_168 (void);
+
+*/
+void copy_cmd_to_page_buffer(void);
+void get_next_hex_cmd(void);
+
 void binUnwantedChars_dot (void);
 void Text_to_EEPROM(int*, char);
 char Text_from_EEPROM(int*);
