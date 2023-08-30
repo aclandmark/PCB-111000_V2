@@ -185,8 +185,7 @@ clear_I2C_interrupt;
 Text_target_cal; sendString("  ");
 Num_to_PC(10, OSCCAL_WV);
 sendChar('\t');
-sendString("error ");//Num_to_PC(10, cal_error);                //Print out cal data 
-//if (cal_error < 1000)sendString(" OK\r\n");
+sendString("error "); 
  
  cal_error = cal_error/625;
  if(!(cal_error))sendString("less than 1%\r\n\r\n");
@@ -297,21 +296,6 @@ Num_to_PC(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));sendString("  ")
 Num_to_PC(16, (byte)Atmel_config(read_fuse_bits_H_h,0));  sendString("  ");
 Num_to_PC(16, (byte)Atmel_config(read_fuse_bits_h, 0));sendString("  ");
 Num_to_PC(16, (byte)Atmel_config(read_lock_bits_h, 0));newline();
-
-/*
-sendHex(16, (byte)Atmel_config(read_extended_fuse_bits_h, 0));
-sendHex(16, (byte)Atmel_config(read_fuse_bits_H_h,0));
-sendHex(16, (byte)Atmel_config(read_fuse_bits_h, 0));
-sendHex(16, (byte)Atmel_config(read_lock_bits_h, 0));newline();
-*/
-
-
-//Text_on_chip_cal; sendString("  ");                           //Print out on-chip cal byte
-//Num_to_PC(16, OSCCAL);
-
-//if (cal_factor==1) 
-//sendString(" User cal");                                      //User cal factor
-//else sendString(" Default cal");                              //Default calfactor
 
 Text_File_size;
 Text_Program_Verification;                                  //Print out file sizes
