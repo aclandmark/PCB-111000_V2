@@ -1,72 +1,39 @@
 
-//Prototypes required for "Project_pcb_168_V2.30B.c"
-
 void Read_on_chip_EEPROM(int);
-/*
-void Auto_cal_168(char);
-
-void Prog_Target_EEPROM(void);
-void Prog_on_chip_EEPROM(void);
-void Program_Flash (void);
-void Verify_Flash (void);
-*/
-
-//Prototypes required for "Project_pcb_168_V2_30B_EEPROM_subs.c"
-
-
-/*
-int decimal_conversion (char, int*);
-int Hex_conversion (char, int*);
-void Upload_data(int, int);
-void Upload_data_1(int, int);
-void Upload_data_2(int, int);
-int askiX4_to_hex_V2 ( char*);
-*/
-//Prototypes for "Project_pcb_168_V2.30B_SW_subs"
-
-
-//Prototypes for "1_Basic_Timer_IO_subs"
+void USART_init (unsigned char, unsigned char);
 void newline(void);
-void sendSpace(void);
 void Timer_T0_10mS_delay_x_m(int);
 void timer_T0_sub(char, unsigned char);
-void timer_T0_sub_with_interrupt(char, unsigned char);
 void timer_T1_sub(char, unsigned int);
-void delay_with_interrupt(char, unsigned char);
 char waitforkeypress(void);
 char receiveChar(void);
 char isCharavailable (int);
 void binUnwantedChars (void);
 void sendChar(char);
 void sendString(char*);
-void sendHex(char, unsigned int);
-void sendCharasASKI(char, unsigned char);
-void USART_init (unsigned char, unsigned char);
-void my_utoa(char, unsigned int, char*, char);
-void my_chartoa(char, unsigned char, char*);
-int askiX2_to_hex (char*);
-char non_numeric_char (char);
-void sendsignedHex (int);
-char Rx_data(void);
-int askiX4_to_hex (char*);
-int my_atoi_with_sign (char*);
-
-//Prototypes for "1_ATMEGA_Programmer_V2.25_HW_subs"
-char Atmel_config ( unsigned int, unsigned int );
 char Read_write_mem(char, int, char);
 void Load_page(char, int, unsigned char);
 
-//Prototypes for "Project_pcb_168_V2.30B.h"
-void Clock_period(void);
-void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
 
+#define prescaller_setting          2
+#define RBL                         255
 
-#define prescaller_setting      2
+#define enable_PCI_on_SCK_pin       PCICR |= (1 << PCIE0);
+#define set_PCI_mask_on_SCK         PCMSK0 |= (1 << PCINT5);
+#define disable_PCI_on_SCK_pin      PCICR &= (~(1 << PCIE0));
+#define clear_PCI_mask_on_SCK       PCMSK0 &= (~(1 << PCINT5));
 
-#define enable_PCI_on_SCK_pin    PCICR |= (1 << PCIE0);
-#define set_PCI_mask_on_SCK     PCMSK0 |= (1 << PCINT5);
-#define disable_PCI_on_SCK_pin   PCICR &= (~(1 << PCIE0));
-#define clear_PCI_mask_on_SCK   PCMSK0 &= (~(1 << PCINT5));
+#define two_msec_delay              timer_T0_sub(delay_2ms);
+#define five_msec_delay             timer_T0_sub(delay_5ms);
+#define ten_msec_delay              timer_T0_sub(delay_10ms);
+#define twenty_msec_delay           timer_T0_sub(delay_20ms);
+
+#define T0_delay_10ms               5,178
+#define delay_20ms                  5,100
+#define delay_10ms                  5,183
+#define delay_5ms                   5,220
+#define delay_2ms                   4,195
+
 
 volatile int EA_counter, EA_buff_ptr;
 volatile long error_sum;
@@ -77,80 +44,53 @@ unsigned char OSCCAL_UV;
 char cal_mode;
 long buffer[45];
 
-#define Get_ready_to_calibrate \
-TIMSK2 |= (1 << TOIE2);\
-TIMSK1 |= (1 << TOIE1);\
-initialise_timers_for_cal_error();\
-start_timers_for_cal_error();
-
-#define close_calibration \
-initialise_timers_for_cal_error();\
-TIMSK2 &= (~(1 << TOIE2));\
-TIMSK1 &= (~(1 << TOIE1));
-
-
-#define two_msec_delay		timer_T0_sub(delay_2ms);
-#define five_msec_delay	timer_T0_sub(delay_5ms);
-#define ten_msec_delay		timer_T0_sub(delay_10ms);
-#define twenty_msec_delay	timer_T0_sub(delay_20ms);
-#define T0_delay_10ms 5,178
-#define T1_delay_500mS 5,0xF0BE
-
-#define PGClock_L  
-#define PGClock_H  Clock_period();
-#define delay_20ms 5,100
-#define delay_10ms 5,183
-#define delay_5ms 5,220
-#define delay_2ms 4,195
-
-#define RBL 255
 
 #define inc_r_pointer \
 r_pointer++;\
 r_pointer = r_pointer & 0b00011111;
 
 
-int  cmd_counter;											//Counts commands as they are downloaded from the PC
-int prog_counter;											//Counts commands burned to flash
-signed int  read_ops=0;										//Total number of commands read from flash
-volatile int counter;										//Counts characters in a record as they are downloded from the PC
-volatile int char_count;									//The number of askii character in a single record
-volatile unsigned char Count_down;							//Counts commands as record is programmed
-volatile int   tempInt1, tempInt2;							//Used to assemble commands and addresses as the are downloaded
-int store[35];												//Used to store commands and address ready for the programmer
-volatile unsigned char w_pointer,r_pointer;					//Read/write pointers to "store" to which hex file is saved
-unsigned int Hex_cmd;										//Command read from flash during verification
+int  cmd_counter;											                    //Counts commands as they are downloaded from the PC
+int prog_counter;											                    //Counts commands burned to flash
+signed int  read_ops=0;										                //Total number of commands read from flash
+volatile int counter;										                  //Counts characters in a record as they are downloded from the PC
+volatile int char_count;									                //The number of askii character in a single record
+volatile unsigned char Count_down;							          //Counts commands as record is programmed
+volatile int   tempInt1, tempInt2;							          //Used to assemble commands and addresses as the are downloaded
+int store[35];												                    //Used to store commands and address ready for the programmer
+volatile unsigned char w_pointer,r_pointer;					      //Read/write pointers to "store" to which hex file is saved
+unsigned int Hex_cmd;										                  //Command read from flash during verification
 
 unsigned char cmd_pin, resp_pin, clock_pin, reset_pin;		//Used to define the programming pins
 
 unsigned int target;
-int Hex_address;											//Address read from the hex file
-int HW_address;												//Hard ware address (usually tracks Hex_address)
-signed int page_address;									//Address of first location on a page of flash 
-volatile int write_address;									//Address on page_buffer to which next command will be written
-signed int FlashSZ;											//Amount of flash memory supplied on target device
-signed int PAmask;											//Used to obtain the flash page address from the hex address
-signed int PageSZ;											//Size of a page of flash
+int Hex_address;											                    //Address read from the hex file
+int HW_address;												                    //Hard ware address (usually tracks Hex_address)
+signed int page_address;									                //Address of first location on a page of flash 
+volatile int write_address;									              //Address on page_buffer to which next command will be written
+signed int FlashSZ;											                  //Amount of flash memory supplied on target device
+signed int PAmask;											                  //Used to obtain the flash page address from the hex address
+signed int PageSZ;											                  //Size of a page of flash
 
-signed char short_record;									//Record  containing less that eight 16 bit commands
-signed char page_offset;									//Address of first location on page buffer to be used
-signed char space_on_page;									//Keeps a track of the space remaining on a page buffer
-unsigned char Flash_flag;									//Indicates that the page buffer contains commands
+signed char short_record;									                //Record  containing less that eight 16 bit commands
+signed char page_offset;									                //Address of first location on page buffer to be used
+signed char space_on_page;									              //Keeps a track of the space remaining on a page buffer
+unsigned char Flash_flag;									                //Indicates that the page buffer contains commands
 
 signed char record_length;
 signed char record_length_old;
-signed char orphan;											//Indicates that the contents of a record span two flash pages
-signed char section_break;									//Set to 1 if at least one page of flash memory will be unused.
-signed char page_break;										//Page only partialy filled before programming next one starts
+signed char orphan;											                  //Indicates that the contents of a record span two flash pages
+signed char section_break;									              //Set to 1 if at least one page of flash memory will be unused.
+signed char page_break;										                //Page only partialy filled before programming next one starts
 volatile signed char line_offset;
 unsigned int prog_led_control;
 
 
-volatile char T0_ovf_flag=0;								//Used by "timer_sub_with_interrupt"
-signed int EE_top;											//Max address available for user srings
-char  cal_factor=0;											//1: Use call factor	0: default cal factor
-int text_start, text_start_mem;								//Controls writing user strings to rarget EEPROM
-char watchdog_reset;										//Set to 1 when watchdog timeout occurs
+//volatile char T0_ovf_flag=0;								              //Used by "timer_sub_with_interrupt"
+signed int EE_top;											                  //Max address available for user srings
+char  cal_factor=0;											                  //1: Use call factor	0: default cal factor
+int text_start, text_start_mem;								            //Controls writing user strings to rarget EEPROM
+char watchdog_reset;										                  //Set to 1 when watchdog timeout occurs
 
 
 /*****************************************************************************/
@@ -168,10 +108,7 @@ Set_LED_ports;\
 LEDs_off;
 
 
-//eeprom_write_byte((uint8_t*)(0), (byte)(0xFC));\
-//eeprom_write_byte((uint8_t*)(1), (byte)0x1);
 
-//while (!(PIND & (1 << PD1)));\
 /*****************************************************************************/
 #define setup_watchdog \
 if (MCUSR & (1<<WDRF)) watchdog_reset = 1;\
@@ -185,17 +122,22 @@ WDTCSR = 0;\
 #define set_up_I2C TWAR = 0x02;
 
 
+
 /*****************************************************************************/
 #define OSC_CAL \
 if ((eeprom_read_byte((uint8_t*)0x1FF) > 0x0F)\
 &&  (eeprom_read_byte((uint8_t*)0x1FF) < 0xF0) && (eeprom_read_byte((uint8_t*)0x1FF)\
 == eeprom_read_byte((uint8_t*)0x1FE))) {OSCCAL = eeprom_read_byte((uint8_t*)0x1FF);cal_factor=1;}
 
+
+
 /********************************************************************************************************************************/
 void save_cal_values(unsigned char OSCCAL_user){
 eeprom_write_byte((uint8_t*)(0x1FF), OSCCAL_user); 
 eeprom_write_byte((uint8_t*)(0x1FE), OSCCAL_user); 
 eeprom_write_byte((uint8_t*)(0x1FD), OSCCAL_DV);}
+
+
 
 /*****************************************************************************/
 #define set_up_I_O \
@@ -284,9 +226,6 @@ counter = 1;
 #define LED_2_on        PORTB |= (1 << PB0);
 
 
-
-/**********HW V 1.3 Define target Pin & CA LED definitions STOP******************************/
-
 #define Atmel_powerup \
 {two_msec_delay;}\
 Reset_L;\
@@ -318,35 +257,21 @@ default: newline(); sendString("TTND"); newline(); wdt_enable(WDTO_120MS);while(
 
 
 /*****************************************************************************/
-#define Print_hex_file \
-if((((Hex_cmd>>8)<0x20)||((Hex_cmd>>8)>0x7E))&&(((Hex_cmd & 0x00FF)<0x20)||((Hex_cmd & 0x00FF)>0x7E)))sendHex(16, Hex_cmd);\
-else{if(((Hex_cmd>>8)>=0x20) && ((Hex_cmd>>8)<=0x7E) && ((Hex_cmd & 0x00FF)>=0x20) && ((Hex_cmd & 0x00FF)<=0x7E))\
-{sendChar(Hex_cmd>>8); sendChar(Hex_cmd & 0x00FF);}\
-else { if(((Hex_cmd>>8)>=0x20) && ((Hex_cmd>>8)<=0x7E)){sendChar(Hex_cmd>>8); sendCharasASKI(16, (Hex_cmd & 0x00FF));}\
-if(((Hex_cmd & 0x00FF)>=0x20) && ((Hex_cmd & 0x00FF)<=0x7E)){sendCharasASKI(16, (Hex_cmd>>8)); sendChar(Hex_cmd & 0x00FF);}}}
+#define Text_Atmega                   newline(); Read_on_chip_EEPROM(0x0);
+#define Text_detected                 Read_on_chip_EEPROM(0x8); newline();
+#define Text_Press_P_or_E             Read_on_chip_EEPROM(0x12);newline();
+#define Text_Send_HexF                newline(); Read_on_chip_EEPROM(0x5D); newline();
+#define Text_EEP_reset                Read_on_chip_EEPROM(0x7E); newline();
+#define Text_10_sec_wait              Read_on_chip_EEPROM(0x98);
 
+#define Text_Config                   Read_on_chip_EEPROM(0xA4); newline();
+#define Text_on_chip_cal              Read_on_chip_EEPROM(0xD5);
+#define Text_File_size                newline(); Read_on_chip_EEPROM(0xE6);
+#define Text_Auto_cal                 Read_on_chip_EEPROM(0xF6); newline();
+#define Text_target_cal               newline();Read_on_chip_EEPROM(0x130);
+#define Text__Press_W_or_R            newline(); Read_on_chip_EEPROM(0x149);
 
-
-/*****************************************************************************/
-#define Text_Atmega         newline(); Read_on_chip_EEPROM(0x0);
-#define Text_detected       Read_on_chip_EEPROM(0x8); newline();
-#define Text_Press_P_or_E   Read_on_chip_EEPROM(0x12);newline();
-#define Text_Send_HexF      newline(); Read_on_chip_EEPROM(0x5D); newline();
-#define Text_EEP_reset      Read_on_chip_EEPROM(0x7E); newline();
-#define Text_10_sec_wait    Read_on_chip_EEPROM(0x98);
-
-#define Text_Config           Read_on_chip_EEPROM(0xA4); newline();
-#define Text_on_chip_cal      Read_on_chip_EEPROM(0xD5);
-#define Text_File_size        newline(); Read_on_chip_EEPROM(0xE6);
-#define Text_Auto_cal         Read_on_chip_EEPROM(0xF6); newline();
-#define Text_target_cal       newline();Read_on_chip_EEPROM(0x130);
-#define Text__Press_W_or_R    newline(); Read_on_chip_EEPROM(0x149);
-
-//#define Text_0-0xFF                   Read_on_chip_EEPROM(0x17A);
-//#define Text_Send_TF                  Read_on_chip_EEPROM(0x189);
 #define Text_Program_Verification     newline(); Read_on_chip_EEPROM(0x199);
-//#define Text_Baud_Rate_L; newline(); Read_on_chip_EEPROM(0x199); newline();
-//#define Text_message_file; Read_on_chip_EEPROM(0x1BD); newline();
 #define Text_Baud_Rate_H              newline(); Read_on_chip_EEPROM(0x1CA); newline();
 
 
@@ -370,3 +295,9 @@ TWDR;
 
 #define clear_I2C_interrupt \
 TWCR = (1 << TWINT);
+
+
+
+
+
+/************************************************************************************/
