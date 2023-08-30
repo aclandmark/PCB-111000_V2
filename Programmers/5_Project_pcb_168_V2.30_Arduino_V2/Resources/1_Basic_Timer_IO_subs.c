@@ -16,11 +16,11 @@ void sendSpace(void){sendString ("  ");}
 	
 /*******************************************************************************************/
 void Timer_T0_10mS_delay_x_m(int m)
-{for (int n = 0; n < m; n++){timer_T0_sub(T0_delay_10ms);}}
+{for (int n = 0; n < m; n++){Timer_T0_sub(T0_delay_10ms);}}
 
 
 /*******************************************************************************************/
-void timer_T0_sub(char Counter_speed, unsigned char Start_point){ 
+void Timer_T0_sub(char Counter_speed, unsigned char Start_point){ 
 TCNT0 = Start_point;
 TCCR0B = Counter_speed;
 while(!(TIFR0 & (1<<TOV0)));
