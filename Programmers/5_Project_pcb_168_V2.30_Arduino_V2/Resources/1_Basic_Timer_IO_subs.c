@@ -1,5 +1,11 @@
 
 
+
+
+
+
+
+
 void SBtoAL(char*, long, char);
 void NumericString_to_PC(char*);
 
@@ -22,10 +28,10 @@ TIFR0 |= (1<<TOV0); TCCR0B = 0;}
 
 
 /*******************************************************************************************/
-void timer_T0_sub_with_interrupt(char Counter_speed, unsigned char St_point){ 
+/*void timer_T0_sub_with_interrupt(char Counter_speed, unsigned char St_point){ 
 TCNT0 = St_point;
 TCCR0B = Counter_speed;}
-ISR(TIMER0_OVF_vect) {T0_ovf_flag = 1; TCCR0B = 0; }
+ISR(TIMER0_OVF_vect) {T0_ovf_flag = 1; TCCR0B = 0; }*/
 
 
 /*******************************************************************************************/
