@@ -368,6 +368,8 @@ while(EEP_mem_counter < EEP_pointer)
 
 
 /********************************************************************************************************************************************/
+
+
 char next_char_from_PC(void){
 unsigned int n = 0;
 while (!(UCSR0A & (1 << RXC0))){n++;
@@ -377,7 +379,7 @@ return UDR0;}
 
 
 
-
+/*
 
 int askiX4_to_hex_V2 ( char a[])														//convert askii to binary integer																			
 {int m, n;  unsigned int hex;
@@ -387,4 +389,4 @@ if (a[m]=='\0') {  hex = hex >> (4*(n+1)); return hex;}
 if(non_numeric_char(a[m])) return 0;
 a[m] = a[m] - '0'; if (a[m] >=17)a[m] = a[m]-7;
 hex = hex + (a[m] << (4*n)); n--;}
-return hex;}
+return hex;}*/
