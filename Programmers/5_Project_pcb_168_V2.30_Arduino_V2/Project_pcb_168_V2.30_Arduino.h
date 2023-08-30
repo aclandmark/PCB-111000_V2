@@ -99,7 +99,6 @@ volatile signed char line_offset;
 unsigned int prog_led_control;
 
 
-//volatile char T0_ovf_flag=0;								              //Used by "timer_sub_with_interrupt"
 signed int EE_top;											                  //Max address available for user srings
 char  cal_factor=0;											                  //1: Use call factor	0: default cal factor
 int text_start, text_start_mem;								            //Controls writing user strings to rarget EEPROM
