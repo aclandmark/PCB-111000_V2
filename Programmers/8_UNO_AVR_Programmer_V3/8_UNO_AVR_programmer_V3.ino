@@ -1,6 +1,7 @@
 
 /*
-8_UNO_AVR_programmer_V3
+
+UNO sketch 8_UNO_AVR_programmer_V3
 
 This sketch is used to help setup a PCB-111000_V2
 It programs an Atmega 168 with  "5_Project_pcb_168_V2.30_Arduino_V2".
