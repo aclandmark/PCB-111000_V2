@@ -1,5 +1,43 @@
 
 /*
+8_UNO_AVR_programmer_V3
+
+This sketch is used to help setup a PCB-111000_V2
+It programs an Atmega 168 with  "5_Project_pcb_168_V2.30_Arduino_V2".
+The Atmega 168 is then soldered onto a PCB-111000_V2 board along with all the other components except the displays.
+It is then used to program the Atmega 328 with the the mini-OS and "Hello World" strings.
+
+Step 1
+Connect a UNO to a PC and upload sketch "8_UNO_AVR_programmer_V3"
+
+Step 2
+Connect the UNO to an Atmega 168 as follows using prototype pcb
+
+ UNO                    Atmega 168
+D0 (RX)                  Pin 2
+D1 (Tx)                  Pin 3
+11                       Pin 17
+12                       Pin 18
+13                       Pin 19
+A3                        Pin 1
+GND                       Pins 8 & 22
++5V                       Pins 7 & 20
+Optioal LED + resistor from pin 8 to GND of the UNO 
+
+
+Step 3 Program the Atmega 168
+
+Reconnect the UNO to a PC with the Br@y++ terminal program open and set to 38400Baud plus default settings
+Press -s- at the "s  s  s  s  s....." prompt to get
+"Atmega 168 detected.
+Press -p- to program flash, -r- to run target, -d- to clear the target EEPROM or -x- to escape."
+
+Press-p- and send "5_Project_pcb_168_V2.30_Arduino_V2.ino.eightanaloginputs"
+Follow instructions to calibrate the Atmega 168
+
+At "P/S  P/S  P/S......" prompt press -s- and send the "on-chip_strings" file
+
+The Atmega 168 can now be soldered onto the PCB-111000_V2 pcb
 
 */
 
