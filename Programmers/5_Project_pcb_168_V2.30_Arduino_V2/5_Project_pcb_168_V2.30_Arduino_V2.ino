@@ -3,8 +3,12 @@
 /*****ATMEGA programmer "5_Project_pcb_168_V2.30_Arduino_V2" developed specially for the "Github_PCB-111000_V2" Project 
 
 
-********Runs on the ATMEGA168 and 
-********programs the ATMEGA 328 EEPROM with the "Hello World" text file and 
+*******Runs on the Atmega 168
+*******See also "8_UNO_AVR_Programmer_V3" which programs the Atmega 168 
+
+
+********The Atmega 168 is the used to 
+********program the ATMEGA 328 EEPROM with the "Hello World" text file and 
 ********flash with the mini-Os plus pcb-bootloader**********
 
 Push the DPDT switch left and get the "P/S   P/S   P/S........" user prompt on the Br@y++ terminal program set to 57600Baud
