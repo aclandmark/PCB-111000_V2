@@ -1,53 +1,42 @@
 
 
-/*****ATMEGA programmer V2.30B developed specially for the "Github_PCB-111000_V2" Project 
+/*****ATMEGA programmer "5_Project_pcb_168_V2.30_Arduino_V2" developed specially for the "Github_PCB-111000_V2" Project 
 
 
-********runs on the ATMEGA168 and programs the ATMEGA 328 with the mini-Os plus bootloader**********
+********Runs on the ATMEGA168 and 
+********programs the ATMEGA 328 EEPROM with the "Hello World" text file and 
+********flash with the mini-Os plus pcb-bootloader**********
 
-Note: It can also program an Atmega 168 but this is not its purpose and testing for this case has been limited
+Push the DPDT switch left and get the "P/S   P/S   P/S........" user prompt on the Br@y++ terminal program set to 57600Baud
 
-
-The first time the program is allowed to run press -S- at the standard user prompt "P   P   P........"
-This enables the remaining user prompts which are saved in a text file to be copied to the on-chip EEPROM
-
-Having programed the on-chip EEPROM the standard user prompt is rienstated 
   Press "V" to retrieve version details
-  Press P to program the mini-OS+bootloader FW for which the reset vector is 0x7000
-  or press X to program single applications for which the reset vectors are zero
-  
-Mesage "ATMEGA328  detected." is displayed and the user prompt changes to "P/E/X    P/E/X....."
+  Press P to program the mini-OS+pcb-bootloader or EEEPROM
 
-  If programming the EEPROM press 
-  "E" or "e" to program addresses 5 to 0x3F5 if the target is an Atmega 328
-  addresses 5 to 0x1FB if the target is an Atmega 168
-  
-  Press "D" to delete user space in the target EEPROM
-  Press "d" to delete user space in the on-chip EEPROM
-  
-  Press "X" to revert to the standard prompt
+  Press -p- again and send the mini-OS parts 1 and 2 followed by the bootloader
+  Follow instruction to calibrate the Atmega 328
 
-  Press "P" to program the target
+  When the "P/S   P/S   P/S........" user prompt is restoted press -p- then -e-
+  and send the "Hello World" text file.
 
-Having programmed a target device power cycle when requested and user prompt "R   R   R........" will be generated
-press R to run the mini-OS auto cal routine
-
-
-ON_CHIP EEPROM:   0x1FF and 0x1FE:  User cal bytes 
-ATMEGA 168      0x1FD:        Default OSCCAL (the value built into the HW) 
-          0x1FC       Set to 1 when used to program a target device, otherwise 0xFF
-          
-          Text strings required by the family of programmers are stored in 
-          addresses 0 to 0x1FB. 
-
-NOTE One extra line:
-This Writes to the EEPROM of the target device to indicate 
-that it has just been programmed and ensure that the auto cal routine runs
-
-
-To run bootloader acquire the standard user prompt "P   P   P........" 
+  To run bootloader acquire the standard user prompt "P/S   P/S   P/S........" 
 switch the DPDT to the right and press the reset switch.
 
+The user prompt changes to "p/r   p/r   p/r   p/r........"
+
+Press -p- and send a user project file
+Press -x- to run the file and operate the DPDT switch
+Press-3- to read the "Hello world" strings
+Press -x- to run the project
+
+To update the mini-OS
+
+At the "p/r   p/r   p/r   p/r........" prompt press -p- and send "5_Project_pcb_168_V2.30_Arduino_V2"
+Press -r- and operate the DPDT to get the "P/S   P/S   P/S......" prompt
+Press -s- to restore the on-chip strings
+Press -p- twice to update the mini-OS
+Press -p- then -e- then -r- to check the EEPROM
+
+Operate the DPDT and prress the reset switch to restore the "p/r   p/r   p/r   p/r........" prompt
 */
 
 
