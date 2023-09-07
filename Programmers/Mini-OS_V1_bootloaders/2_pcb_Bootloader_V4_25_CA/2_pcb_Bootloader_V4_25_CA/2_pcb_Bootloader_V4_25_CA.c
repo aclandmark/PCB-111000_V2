@@ -38,7 +38,8 @@ signed int  read_ops=0;
 char dummy_byte;
 
 int main (void){
-	char temp_char,cal_factor=0;
+	//char temp_char,cal_factor=0;
+	char cal_factor=0;
 	char target_detected = 0;
 
 	/*This program is loaded into the boot section starting at SW location 0x7000*/
@@ -105,7 +106,8 @@ int main (void){
 				Atmel_config(Prog_enable_h, 0);
 
 				/***Erase target flash and program target config space***/
-				temp_char = (Atmel_config(Chip_erase_h, 0));
+				//temp_char = (Atmel_config(Chip_erase_h, 0));
+				Atmel_config(Chip_erase_h, 0);
 				
 				Atmel_config(write_extended_fuse_bits_h,0xFF);
 				Atmel_config(write_fuse_bits_H_h,0xD5);					//BOD 2.9V
@@ -170,7 +172,7 @@ int main (void){
 
 
 			void Program_Flash (void){
-				char temp_char=0;
+				//char temp_char=0;
 				new_record();  short_line=0;
 				start_new_code_block();
 				Program_record();
@@ -201,8 +203,8 @@ int main (void){
 					//cli();  TIMER INTERUPT STILL REQUIRED
 					UCSR0B &= (~(1<<RXCIE0));	// clear UART interrupt flag
 					//LEDs_off;
-					while(1){if (isCharavailable(2)==1)temp_char = receiveChar();else break;}
-					
+					//while(1){if (isCharavailable(2)==1)temp_char = receiveChar();else break;}
+					while(1){if (isCharavailable(2)==1)receiveChar();else break;}
 					if((Flash_flag) && (!(orphan))){write_page_SUB(page_address);}
 					if(orphan) {write_page_SUB(page_address + PageSZ);}
 				}
