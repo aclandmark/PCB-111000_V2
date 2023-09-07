@@ -87,7 +87,7 @@ space_on_page = (PageSZ - page_offset);}
 
 
 void Program_record(void){
-unsigned char Dummy_byte;
+//unsigned char Dummy_byte;
 while(Count_down){ 
 Count_down--;
 Flash_flag = 1;   
@@ -97,7 +97,8 @@ PIC_address++;
 space_on_page--;
 prog_counter++;       
 if (write_address == PageSZ){
-Dummy_byte = Read_write_mem('W', page_address, 0x0);
+//Dummy_byte = Read_write_mem('W', page_address, 0x0);
+Read_write_mem('W', page_address, 0x0);
 Flash_flag = 0;
 write_address = 0;
 space_on_page = PageSZ;
@@ -118,8 +119,9 @@ Hex_cmd = store[A_int_r_pointer];inc_r_pointer; //sei(); //UCSR0B |= (1<<RXCIE0)
 }
 
 void write_page_SUB(signed int page_address){
-char Dummy_byte;
-Dummy_byte = Read_write_mem('W',  page_address, 0x0);
+//char Dummy_byte;
+//Dummy_byte = Read_write_mem('W',  page_address, 0x0);
+Read_write_mem('W',  page_address, 0x0);
 Flash_flag = 0;}
 
 
