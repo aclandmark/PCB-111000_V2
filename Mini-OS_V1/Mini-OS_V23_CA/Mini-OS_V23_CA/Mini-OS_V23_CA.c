@@ -1,4 +1,7 @@
 /*********************
+
+COMPILE using OPTIMIZE level (-01) only
+
 Projects version 9
 I2C program version 4
 
@@ -44,11 +47,12 @@ int main (void){
 	char sign_bit;
 	char test_num, test_digit;
 
-	char *SW_Version = "OS: I2C_V20_0_CA\r\n";
-	char *SW_info = "SW information: Operating system I2C_V20_0_CA\
-	Projects V1_9 and Bootloader V4_21_CA.\
-	External programmer V2_30B\r\n";
+	char *SW_Version = "System files: Mini-OS_V23_0_CA plus pcb_Bootloader_V4_25_CA \r\n";
+		
 	
+	char *SW_info = "SW information:\
+	Use Project_pcb_168_V2.30_Arduino_V2 to update system files\r\n\
+		See Nano projects directory for user work.\r\n";
 
 	/****Watchdog initiated for mode F only (user clock/stop watch with
 	external 10mS crystal interrupt).*********/
