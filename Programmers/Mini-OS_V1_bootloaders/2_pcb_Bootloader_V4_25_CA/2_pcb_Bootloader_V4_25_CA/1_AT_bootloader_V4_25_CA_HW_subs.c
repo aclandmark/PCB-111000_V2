@@ -20,6 +20,9 @@ case (signature_bit_1): if((n > 7) && (PGD_resp_H)) Echo = Echo | (1<< (15-n)); 
 {ten_msec_delay;}	
 return Echo;}                
 
+
+
+/****************************************************************************************/
 char Read_write_mem(char Operation,  int mem_address, char EEPROM_data){
 unsigned char cmd = 0;
 char n,Echo=0;
@@ -48,7 +51,34 @@ if(Operation == 'W'){five_msec_delay;}		////////////////////////////////////////
 //if(Operation == 'I'){ten_msec_delay;}		/////////////////////////////////////////
 return Echo;}
 
+
+
+
+/****************************************************************************************/
 void Load_page(char high_low, int address_on_page, unsigned char data){
+int cmd = 0;
+unsigned char n;
+
+switch (high_low){
+case 'H': cmd = 0x4800; break;
+case 'L': cmd = 0x4000; break;}
+
+for (n=0; n<=15; n++){PGC_L;PGClock_L;  
+if((cmd<<n) & 0x8000)PGD_cmd_H; else 	PGD_cmd_L;
+PGC_H; PGClock_H;}            
+
+for (n=0; n<=7; n++){PGC_L;PGClock_L; 
+if ((address_on_page<<n) & 0x80)PGD_cmd_H; else 	PGD_cmd_L;          
+PGC_H; PGClock_H;}       
+
+for (n=0; n<=7; n++){PGC_L; PGClock_L;  
+if ((data<<n) & 0x80)PGD_cmd_H;  else 	PGD_cmd_L;     
+PGC_H;   PGClock_H;}   
+PGC_L;	PGClock_L;}     
+    
+
+/****************************************************************************************/
+/*void Load_page_OLD(char high_low, int address_on_page, unsigned char data){
 int cmd = 0;
 unsigned char n,Echo;
 
@@ -69,4 +99,4 @@ for (n=0; n<=7; n++){PGC_L; PGClock_L;
 if ((data<<n) & 0x80)PGD_cmd_H;  else 	PGD_cmd_L;     
 PGC_H;   PGClock_H;}   
 PGC_L;	PGClock_L;}     
-    
+*/    
