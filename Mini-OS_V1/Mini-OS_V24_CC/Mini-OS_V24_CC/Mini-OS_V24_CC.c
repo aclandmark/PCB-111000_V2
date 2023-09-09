@@ -54,7 +54,7 @@ int main (void){
 	
 	char *SW_info = "SW information:\
 	Use Project_pcb_168_V2.30_Arduino_V2 to update system files\r\n\
-	See Nano projects directory for user work.\r\n";
+		See Nano projects directory for user work.\r\n";
 
 	
 	
