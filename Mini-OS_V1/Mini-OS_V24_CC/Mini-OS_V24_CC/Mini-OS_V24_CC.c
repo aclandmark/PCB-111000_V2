@@ -44,10 +44,19 @@ int main (void){
 	char sign_bit;
 	char test_num, test_digit;
 
-	char *SW_Version = "OS: I2C_V20_0_CA\r\n";
+	/*char *SW_Version = "OS: I2C_V20_0_CA\r\n";
 	char *SW_info = "SW information: Operating system I2C_V20_0_CA\
 	Projects V1_9 and Bootloader V4_21_CA.\
-	External programmer V2_30B\r\n";
+	External programmer V2_30B\r\n";*/
+	
+	char *SW_Version = "System files: Mini-OS_V24_0_CC plus pcb_Bootloader_V4_26_CC \r\n";
+	
+	
+	char *SW_info = "SW information:\
+	Use Project_pcb_168_V2.30_Arduino_V2 to update system files\r\n\
+	See Nano projects directory for user work.\r\n";
+
+	
 	
 
 	/****Watchdog initiated for mode F only (user clock/stop watch with
