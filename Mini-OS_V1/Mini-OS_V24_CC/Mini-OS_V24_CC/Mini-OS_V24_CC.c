@@ -1,4 +1,7 @@
 /*********************
+
+COMPILE using OPTIMIZE level (-01) only
+
 Projects version 9
 I2C program version 4
 
