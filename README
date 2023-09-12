@@ -16,4 +16,29 @@ V2 used the USBasp programmer
 Remaining versions used Arduino and Studio 7 compilers. Programming was carried out
 using the "UNO as AVR programmer" and "UNO as UPDI programmer" Arduino projects.
 
+# PCB111000_New
+
+PCB111000 has beeen developed as a learning aid for the C language when applied to AVR devices.  
+It consists of a USB bridge to communicate with a PC, an 8 digit display and two AVR devices. One of the AVR devices hosts a miniOS which drives the display and
+the other, the user device, hosts user projects.
+
+There are three PCB111000 projects pcbs:
+
+PCB111000_New         The initial version in which the miniOS has been rewritten to make it more readable. An Atmega328 hosts the miniOS, this includes a programmer
+                      for the user device, an Atmega 168.  An FTDI chip FT230X acts as the uSAB bridge.
+
+PCB111000_UNO         A cut down version in which the a UNO provides the PC comms and an Atmega 328 to hosts the user projects.
+
+PCB111000_CP2102      This uses a CP2102 module for comms with a PC, an ATtiny1606 to drive the display and user projects run on an Atmega328 which is programmed using a bootloader.
+
+For PCB111000_New
+
+Projects are compiled using Studio 7 or the Arduino development environment with the following settings made in the Tools tab: Board: "Arduino Nano", Processor: "Atmega168".
+User projects are uploaded using the miniOS.
+The miniOS is uploaded (preferrably before the pcb is assembled) using the "UNO_AVR_Programmer" (see AVR_Freaks projects 9 Sept 2020).
+
+Note:There were originally two versions of PCB111000_New, one for commmon anode and one for common cathode displays.  This is because MOSFETs were used to drive the displays.  These are not needed and can be replaced with wire links.  Hence only one version is needed with a display header file taylored to the display actually used.  Eagle files are not provided for the original versions since they are now obsolete.
+
+
+
 
