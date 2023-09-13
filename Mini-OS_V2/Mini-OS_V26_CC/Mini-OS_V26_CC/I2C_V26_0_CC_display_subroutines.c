@@ -63,11 +63,15 @@ case 'E': PORTD |= (seg_e); break;
 case 'F': PORTD |= (seg_f); break;
 case 'G': PORTD |= (seg_g); break;*/
 case 'P': decimalP; break;
-case '.':
+/*case '.':
 case '_': PORTD |= (seg_d); break;
-case '-': PORTD |= (seg_g); break;
+case '-': PORTD |= (seg_g); break;*/
+case '.':
+case '_': PORTD &= ~(seg_d); break;
+case '-': PORTD &= (~(seg_g)); break;
 case 'E': case 'e':
-case 'X': PORTB |= (seg_a); PORTD |= (seg_d | seg_e | seg_f | seg_g );break;}} //E the exponential function
+case 'X': PORTB &= (~(seg_a)); PORTD &= (~(seg_d | seg_e | seg_f | seg_g ));break;}}
+//case 'X': PORTB |= (seg_a); PORTD |= (seg_d | seg_e | seg_f | seg_g );break;}} //E the exponential function
 
 
 /*****************************************************************************************/
@@ -81,13 +85,20 @@ case 4: m = 0x10; break;
 case 5: m = 0x20; break;
 case 6: m = 0x40; break;
 case 7: m = 0x80; break;}
-if (display_buf[0] & m) PORTB |= (seg_a);
+if (display_buf[0] & m) PORTB &= (~(seg_a));
+	if (display_buf[1] & m) PORTD &= (~(seg_g));
+	if (display_buf[2] & m) PORTD &= (~(seg_d));
+	if (display_buf[3] & m) PORTD &= (~(seg_b));
+	if (display_buf[4] & m) PORTD &= (~(seg_c));
+	if (display_buf[5] & m) PORTD &= (~(seg_e));
+if (display_buf[6] & m) PORTD &= (~(seg_f));}
+/*if (display_buf[0] & m) PORTB |= (seg_a);
 if (display_buf[1] & m) PORTD |= (seg_g);
 if (display_buf[2] & m) PORTD |= (seg_d);
 if (display_buf[3] & m) PORTD |= (seg_b);
 if (display_buf[4] & m) PORTD |= (seg_c);
 if (display_buf[5] & m) PORTD |= (seg_e);
-if (display_buf[6] & m) PORTD |= (seg_f);}
+if (display_buf[6] & m) PORTD |= (seg_f);}*/
 
 
 /*****************************************************************************************/
