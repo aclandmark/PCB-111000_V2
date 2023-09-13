@@ -21,19 +21,13 @@ void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}	//P <= 3 AT STA
 #define RBL 255
 
 /* SW subs prototypes*/
-
 void newline(void);
-//char waitforkeypress(void);
 char receiveChar(void);
 char isCharavailable (int);
 void waitforchar(void);
-//char Rx_low_speed_data(void);
-//void binUnwantedChars (void);
 void sendChar(char);
 void sendString(char*);
-//void sendHex(char, unsigned int);
 void USART_init (unsigned char, unsigned char);
-//void my_utoa(char, unsigned int, char*, char);
 void new_record(void); 
 void start_new_code_block(void);
 void Program_record(void);
@@ -42,18 +36,13 @@ void decode_HEX_cmd_SUB(void);
 void write_page_SUB(int);
 
 /* HW subs prototypes*/
-
 char Atmel_config ( unsigned int, unsigned int );
 char Read_write_mem(char, int, char);
 void Load_page(char, int, unsigned char);
 
 /* main subs prototypes*/
-
 void Program_Flash (void);
 void Verify_Flah_99(void);
-
-//void timer_T0_sub_with_interrupt(char, unsigned char);
-//void delay_with_interrupt(char, unsigned char);
 void timer_T0_sub(char, unsigned char);
 
 #define inc_r_pointer \
@@ -90,9 +79,8 @@ unsigned char cmd_pin, resp_pin, clock_pin, reset_pin;
 volatile char w_pointer,r_pointer, w_pointer_copy;
 volatile int counter;
 volatile int   tempInt1, tempInt2;
-volatile int store[80];		//should be 80
+volatile int store[80];
 volatile int char_count;
-//volatile char T0_ovf_flag=0;
 
 /*********variables for the new_record subroutine****************/
 volatile char Count_down;
