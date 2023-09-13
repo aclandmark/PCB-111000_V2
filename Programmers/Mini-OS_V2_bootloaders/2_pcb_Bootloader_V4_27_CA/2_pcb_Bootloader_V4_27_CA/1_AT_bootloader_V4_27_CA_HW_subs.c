@@ -47,10 +47,8 @@ if ((Operation == 'I') && ((EEPROM_data <<n) & 0x80))PGD_cmd_H;  else 	PGD_cmd_L
 PGC_H; PGClock_H;   
 if (PGD_resp_H) (Echo = (Echo | (1<< (7-n))));		
 }PGC_L;	PGClock_L;
-if(Operation == 'W'){five_msec_delay;}		/////////////////////////////////////////////
-//if(Operation == 'I'){ten_msec_delay;}		/////////////////////////////////////////
+if(Operation == 'W'){five_msec_delay;}	
 return Echo;}
-
 
 
 
@@ -78,25 +76,4 @@ PGC_L;	PGClock_L;}
     
 
 /****************************************************************************************/
-/*void Load_page_OLD(char high_low, int address_on_page, unsigned char data){
-int cmd = 0;
-unsigned char n,Echo;
 
-switch (high_low){
-case 'H': cmd = 0x4800; break;
-case 'L': cmd = 0x4000; break;}
-Echo = 0;
-
-for (n=0; n<=15; n++){PGC_L;PGClock_L;  
-if((cmd<<n) & 0x8000)PGD_cmd_H; else 	PGD_cmd_L;
-PGC_H; PGClock_H;}            
-
-for (n=0; n<=7; n++){PGC_L;PGClock_L; 
-if ((address_on_page<<n) & 0x80)PGD_cmd_H; else 	PGD_cmd_L;          
-PGC_H; PGClock_H;}       
-
-for (n=0; n<=7; n++){PGC_L; PGClock_L;  
-if ((data<<n) & 0x80)PGD_cmd_H;  else 	PGD_cmd_L;     
-PGC_H;   PGClock_H;}   
-PGC_L;	PGClock_L;}     
-*/    
