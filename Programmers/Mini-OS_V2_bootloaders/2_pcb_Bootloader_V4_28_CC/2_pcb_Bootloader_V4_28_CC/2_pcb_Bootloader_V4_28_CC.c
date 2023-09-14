@@ -70,15 +70,15 @@ int main (void){
 	MCUCR = (1<<IVSEL);
 	MCUSR &= (~(1 << EXTRF));  				//Reset the external reset flag
 
-	DDRD |= (1 << DDD7); PORTD |= (1 << PD7);	//define led activity
-	DDRB |= (1 << DDB0) | (1 << DDB2);
-	DDRC |= (1 << DDC0) | (1 << DDC1) | (1 << DDC2);
+	DDRD |= (1 << DDD7); PORTD &= ~(1 << PD7);	//define led activity
+	//DDRB |= (1 << DDB0) | (1 << DDB2);
+	//DDRC |= (1 << DDC0) | (1 << DDC1) | (1 << DDC2);
 	
 	ADMUX |= (1 << REFS0);		//select internal ADC ref and remove external supply on AREF pin
 	USART_init(0,16);			//57.6k
 
 	while(1){
-		boot_target;
+		boot_target;			//Set up IO
 		Atmel_powerup_and_target_detect;
 		
 		/*****************Power-up and make contact with target****************************/
