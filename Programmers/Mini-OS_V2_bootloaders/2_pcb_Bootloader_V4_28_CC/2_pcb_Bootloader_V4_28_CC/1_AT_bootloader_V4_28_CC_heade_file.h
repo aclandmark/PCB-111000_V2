@@ -121,8 +121,8 @@ volatile signed char line_offset;
 
 #define boot_target cmd_pin =  0x08; resp_pin = 0x10; clock_pin =  0x20; reset_pin = 0x08; DDRB |= 0x28; DDRC |= 0x08;
 
-#define LED_2_off		 PORTD &= (~(1 << PD7));
-#define LED_2_on		 PORTD |= (1 << PD7);
+#define LED_2_on		 PORTD &= (~(1 << PD7));
+#define LED_2_off		 PORTD |= (1 << PD7);
 
 #define Atmel_powerup \
 {two_msec_delay;}\
