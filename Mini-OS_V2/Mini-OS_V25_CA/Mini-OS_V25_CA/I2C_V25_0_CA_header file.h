@@ -107,14 +107,11 @@ RHSofDP = 0;expnt_result = 0;
 #define two_fifty_mS_delay_with_interrupts  TIMSK1 |= (1 << TOIE1);two_fifty_mS_delay; TIMSK1 &= (~(1 << TOIE1));
 
 #define one_sec_delay  timer_T1_sub_with_interrupt(T1_delay_1sec);while (T1_ovf_flag == 0);T1_ovf_flag = 0;
-//////////#define T1_delay_1sec 5,0xE17B
 #define one_sec_delay_with_interrupts  TIMSK1 |= (1 << TOIE1);one_sec_delay; TIMSK1 &= (~(1 << TOIE1));
 
 
 
 /*********************************************************************************************************************/
-//Drivers updated
-
 #define	digit_3			PORTB |= (1 << PB0)
 #define	digit_2			PORTB |= (1 << PB2)
 #define	digit_1			PORTB |= (1 << PB3)
@@ -143,10 +140,6 @@ DDRD |= (1 << DDD2) | (1 << DDD3) | (1 << DDD4) | (1 << DDD5) | (1 << DDD6) | (1
 
 #define clear_digits PORTB &= (~((1 << PB0) | (1 << PB2) | (1 << PB3) | (1 << PB4) | (1 << PB5)));\
 PORTC &= (~((1 << PC0) | (1 << PC1) | (1 << PC2)));
-
-//#define clear_digits  PORTB |= ((1 << PB0) | (1 << PB2) | (1 << PB3) | (1 << PB4) | (1 << PB5));\
-//PORTC |= ((1 << PC0) | (1 << PC1) | (1 << PC2));
-
 
 #define clear_display  PORTB |= (seg_a ); \
 PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
