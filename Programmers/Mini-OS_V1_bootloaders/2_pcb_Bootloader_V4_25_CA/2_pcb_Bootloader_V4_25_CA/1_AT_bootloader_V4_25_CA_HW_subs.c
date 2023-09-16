@@ -27,11 +27,11 @@ char Read_write_mem(char Operation,  int mem_address, char EEPROM_data){
 unsigned char cmd = 0;
 char n,Echo=0;
 switch (Operation){
-case 'H': cmd = 0x28; break;	//read flash high byte
-case 'L': cmd = 0x20; break;	//read flash low byte
-case 'W': cmd = 0x4C; break;	//write page to flash  (32 or 64 commands)
-//case 'I': cmd = 0xC0; break;      //EEprom data in   5mS DELAY will be needed
-//case 'O': cmd = 0xA0; break;      //EEPROM data out
+case 'H': cmd = 0x28; break;			//read flash high byte
+case 'L': cmd = 0x20; break;			//read flash low byte
+case 'W': cmd = 0x4C; break;			//write page to flash  (32 or 64 commands)
+//case 'I': cmd = 0xC0; break;      	//EEprom data in   5mS DELAY will be needed
+//case 'O': cmd = 0xA0; break;      	//EEPROM data out
 }
 
 for (n=0; n<=7; n++){PGC_L;	PGClock_L;				
@@ -47,8 +47,7 @@ if ((Operation == 'I') && ((EEPROM_data <<n) & 0x80))PGD_cmd_H;  else 	PGD_cmd_L
 PGC_H; PGClock_H;   
 if (PGD_resp_H) (Echo = (Echo | (1<< (7-n))));		
 }PGC_L;	PGClock_L;
-if(Operation == 'W'){five_msec_delay;}		/////////////////////////////////////////////
-//if(Operation == 'I'){ten_msec_delay;}		/////////////////////////////////////////
+if(Operation == 'W'){five_msec_delay;}	
 return Echo;}
 
 
@@ -78,25 +77,4 @@ PGC_L;	PGClock_L;}
     
 
 /****************************************************************************************/
-/*void Load_page_OLD(char high_low, int address_on_page, unsigned char data){
-int cmd = 0;
-unsigned char n,Echo;
-
-switch (high_low){
-case 'H': cmd = 0x4800; break;
-case 'L': cmd = 0x4000; break;}
-Echo = 0;
-
-for (n=0; n<=15; n++){PGC_L;PGClock_L;  
-if((cmd<<n) & 0x8000)PGD_cmd_H; else 	PGD_cmd_L;
-PGC_H; PGClock_H;}            
-
-for (n=0; n<=7; n++){PGC_L;PGClock_L; 
-if ((address_on_page<<n) & 0x80)PGD_cmd_H; else 	PGD_cmd_L;          
-PGC_H; PGClock_H;}       
-
-for (n=0; n<=7; n++){PGC_L; PGClock_L;  
-if ((data<<n) & 0x80)PGD_cmd_H;  else 	PGD_cmd_L;     
-PGC_H;   PGClock_H;}   
-PGC_L;	PGClock_L;}     
-*/    
+    
