@@ -23,17 +23,12 @@ void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}	//P <= 3 AT STA
 /* SW subs prototypes*/
 
 void newline(void);
-//char waitforkeypress(void);
 char receiveChar(void);
 char isCharavailable (int);
 void waitforchar(void);
-//char Rx_low_speed_data(void);
-//void binUnwantedChars (void);
 void sendChar(char);
 void sendString(char*);
-//void sendHex(char, unsigned int);
 void USART_init (unsigned char, unsigned char);
-//void my_utoa(char, unsigned int, char*, char);
 void new_record(void); 
 void start_new_code_block(void);
 void Program_record(void);
@@ -51,9 +46,6 @@ void Load_page(char, int, unsigned char);
 
 void Program_Flash (void);
 void Verify_Flah_99(void);
-
-//void timer_T0_sub_with_interrupt(char, unsigned char);
-//void delay_with_interrupt(char, unsigned char);
 void timer_T0_sub(char, unsigned char);
 
 #define inc_r_pointer \
@@ -69,7 +61,7 @@ int Hex_address;
 int PIC_address;
 signed int page_address;
 signed int PAmask;
-signed char offset;		//used for different things
+signed char offset;	
 signed char space_on_page;
 signed int PageSZ;
 char Flash_flag;
@@ -90,15 +82,17 @@ unsigned char cmd_pin, resp_pin, clock_pin, reset_pin;
 volatile char w_pointer,r_pointer, w_pointer_copy;
 volatile int counter;
 volatile int   tempInt1, tempInt2;
-volatile int store[80];		//should be 80
+volatile int store[80];	
 volatile int char_count;
-//volatile char T0_ovf_flag=0;
+
 
 /*********variables for the new_record subroutine****************/
 volatile char Count_down;
+
 /*********variables for the start_new_code_block subroutine****************/
 volatile int write_address;	
 volatile signed char line_offset;
+
 
 #define Prog_enable 0xAC530000
 #define Prog_enable_h 0xAC53
@@ -121,6 +115,7 @@ volatile signed char line_offset;
 
 #define Chip_erase 0xAC800000
 #define Chip_erase_h 0xAC80
+
 
 /********HW V 1.3 Define target Pin & CC LED definitions START for boot loader**********/
 #define PGD_cmd_H PORTB |= cmd_pin
