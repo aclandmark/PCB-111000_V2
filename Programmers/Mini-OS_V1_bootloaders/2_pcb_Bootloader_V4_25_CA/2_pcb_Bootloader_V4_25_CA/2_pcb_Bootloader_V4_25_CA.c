@@ -1,8 +1,4 @@
 
-//V4.21A: Move sei() to start of programmer
-//remove delay following eeprom write
-//Suitable for CA displays
-//Offers High/low speed UART slection
 
 
 /********  ATMEGA pcb bootloader runs in the boot space of the ATMEGA328**********/
@@ -38,7 +34,6 @@ signed int  read_ops=0;
 char dummy_byte;
 
 int main (void){
-	//char temp_char,cal_factor=0;
 	char cal_factor=0;
 	char target_detected = 0;
 
@@ -70,7 +65,7 @@ int main (void){
 	//check reset
 	if (!(MCUSR & (1 << EXTRF)) )		//POR, BOR or watchdog timeout but not the reset switch
 	{MCUCR = (1<<IVCE);MCUCR = 0x0;	//select interrupt vector table starting at 0x000
-		//while (PIND & (1 << PD1));			//data_led_OFF;//wait for user to select Run PIC
+	
 	asm("jmp 0x0000");}
 	MCUCR = (1<<IVCE);  			//use interrupt vector table starting at start of boot section
 	MCUCR = (1<<IVSEL);
@@ -200,10 +195,7 @@ int main (void){
 						}	//loop 2
 					}	//loop 1
 					
-					//cli();  TIMER INTERUPT STILL REQUIRED
-					UCSR0B &= (~(1<<RXCIE0));	// clear UART interrupt flag
-					//LEDs_off;
-					//while(1){if (isCharavailable(2)==1)temp_char = receiveChar();else break;}
+					UCSR0B &= (~(1<<RXCIE0));
 					while(1){if (isCharavailable(2)==1)receiveChar();else break;}
 					if((Flash_flag) && (!(orphan))){write_page_SUB(page_address);}
 					if(orphan) {write_page_SUB(page_address + PageSZ);}
