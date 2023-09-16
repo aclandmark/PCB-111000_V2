@@ -21,10 +21,10 @@ void start_T2_for_ATMEGA_168_cal(char);
 
 
 /****************************************************************************************************/
-volatile char payload_size;							//zero to hide clock, 1 to update 10mS 2 to update 100ms and 8 to update seconds
+volatile char payload_size;							
 volatile int disp_ptr;
-volatile char Char_received, exit_loop = 0, display_mask;		//ISR UART
-volatile char mode=1, timer_mode, inc_secs, inc_mins;					//ISR T0
+volatile char Char_received, exit_loop = 0, display_mask;
+volatile char mode=1, timer_mode, inc_secs, inc_mins;
 volatile char display_buf[8], clock_buf[8], stop_watch_buf[8],strobe[8];
 volatile int buf_ptr, mode_C_ptr;
 volatile char T1_ovf_flag=0, timer_2_counter;
@@ -39,7 +39,7 @@ char Sc_Num_string[16];
 int Sc_Num_string_length, Sc_Num_string_pointer, display_char_skip_counter;
 
 volatile int EA_counter, EA_buff_ptr;
-int buffer[41];	//Used to store "long" results, however for this application results are always less than 32000
+int buffer[41];	
 volatile char T1_OVF;
 volatile long error_SUM;
 char OSCCAL_test;
