@@ -55,13 +55,6 @@ case '6': six; break;
 case '7': seven; break;
 case '8': eight; break;
 case '9': nine; break;
-/*case 'A': PORTB |= (seg_a); break;
-case 'B': PORTD |= (seg_b); break;
-case 'C': PORTD |= (seg_c); break;
-case 'D': PORTD |= (seg_d); break;
-case 'E': PORTD |= (seg_e); break;
-case 'F': PORTD |= (seg_f); break;
-case 'G': PORTD |= (seg_g); break;*/
 case 'P': decimalP; break;
 case '.':
 case '_': PORTD |= (seg_d); break;
@@ -93,8 +86,6 @@ if (display_buf[6] & m) PORTD |= (seg_f);}
 /*****************************************************************************************/
 void Display_driver()			//ISR calls this
 {
-//if(!(buf_ptr)){clear_digits; clear_display; }
-
 buf_ptr++; buf_ptr = buf_ptr%8;
 clear_digits; clear_display; 
 switch(buf_ptr){
