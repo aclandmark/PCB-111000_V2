@@ -63,17 +63,17 @@ int main (void){
 	where the application program resides*/
 
 	//check reset
-	if (!(MCUSR & (1 << EXTRF)) )			//POR, BOR or watchdog timeout but not the reset switch
-	{MCUCR = (1<<IVCE);MCUCR = 0x0;			//select interrupt vector table starting at 0x000
+	if (!(MCUSR & (1 << EXTRF)) )						//POR, BOR or watchdog timeout but not the reset switch
+	{MCUCR = (1<<IVCE);MCUCR = 0x0;						//select interrupt vector table starting at 0x000
 	asm("jmp 0x0000");}
-	MCUCR = (1<<IVCE);  					//use interrupt vector table starting at start of boot section
+	MCUCR = (1<<IVCE);  								//use interrupt vector table starting at start of boot section
 	MCUCR = (1<<IVSEL);
-	MCUSR &= (~(1 << EXTRF));  				//Reset the external reset flag
+	MCUSR &= (~(1 << EXTRF));  							//Reset the external reset flag
 
-	DDRD |= (1 << DDD7); PORTD |= (1 << PD7);		//define led activity
-	PORTC = 0x07;									//Limit LED activity
+	DDRD |= (1 << DDD7); PORTD |= (1 << PD7);			//define led activity
+	PORTC = 0x07;										//Limit LED activity
 
-	ADMUX |= (1 << REFS0);		//select internal ADC ref and remove external supply on AREF pin
+	ADMUX |= (1 << REFS0);								//select internal ADC ref and remove external supply on AREF pin
 	USART_init(0,16);
 
 	
@@ -158,7 +158,7 @@ int main (void){
 				if ((counter & 0x03) == 0x02)  {tempInt1 += tempChar;}
 				if ((counter & 0x03) == 0x03)  {tempInt2 = tempChar<<4;}
 				if ((counter & 0x03) == 0x0)  {tempInt2+= tempChar; tempInt2 = tempInt2<<8;tempInt1+=tempInt2;
-				local_pointer = w_pointer++; store[local_pointer] = tempInt1; }}//cmd_counter++;}}
+				local_pointer = w_pointer++; store[local_pointer] = tempInt1; }}
 
 				counter++;
 			w_pointer = w_pointer & 0b00111111;	}
@@ -171,28 +171,28 @@ int main (void){
 				
 				while(1){		//loop1
 					new_record();
-					if (line_length==0)break; 	//ISR variable
+					if (line_length==0)break; 																//ISR variable
 
 
-					if ((Hex_address == PIC_address) && (!(short_line))){	//normal ongoing code block
+					if ((Hex_address == PIC_address) && (!(short_line))){									//normal ongoing code block
 						if (space_on_page == (PageSZ - offset)){page_address = (Hex_address & PAmask);}
 					Program_record();	}
 
 					else{if(Hex_address != PIC_address)//loop 2
 						{//normal break	loop 3
-							if (section_break){//PAGE Adress increases by at least 0x40
-								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    //+0x20 for offset pages
-							if(orphan) write_page_SUB(page_address + PageSZ);}   //0x20??
+							if (section_break){																//PAGE Adress increases by at least 0x40
+								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    			//+0x20 for offset pages
+							if(orphan) write_page_SUB(page_address + PageSZ);}   							//0x20??
 							
 							else{//loop 4
 								if(page_break){if((Flash_flag) && (!(orphan))) write_page_SUB(page_address);
 								orphan = 0; }}//  break within page loop 4
 							}//loop 3
-							start_new_code_block(); Program_record();  if(short_line)short_line=0;//short_line no break
+							start_new_code_block(); Program_record();  if(short_line)short_line=0;			//short_line no break
 						}	//loop 2
 					}	//loop 1
 					
-					UCSR0B &= (~(1<<RXCIE0));	// clear UART interrupt flag
+					UCSR0B &= (~(1<<RXCIE0));
 					while(1){if (isCharavailable(2)==1)receiveChar();else break;}
 
 					if((Flash_flag) && (!(orphan))){write_page_SUB(page_address);}
