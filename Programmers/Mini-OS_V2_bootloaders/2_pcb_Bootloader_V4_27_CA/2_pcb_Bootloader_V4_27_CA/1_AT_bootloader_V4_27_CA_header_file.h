@@ -8,7 +8,7 @@ void Clock_period(void);
 
 #define	next_char			while(r_pointer == w_pointer);		
 
-void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}	//P <= 3 AT START
+void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
 
 #define PGClock_L  
 #define PGClock_H			Clock_period();
@@ -58,7 +58,7 @@ int Hex_address;
 int PIC_address;
 signed int page_address;
 signed int PAmask;
-signed char offset;		//used for different things
+signed char offset;	
 signed char space_on_page;
 signed int PageSZ;
 char Flash_flag;
@@ -84,6 +84,7 @@ volatile int char_count;
 
 /*********variables for the new_record subroutine****************/
 volatile char Count_down;
+
 /*********variables for the start_new_code_block subroutine****************/
 volatile int write_address;	
 volatile signed char line_offset;
