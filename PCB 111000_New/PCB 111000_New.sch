@@ -1053,6 +1053,7 @@ RS 757-0010</description>
 <text x="-185.42" y="12.7" size="6.35" layer="91">or Common anode displays</text>
 <text x="-185.42" y="38.1" size="6.35" layer="91">PCB111000_NEW</text>
 <text x="-185.42" y="25.4" size="6.35" layer="91">Uses Common cathode or</text>
+<text x="-187.96" y="-40.64" size="6.4516" layer="91">USER SWITCHES ARE TOO CLOSE TO THE +5V TRACK</text>
 </plain>
 <instances>
 <instance part="R5" gate="G$1" x="-83.82" y="140.97" smashed="yes" rot="R180">
