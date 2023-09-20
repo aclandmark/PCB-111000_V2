@@ -3,6 +3,8 @@
 
 UNO sketch 8_UNO_AVR_programmer_V3
 
+This sketch runs on a UNO
+
 This sketch is used to help setup a PCB-111000_V2
 It programs an Atmega 168 with  "5_Project_pcb_168_V2.30_Arduino_V2".
 The Atmega 168 is then soldered onto a PCB-111000_V2 board along with all the other components except the displays.
