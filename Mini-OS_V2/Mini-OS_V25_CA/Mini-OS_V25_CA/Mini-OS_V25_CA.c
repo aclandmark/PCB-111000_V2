@@ -47,7 +47,7 @@ int main (void){
 	char sign_bit;
 	char test_num, test_digit;
 
-	char *SW_Version = "System files: Mini-OS_V23_0_CA plus pcb_Bootloader_V4_25_CA \r\n";
+	char *SW_Version = "System files: Mini-OS_V25_0_CA plus pcb_Bootloader_V4_27_CA \r\n";
 		
 	
 	char *SW_info = "SW information:\
