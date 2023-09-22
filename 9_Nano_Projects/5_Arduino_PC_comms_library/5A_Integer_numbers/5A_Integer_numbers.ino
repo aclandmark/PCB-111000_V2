@@ -36,7 +36,7 @@ int main (void)
     long  num;
     int m = 1;
  
- setup_HW_Arduino_IO;
+ setup_HW_Arduino_IO_Extra;
 
   User_prompt_A;
  
