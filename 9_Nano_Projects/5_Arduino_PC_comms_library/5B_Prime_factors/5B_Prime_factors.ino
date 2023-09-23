@@ -8,6 +8,8 @@
 
 #include "Prime_factors_header.h"
 
+#define Search_array_length   125
+
 #define BL 30                     //Buffer length
 
 /************************************************************************************************************/
@@ -18,12 +20,12 @@ int main (void)
     long factor;
     char factor_counter;
  
- setup_HW_Arduino_IO;
+ setup_HW_Arduino_IO_Extra;
    Serial.write("\r\nInteger number\t");
    number = Int_Num_from_PC_A(num_string, BL);
+   newline_A();
+  Serial.print(number);//while(1);
 
-   newline_A;
-  Serial.print(number);
   Serial.write('\t');
   factor_counter = 0;
   do{
@@ -41,9 +43,9 @@ int main (void)
 
 /************************************************************************************************************/
 long Product_search  (long number)  {
-long search_array[200]; 
+long search_array[Search_array_length]; 
 int j=0;
-long n=200;
+long n=Search_array_length;
 long L=0;
 
 while(1){
@@ -52,12 +54,12 @@ for(long k =0; k < n; k++)                              //Populate array (i.e. w
 prime_no_generator(L,n,search_array);                   //Set all non primes in array to zero
 j=0; 
 while(search_array[j] == 0)j += 1;                     //Select first prime number
-while (j<=200)
+while (j<=Search_array_length)
 {if ((search_array[j] >= 2) &&
 (number%search_array[j] == 0))                         //Scan array until a factor is found
 {return search_array[j];}                              //and return it
 j += 1;} 
-if(L*200 > number)return 0;                            //No factors found at all: Return zero for prime number
+if(L*Search_array_length > number)return 0;                            //No factors found at all: Return zero for prime number
 L += 1; Serial.write('.');}}                           //No factor found in array: increment L and populate new array
 
 
