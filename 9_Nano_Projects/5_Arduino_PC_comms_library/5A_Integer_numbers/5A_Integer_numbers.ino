@@ -43,7 +43,7 @@ int main (void)
    Serial.write("\r\nInteger number");
 num = Int_Num_from_PC_A_Local(num_string,BL);
 
-newline_A;
+newline_A();
 Serial.print(num);
 Serial.write("\t");
 
