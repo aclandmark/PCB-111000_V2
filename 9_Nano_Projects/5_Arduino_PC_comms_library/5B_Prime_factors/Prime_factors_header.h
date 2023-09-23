@@ -3,6 +3,9 @@
 #include <avr/wdt.h>
 
 char watch_dog_reset = 0;
+char User_response;
+
+
 
 #define T0_delay_10ms 5,178
 #define T1_delay_100ms 3, 0x9E62
@@ -18,7 +21,7 @@ char watch_dog_reset = 0;
 
 
 /*****************************************************************************/
-#define setup_HW \
+#define setup_HW_Arduino_IO \
 setup_watchdog;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
@@ -29,33 +32,35 @@ eeprom_write_byte((uint8_t*)(0x1FD),OSCCAL);\
 while (!(PIND & (1 << PD1)));\
 Timer_T0_10mS_delay_x_m(5);\
 OSC_CAL;\
-setup_PC_comms_Basic(0,16);\
+Serial.begin(115200);\
+while (!Serial);\
+sei();\
 I2C_Tx_LED_dimmer();
 
 
 
 /*****************************************************************************/
-#define setup_HW_Extra \
-setup_HW;\
+#define setup_HW_Arduino_IO_Extra \
+setup_HW_Arduino_IO;\
 \
 Timer_T0_10mS_delay_x_m(1);\
 I2C_TX_328_check();\
 waiting_for_I2C_master;\
 if (receive_byte_with_Nack()==1)\
 {TWCR = (1 << TWINT);\
-String_to_PC_Basic("\r\nPress\r\n\
+Serial.write("\r\nPress\r\n\
 1 for OS version\r\n\
 2 for system data\r\n\
 3 Message from the OS (x to escape)\r\n\
 4 Default project\r\n\
 0 to escape\r\n");\
-switch (waitforkeypress_Basic()){\
+switch (waitforkeypress_A()){\
 case '0':break;\
-case '1':I2C_Rx_get_version('0');break;\
-case '2':I2C_Rx_get_version('1');break;\
+case '1':I2C_Rx_get_version_A('0');break;\
+case '2':I2C_Rx_get_version_A('1');break;\
 case '3':do\
-{Read_Hello_world_string();newline_Basic();}\
-while (waitforkeypress_Basic() != 'x');\
+{Read_Hello_world_string_A();newline_A();}\
+while (waitforkeypress_A() != 'x');\
 break;\
 case '4':wdt_enable(WDTO_30MS);\
 I2C_Tx_display(); break;}}\
@@ -129,7 +134,12 @@ if ((eeprom_read_byte((uint8_t*)0x1FE) > 0x0F)\
 
 
 /*****************************************************************************/
-#define diagnostic_mode \
+#define User_prompt_A \
+while(1){\
+do{Serial.write("R?    ");}  while((isCharavailable_A (50) == 0));\
+User_response = Serial.read();\
+if((User_response == 'R') || (User_response == 'r'))break;} Serial.write("\r\n");
+
 
 
 
@@ -147,13 +157,13 @@ TWCR = (1 << TWINT);
 
 /*****************************************************************************/
 #include "Resources_nano_projects/Subroutines/HW_timers.c"
-#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Basic.c"
+//#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Basic.c"
 #include "Resources_nano_projects/I2C_Subroutines/I2C_subroutines_1.c"
 #include "Resources_nano_projects/I2C_Subroutines/I2C_slave_Rx_Tx.c"
-#include "Resources_nano_projects/I2C_Subroutines/I2C_diagnostic.c"
+#include "Resources_nano_projects/I2C_Subroutines/I2C_diagnostic_A.c"
 #include "Resources_nano_projects/Subroutines/Random_and_prime_nos.c"
 
-
-
+#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
+#include "Resources_nano_projects/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
 
 /******************************************************************************/
