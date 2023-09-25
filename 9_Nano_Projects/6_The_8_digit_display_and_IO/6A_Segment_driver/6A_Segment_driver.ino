@@ -26,7 +26,7 @@ int main (void){
 
 char letter = 0, digit_num;            
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino_IO_Extra;
 I2C_Tx_any_segment_clear_all();
 
 set_up_PCI_on_sw2;
