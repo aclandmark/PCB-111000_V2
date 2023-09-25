@@ -165,5 +165,6 @@ TWCR = (1 << TWINT);
 
 #include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
 #include "Resources_nano_projects/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
+#include "Resources_nano_projects\Subroutines\FPN_DIY_IO.c"
 
 /******************************************************************************/
