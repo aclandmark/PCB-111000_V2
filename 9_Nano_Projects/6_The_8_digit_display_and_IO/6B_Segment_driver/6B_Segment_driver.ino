@@ -15,7 +15,7 @@ int main (void){
 
 char keypress = 0, digit_num=0;            
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino_IO_Extra;
 
 if(!(watch_dog_reset))Serial.write(message_1);
 else Serial.write(message_2);{watch_dog_reset = 0;}
