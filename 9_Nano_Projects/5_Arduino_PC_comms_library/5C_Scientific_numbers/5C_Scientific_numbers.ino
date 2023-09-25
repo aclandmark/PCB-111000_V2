@@ -43,7 +43,7 @@ int main (void)
     float index;
     char pre_dp;
  
- setup_HW_Arduino_IO;
+ setup_HW_Arduino_IO_Extra;
     
    if (watch_dog_reset == 1) {watch_dog_reset = 0; User_prompt_A;}
   else {Serial.write("\r\n\r\nUsing Arduino functions to receive and print scientific numbers.\r\n");}
