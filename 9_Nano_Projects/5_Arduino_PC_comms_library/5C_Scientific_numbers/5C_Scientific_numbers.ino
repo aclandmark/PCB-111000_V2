@@ -84,7 +84,7 @@ num_1 = num_2;}
 
 /*****************************************************************************************/
 void Sc_Num_to_PC_A_Local(float num, char pre_dp, char post_dp, char next_char)
-{int A = 1;
+{long A = 1;
 char keypresses[12];
 char sign = '+';
 int Exp = 0;
