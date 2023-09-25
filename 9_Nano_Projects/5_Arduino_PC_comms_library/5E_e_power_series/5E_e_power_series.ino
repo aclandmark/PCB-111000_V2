@@ -40,7 +40,7 @@ float Log_result;
 float Result;
 
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino_IO_Extra;
 
 if(!(watch_dog_reset))Serial.write(message_1);
 if(watch_dog_reset){watch_dog_reset = 0; Serial.write(message_2);}
