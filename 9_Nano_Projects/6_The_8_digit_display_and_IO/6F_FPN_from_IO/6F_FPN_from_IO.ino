@@ -72,8 +72,8 @@ float fpn_from_IO()
   
   for(int m = 0; m <= 14; m++)FPN_string[m] = 0;
   
-  set_up_pci;
-  enable_pci;
+  set_up_PCI;
+  enable_PCI;
   
   Init_display_for_pci_data_entry;
   scroll_control = 0b00011110;
