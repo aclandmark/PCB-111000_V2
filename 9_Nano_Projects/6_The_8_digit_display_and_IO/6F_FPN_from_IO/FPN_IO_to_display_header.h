@@ -5,6 +5,10 @@
 char watch_dog_reset = 0;
 char User_response;
 
+volatile char Data_Entry_complete, digit_entry;
+volatile char scroll_control;
+char digits[8];
+
 
 
 #define T0_delay_10ms 5,178
@@ -12,8 +16,8 @@ char User_response;
 #define T2_delay_10ms 7,178
 
 
-#define set_up_PCI_on_sw2           PCICR |= (1 << PCIE0);
-#define enable_pci_on_sw2           PCMSK0 |= (1 << PCINT6);
+#define set_up_PCI      PCICR |= ((1 << PCIE0) | (1 << PCIE2))
+#define enable_PCI      PCMSK0 |= (1 << PCINT6);    PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
 
 
 #define switch_1_down  ((PIND & 0x80)^0x80)
@@ -23,6 +27,15 @@ char User_response;
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
 
+#define Init_display_for_pci_data_entry \
+clear_digits;\
+digits[0] = '0';\
+I2C_Tx_8_byte_array(digits);
+
+
+
+#define clear_digits {for(int m = 0; m<=7; m++)digits[m]=0;}
+#define shift_digits_left {for (int n = 0; n < 7; n++){digits[7-n] = digits[6-n];}}
 
 
 /*****************************************************************************/
@@ -162,13 +175,15 @@ TWCR = (1 << TWINT);
 
 /*****************************************************************************/
 #include "Resources_nano_projects/Subroutines/HW_timers.c"
-//#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Basic.c"
 #include "Resources_nano_projects/I2C_Subroutines/I2C_subroutines_1.c"
 #include "Resources_nano_projects/I2C_Subroutines/I2C_slave_Rx_Tx.c"
 #include "Resources_nano_projects/I2C_Subroutines/I2C_diagnostic_A.c"
 #include "Resources_nano_projects/Subroutines/Random_and_prime_nos.c"
 
 #include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
+#include "Resources_nano_projects/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
+#include "Resources_nano_projects\Subroutines\FPN_DIY_IO.c"
+#include "Resources_nano_projects/PC_comms/KBD_to_display.c"
 
 
 /******************************************************************************/
