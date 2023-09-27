@@ -36,7 +36,7 @@ int main (void){
   float x1;
   float power;
  
-  setup_HW_Arduino_IO;
+  setup_HW_Arduino_IO_Extra;
 
 if(!(watch_dog_reset))
 
@@ -128,7 +128,8 @@ ISR(PCINT0_vect){
   I2C_Tx_any_segment_clear_all();
   Timer_T0_10mS_delay_x_m(25);                           //Flash display
   I2C_Tx_8_byte_array(digits);
-Data_Entry_complete=1;digit_entry = 1;}
+Data_Entry_complete=1;digit_entry = 1;
+while(switch_2_down);}                                  //Extra line
 
 
 
