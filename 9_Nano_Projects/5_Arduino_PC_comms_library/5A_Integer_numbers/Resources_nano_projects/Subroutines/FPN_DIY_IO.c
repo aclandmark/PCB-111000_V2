@@ -17,11 +17,11 @@ char PCMSK0_backup, PCMSK2_backup, float_display_mode;
 
 
 /*****************************************************************************/
-#define pci_on_sw1_and_sw2_enabled (PCMSK2 & 0x84) == 0x84
-#define pci_on_sw3_enabled (PCMSK0 & 0x04) == 0x04
-#define PCIenabled ((pci_on_sw1_and_sw2_enabled) || (pci_on_sw3_enabled))
-#define disable_pci_on_sw1_and_sw2  PCMSK2 &= (~((1 << PCINT18) | (1 << PCINT23)));
-#define disable_pci_on_sw3  PCMSK0 &= (~(1 << PCINT2));
+#define pci_on_sw1_and_sw3_enabled (PCMSK2 & 0x84) == 0x84
+#define pci_on_sw2_enabled (PCMSK0 & 0x40) == 0x40
+#define PCIenabled ((pci_on_sw1_and_sw3_enabled) || (pci_on_sw2_enabled))
+#define disable_pci_on_sw1_and_sw3  PCMSK2 &= (~((1 << PCINT18) | (1 << PCINT23)));
+#define disable_pci_on_sw2  PCMSK0 &= (~(1 << PCINT6));
 
 
 
@@ -31,10 +31,10 @@ char PCMSK0_backup, PCMSK2_backup, float_display_mode;
 PCMSK0_backup= PCMSK0;\
 PCMSK2_backup= PCMSK2;\
 float_display_mode = '0';\
-if (PCIenabled){disable_pci_on_sw3;disable_pci_on_sw1_and_sw2;}\
+if (PCIenabled){disable_pci_on_sw2;disable_pci_on_sw1_and_sw3;}\
 while(1){\
-if(switch_3_down)float_display_mode = '1'; else float_display_mode = '0';\
-if((switch_1_down)||(switch_2_down))float_display_mode = '2';\
+if(switch_2_down)float_display_mode = '1'; else float_display_mode = '0';\
+if((switch_1_down)||(switch_3_down))float_display_mode = '2';\
 waiting_for_I2C_master;\
 send_byte_with_Nack(float_display_mode);\
 clear_I2C_interrupt;\
