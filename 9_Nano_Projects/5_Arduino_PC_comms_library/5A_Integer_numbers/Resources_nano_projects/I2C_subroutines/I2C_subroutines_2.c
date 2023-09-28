@@ -1,8 +1,9 @@
 
-char PCMSK0_backup, PCMSK2_backup, float_display_mode;
+char PCMSK0_backup, PCMSK2_backup, float_display_mode;		//Duplicate
 	
 
-/*****************************************************************************/
+/*****************************************************************************
+DUPLICATE
 #define pci_on_sw1_and_sw3_enabled 			(PCMSK2 & 0x84) == 0x84
 #define pci_on_sw2_enabled 					(PCMSK0 & 0x40) == 0x40
 #define PCIenabled 							((pci_on_sw1_and_sw3_enabled) || (pci_on_sw2_enabled))
@@ -27,7 +28,7 @@ if(float_display_mode == '2')break;}\
 PCMSK0 = PCMSK0_backup;\
 PCMSK2 = PCMSK2_backup;
 
-
+****************************************************************************************/
 
 
 void I2C_Tx_long(long);
