@@ -14,6 +14,9 @@ int main (void){
 float Num_1;
 float power;
 char digits[15];
+char num_as_string[12]; 
+
+
 
 long Significand;
 long  Denominator;
