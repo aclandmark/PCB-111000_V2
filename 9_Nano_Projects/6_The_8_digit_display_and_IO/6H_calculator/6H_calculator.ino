@@ -40,8 +40,8 @@ int main (void){
 
 if(!(watch_dog_reset))
 
-{Serial.write("Press: sw_1 to populate digit_0, sw2 to shift the display left\r\n\
-sw_3 to enter the number and sw1 to do some arithmetic.\r\n\
+{Serial.write("Press: sw_3 to populate digit_0, sw1 to shift the display left\r\n\
+sw_2 to enter the number and sw1 to do some arithmetic.\r\n\
 Note: display flashes to indicate number has been entered.\r\n");}
 
 else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
@@ -49,13 +49,13 @@ else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
  x1 = fpn_from_IO();
  Sc_Num_to_PC_A(x1,1,6 ,' ');
  I2C_FPN_to_display(x1);
-while(switch_1_up);
+while(switch_3_up);
   
 while(1){
 op = 0;
 cli();
 I2C_Tx_any_segment_clear_all();
-while(switch_1_down)
+while(switch_3_down)
 {op = op%8;
 I2C_Tx_any_segment('d', 7- op);
 op += 1;
@@ -83,9 +83,9 @@ Serial.write ("\r\n");
 I2C_FPN_to_display(result);
 x1 = result;
 
-while(switch_1_up);}
+while(switch_3_up);}
 
-while(switch_1_up);
+while(switch_3_up);
 SW_reset;}
 
 
@@ -99,8 +99,8 @@ float fpn_from_IO()
   
   for(int m = 0; m <= 14; m++)FPN_string[m] = 0;
   
-  set_up_pci;
-  enable_pci;
+  set_up_PCI;
+  enable_PCI;
   
   Init_display_for_pci_data_entry;
   scroll_control = 0b00011110;
@@ -122,7 +122,7 @@ sign = '-';}
 num = atof(FPN_string);
 
 if (sign == '-') num = num * (-1);
-disable_pci_on_sw3;
+disable_pci_on_sw2;
 return num;}
 
 
@@ -151,22 +151,23 @@ if (Data_Entry_complete)break;                          //Leave loop when data e
 
 /*************************************************************************/
 ISR(PCINT0_vect){
-  if(switch_3_up)return;                                 //Ignore switch release
+  if(switch_2_up)return;                                 //Ignore switch release
   I2C_Tx_any_segment_clear_all();
   Timer_T0_10mS_delay_x_m(25);                           //Flash display
   I2C_Tx_8_byte_array(digits);
-Data_Entry_complete=1;digit_entry = 1;}
+Data_Entry_complete=1;digit_entry = 1;
+while(switch_2_down);}
 
 
 
 /*************************************************************************/
 ISR(PCINT2_vect){
-  if((switch_1_up) && (switch_2_up))return;
-  while(switch_1_down){scroll_display_zero();
+  if((switch_1_up) && (switch_3_up))return;
+  while(switch_3_down){scroll_display_zero();
   Timer_T0_10mS_delay_x_m(20);}
-  if(switch_2_down)shift_display_left();
+  if(switch_1_down)shift_display_left();
   Timer_T0_10mS_delay_x_m(20);
-clear_PCI_on_sw1_and_sw2;}
+clear_PCI_on_sw1_and_sw3;}
 
 
 
