@@ -55,7 +55,7 @@ void String_to_PC(const char*);
 void Exp_to_PC (signed char);
 
 /************************************************************************/
-void I2C_Tx_long(long L_number){
+void I2C_Tx_long(long L_number){//DUPLICATE
 char s[4];
 char num_bytes=4; char mode=6;
 for(int m=0; m<=3; m++){s[m] = (L_number >> (8*(3-m)));}
@@ -94,7 +94,7 @@ PCMSK0 = PCMSK0_backup;
 PCMSK2 = PCMSK2_backup;}*/
 
 /************************************************************************/
-long I2C_displayToNum(void){		
+long I2C_displayToNum(void){	//Duplicate	
 long L_number = 0;
 unsigned char receive_byte;
 char num_bytes=0;
