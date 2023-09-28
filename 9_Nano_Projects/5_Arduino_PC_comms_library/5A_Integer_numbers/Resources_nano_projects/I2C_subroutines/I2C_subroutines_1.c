@@ -13,6 +13,7 @@ void I2C_initiate_10mS_ref(void);
 void I2C_Tx_display(void);
 void I2C_Tx_LED_dimmer(void);
 void I2C_Set_Tx_Rx_speed(char);
+void I2C_Tx_long(long );
 
 unsigned int PRN_16bit_GEN(unsigned int, unsigned char*);
 
@@ -168,4 +169,15 @@ L_number = L_number << 8; break;
 case 3: L_number =  L_number + receive_byte; break;}}
 clear_I2C_interrupt;
 return L_number;}
+
+
+
+/************************************************************************/
+void I2C_Tx_long(long L_number){
+char s[4];
+char num_bytes=4; char mode=6;
+for(int m=0; m<=3; m++){s[m] = (L_number >> (8*(3-m)));}
+I2C_Tx(num_bytes,mode, s);}
+
+
 
