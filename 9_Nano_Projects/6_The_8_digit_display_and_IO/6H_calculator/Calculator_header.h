@@ -21,18 +21,6 @@ char digits[8];
 
 #define   clear_PCI_on_sw1_and_sw3   PCIFR |= (1<< PCIF2);
 
-#define disable_PCI PCMSK0 &= (~(1 << PCINT6)); \
-PCMSK2 &= (~((1 << PCINT18) | (1 << PCINT23)));
-
-
-#define message_1 \
-"\r\n\
-Press sw3 to populate digits[0]\r\n\
-sw1 to shift display left\r\n\
-sw2 to enter the number\r\n\
-sw3 to pause the display \r\n\
-and restart the program.\r\n"
-
 
 #define switch_1_down  ((PIND & 0x80)^0x80)
 #define switch_1_up   (PIND & 0x80)
