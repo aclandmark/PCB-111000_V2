@@ -118,22 +118,6 @@ TWCR = (1 << TWINT) | (1 << TWEN);		//clear interrupt and leave I2C slave active
 TWCR |= (1 << TWEA) | (1 << TWIE);} 	//Slave mode with interrupt and Enable Acknowledge
 
 
-/************************************************************************/
-
-void I2C_Tx_display(void){
-
-int PRN = 0;
-unsigned char PRN_counter = 0;
-
-if ((!(eeprom_read_byte((uint8_t*)0x1FC))) && (!(eeprom_read_byte((uint8_t*)0x1FB))))
-eeprom_write_byte((uint8_t*)(0x1FC), 0xFF);
-
-
-while(1){
-PRN = PRN_16bit_GEN (PRN, &PRN_counter);									//Generate a new PRN (0) tells subroutine to use the EEPROM
-I2C_Tx_2_integers(PRN, (PRN<<1));							//Display two "pseudo random numbers"
-Timer_T1_sub(T1_delay_100ms);}}
-
 
 
 /************************************************************************/
@@ -144,6 +128,16 @@ if((PINB & 0x40)^0x40)Dimmer_control = 1;			//if Switch_2 down
 else Dimmer_control = 0;							//Normal operation
 
 I2C_Tx(1, 'Q', &Dimmer_control);}	
+
+
+
+
+/************************************************************************/
+void I2C_Tx_long(long L_number){
+char s[4];
+char num_bytes=4; char mode=6;
+for(int m=0; m<=3; m++){s[m] = (L_number >> (8*(3-m)));}
+I2C_Tx(num_bytes,mode, s);}
 
 
 
@@ -173,11 +167,21 @@ return L_number;}
 
 
 /************************************************************************/
-void I2C_Tx_long(long L_number){
-char s[4];
-char num_bytes=4; char mode=6;
-for(int m=0; m<=3; m++){s[m] = (L_number >> (8*(3-m)));}
-I2C_Tx(num_bytes,mode, s);}
+
+void I2C_Tx_display(void){
+
+int PRN = 0;
+unsigned char PRN_counter = 0;
+
+if ((!(eeprom_read_byte((uint8_t*)0x1FC))) && (!(eeprom_read_byte((uint8_t*)0x1FB))))
+eeprom_write_byte((uint8_t*)(0x1FC), 0xFF);
+
+
+while(1){
+PRN = PRN_16bit_GEN (PRN, &PRN_counter);									//Generate a new PRN (0) tells subroutine to use the EEPROM
+I2C_Tx_2_integers(PRN, (PRN<<1));							//Display two "pseudo random numbers"
+Timer_T1_sub(T1_delay_100ms);}}
 
 
 
+/**********************************************************************************/
