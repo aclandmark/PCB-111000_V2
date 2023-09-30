@@ -1,7 +1,7 @@
 
 
 void I2C_Tx(char, char, char*);
-
+unsigned int PRN_16bit_GEN(unsigned int, unsigned char*);
 
 
 
@@ -18,6 +18,21 @@ I2C_Tx(num_bytes,mode, s);}
 
 
 
+/************************************************************************/
+void I2C_Tx_any_segment(char segment, char digit_num){
+char s[2]; char num_bytes=2; char mode = 3;
+s[0] = segment;
+s[1] = digit_num; 
+I2C_Tx(num_bytes,mode, s);}
+
+
+/************************************************************************/
+void I2C_Tx_any_segment_clear_all(void){
+char segment = 'a'; char digit_num = 0;
+char s[2]; char num_bytes=2; char mode = 2;
+s[0] = segment;
+s[1] = digit_num; 
+I2C_Tx(num_bytes,mode, s);}
 
 
 
@@ -27,6 +42,21 @@ char num_bytes=8; char mode=4;
 I2C_Tx(num_bytes,mode, s);}
 
 
+
+/************************************************************************/
+void I2C_Tx_display(void){
+
+int PRN = 0;
+unsigned char PRN_counter = 0;
+
+if ((!(eeprom_read_byte((uint8_t*)0x1FC))) && (!(eeprom_read_byte((uint8_t*)0x1FB))))
+eeprom_write_byte((uint8_t*)(0x1FC), 0xFF);
+
+
+while(1){
+PRN = PRN_16bit_GEN (PRN, &PRN_counter);									//Generate a new PRN (0) tells subroutine to use the EEPROM
+I2C_Tx_2_integers(PRN, (PRN<<1));							//Display two "pseudo random numbers"
+Timer_T1_sub(T1_delay_100ms);}}
 
 
 
@@ -41,6 +71,20 @@ I2C_Tx(1, 'Q', &Dimmer_control);}
 
 
 
+/************************************************************************/
+void I2C_Rx_get_version(char str_type){
+char num_bytes=1; char mode='P';
+char s[2];
+
+s[0]= str_type; s[1]=0;
+I2C_Tx(num_bytes,mode, s);
+waiting_for_I2C_master;
+num_bytes = (receive_byte_with_Ack() - '0') * 10;
+num_bytes += (receive_byte_with_Ack() - '0');
+for (int m = 0; m < num_bytes; m++){
+if (m ==(num_bytes-1)){Char_to_PC_Basic(receive_byte_with_Nack());}
+else {Char_to_PC_Basic(receive_byte_with_Ack());}}
+TWCR = (1 << TWINT);}
 
 
 
