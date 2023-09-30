@@ -37,6 +37,15 @@ I2C_Tx(num_bytes,mode, s);}
 
 
 /************************************************************************/
+void I2C_Tx_long(long L_number){
+char s[4];
+char num_bytes=4; char mode=6;
+for(int m=0; m<=3; m++){s[m] = (L_number >> (8*(3-m)));}
+I2C_Tx(num_bytes,mode, s);}
+
+
+
+/************************************************************************/
 void I2C_Tx_8_byte_array(char s[]){									//was I2C_Tx_1
 char num_bytes=8; char mode=4;
 I2C_Tx(num_bytes,mode, s);}
