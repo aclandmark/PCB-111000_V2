@@ -99,7 +99,7 @@ I2C_Tx(1, 'Q', &Dimmer_control);}
 
 
 /************************************************************************/
-void I2C_Rx_get_version(char str_type){
+/*void I2C_Rx_get_version(char str_type){
 char num_bytes=1; char mode='P';
 char s[2];
 
@@ -112,11 +112,11 @@ for (int m = 0; m < num_bytes; m++){
 if (m ==(num_bytes-1)){Char_to_PC_Basic(receive_byte_with_Nack());}
 else {Char_to_PC_Basic(receive_byte_with_Ack());}}
 TWCR = (1 << TWINT);}
-
+*/
 
 
 /************************************************************************/
-void I2C_Rx_get_version_A(char str_type){			//NEEDED
+/*void I2C_Rx_get_version_A(char str_type){			//NEEDED
 char num_bytes=1; char mode='P';
 char s[2];
 
@@ -129,7 +129,7 @@ for (int m = 0; m < num_bytes; m++){
 if (m ==(num_bytes-1)){Serial.write(receive_byte_with_Nack());}
 else {Serial.write(receive_byte_with_Ack());}}
 TWCR = (1 << TWINT);}
-
+*/
 
 
 /************************************************************************/
