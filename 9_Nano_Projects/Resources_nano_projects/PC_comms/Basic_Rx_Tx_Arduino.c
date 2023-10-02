@@ -1,5 +1,5 @@
 
-
+void I2C_Tx(char, char, char*);
 
 /**********************************************************************************************************************************************************************************/
 char isCharavailable_A (int m){int n = 0;								//Version of isCharavailable_Basic() that uses the Arduino library
@@ -89,5 +89,21 @@ while(receive_byte);									//Detect '\0' character used to terminate a string
 receive_byte_with_Nack();								//Receve a second null char at the end of the string
 clear_I2C_interrupt;}									//Complete transaction
 
+
+
+/************************************************************************/
+void I2C_Rx_get_version_A(char str_type){			//NEEDED
+char num_bytes=1; char mode='P';
+char s[2];
+
+s[0]= str_type; s[1]=0;
+I2C_Tx(num_bytes,mode, s);
+waiting_for_I2C_master;
+num_bytes = (receive_byte_with_Ack() - '0') * 10;
+num_bytes += (receive_byte_with_Ack() - '0');
+for (int m = 0; m < num_bytes; m++){
+if (m ==(num_bytes-1)){Serial.write(receive_byte_with_Nack());}
+else {Serial.write(receive_byte_with_Ack());}}
+TWCR = (1 << TWINT);}
 
 
