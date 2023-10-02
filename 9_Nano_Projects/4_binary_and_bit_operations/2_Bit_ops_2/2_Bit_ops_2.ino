@@ -47,7 +47,7 @@ lfsr = (PRN_8bit_GEN ());                  //Generate a new PRN (0) tells subrou
       case '4':   String_to_PC_Basic("clear a bit\r\n"); break;
       case '5':   String_to_PC_Basic("toggle a bit\r\n"); break;
       case '6':   String_to_PC_Basic("test a bit\r\n"); break;
-      default:    newline; continue;
+      default:    newline_Basic(); continue;
     }
 
     digits[1] = 0;
