@@ -1,6 +1,15 @@
 
 void I2C_Tx(char, char, char*);
 
+void send_byte_with_Ack(char);
+void send_byte_with_Nack(char);
+char receive_byte_with_Ack(void);
+char receive_byte_with_Nack(void);
+void I2C_Tx_initiate_mode(char);
+
+
+
+
 /**********************************************************************************************************************************************************************************/
 char isCharavailable_A (int m){int n = 0;								//Version of isCharavailable_Basic() that uses the Arduino library
 while (!(Serial.available())){n++;	wdr();			
