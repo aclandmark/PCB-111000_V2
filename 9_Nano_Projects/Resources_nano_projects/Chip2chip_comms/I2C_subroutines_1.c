@@ -46,9 +46,27 @@ I2C_Tx(num_bytes,mode, s);}
 
 
 /************************************************************************/
+void I2C_Tx_BWops(char s[]){										//Bit wise operations
+char num_bytes=8;
+char mode = 'G';
+I2C_Tx(num_bytes,mode, s);}
+
+
+
+
+/************************************************************************/
 void I2C_Tx_8_byte_array(char s[]){									//was I2C_Tx_1
 char num_bytes=8; char mode=4;
 I2C_Tx(num_bytes,mode, s);}
+
+
+
+/************************************************************************/
+void I2C_Tx_display_char (char single_char, char sign_bit){
+char s[2]; char num_bytes=2; char mode = 5;
+s[0] = single_char;
+s[1] = sign_bit;
+I2C_Tx(num_bytes, mode, s);}
 
 
 
