@@ -3,7 +3,7 @@
 #include <avr/wdt.h>
 
 char watch_dog_reset = 0;
-
+char str_counter;
 
 #define switch_3_down  ((PIND & 0x04)^0x04)
 
@@ -43,9 +43,11 @@ switch (waitforkeypress_Basic()){\
 case '0':break;\
 case '1':I2C_Rx_get_version('0');break;\
 case '2':I2C_Rx_get_version('1');break;\
-case '3':do\
-{Read_Hello_world_string();newline_Basic();}\
-while (waitforkeypress_Basic() != 'x');\
+case '3':str_counter = 0; do\
+{Read_Hello_world_string();newline_Basic();\
+str_counter += 1;\
+waitforkeypress_Basic();}\
+while (str_counter < 3);\
 break;\
 case '4':wdt_enable(WDTO_30MS);\
 I2C_Tx_display(); break;}}\
