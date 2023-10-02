@@ -10,7 +10,7 @@ char receive_byte_with_Ack(void);
 char receive_byte_with_Nack(void);
 void I2C_Tx_initiate_mode(char);
 
-
+void I2C_Tx(char, char, char*);
 
 /*********************************************************************/
 void setup_PC_comms_Basic (unsigned char UBRROH_N, unsigned char UBRR0L_N ){
@@ -139,5 +139,21 @@ receive_byte_with_Nack();								//Receve a second null char at the end of the s
 clear_I2C_interrupt;}									//Complete transaction
 
 
+
+
+/************************************************************************/
+void I2C_Rx_get_version(char str_type){
+char num_bytes=1; char mode='P';
+char s[2];
+
+s[0]= str_type; s[1]=0;
+I2C_Tx(num_bytes,mode, s);
+waiting_for_I2C_master;
+num_bytes = (receive_byte_with_Ack() - '0') * 10;
+num_bytes += (receive_byte_with_Ack() - '0');
+for (int m = 0; m < num_bytes; m++){
+if (m ==(num_bytes-1)){Char_to_PC_Basic(receive_byte_with_Nack());}
+else {Char_to_PC_Basic(receive_byte_with_Ack());}}
+TWCR = (1 << TWINT);}
 
 
