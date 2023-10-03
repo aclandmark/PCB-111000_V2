@@ -4,7 +4,7 @@
 
 char watch_dog_reset = 0;
 char User_response;
-
+char str_counter;
 
 
 #define T0_delay_10ms 5,178
@@ -63,9 +63,11 @@ switch (waitforkeypress_A()){\
 case '0':break;\
 case '1':I2C_Rx_get_version_A('0');break;\
 case '2':I2C_Rx_get_version_A('1');break;\
-case '3':do\
-{Read_Hello_world_string_A();newline_A();}\
-while (waitforkeypress_A() != 'x');\
+case '3':str_counter = 0; do\
+{Read_Hello_world_string_A();newline_A();\
+str_counter += 1;\
+waitforkeypress_A();}\
+while (str_counter < 3);\
 break;\
 case '4':wdt_enable(WDTO_30MS);\
 I2C_Tx_display(); break;}}\
@@ -162,12 +164,13 @@ TWCR = (1 << TWINT);
 
 /*****************************************************************************/
 #include "Resources_nano_projects/Subroutines/HW_timers.c"
-#include "Resources_nano_projects/I2C_Subroutines/I2C_subroutines_1.c"
-#include "Resources_nano_projects/I2C_Subroutines/I2C_slave_Rx_Tx.c"
-#include "Resources_nano_projects/I2C_Subroutines/I2C_diagnostic_A.c"
+#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
+#include "Resources_nano_projects/Chip2chip_comms/I2C_subroutines_1.c"
+#include "Resources_nano_projects/Chip2chip_comms/I2C_slave_Rx_Tx.c"
+//#include "Resources_nano_projects/I2C_Subroutines/I2C_diagnostic_A.c"
 #include "Resources_nano_projects/Subroutines/Random_and_prime_nos.c"
 
-#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
+
 #include "Resources_nano_projects/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
 #include "Resources_nano_projects\Subroutines\FPN_DIY_IO.c"
 #include "Resources_nano_projects/PC_comms/KBD_to_display.c"
