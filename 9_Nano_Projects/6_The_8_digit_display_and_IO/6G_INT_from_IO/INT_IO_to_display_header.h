@@ -4,6 +4,7 @@
 
 char watch_dog_reset = 0;
 char User_response;
+char str_counter;
 
 volatile char Data_Entry_complete, digit_entry;
 volatile char scroll_control;
@@ -90,9 +91,11 @@ switch (waitforkeypress_A()){\
 case '0':break;\
 case '1':I2C_Rx_get_version_A('0');break;\
 case '2':I2C_Rx_get_version_A('1');break;\
-case '3':do\
-{Read_Hello_world_string_A();newline_A();}\
-while (waitforkeypress_A() != 'x');\
+case '3':str_counter = 0; do\
+{Read_Hello_world_string_A();newline_A();\
+str_counter += 1;\
+waitforkeypress_A();}\
+while (str_counter < 3);\
 break;\
 case '4':wdt_enable(WDTO_30MS);\
 I2C_Tx_display(); break;}}\
