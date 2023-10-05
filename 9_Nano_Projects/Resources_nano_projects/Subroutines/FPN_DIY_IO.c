@@ -34,7 +34,7 @@ float_display_mode = '0';\
 if (PCIenabled){disable_pci_on_sw2;disable_pci_on_sw1_and_sw3;}\
 while(1){\
 if(switch_2_down)float_display_mode = '1'; else float_display_mode = '0';\
-if(switch_3_down)float_display_mode = '2';\
+if(switch_1_down)float_display_mode = '2';\
 waiting_for_I2C_master;\
 send_byte_with_Nack(float_display_mode);\
 clear_I2C_interrupt;\
