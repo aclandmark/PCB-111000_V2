@@ -16,10 +16,10 @@ char str_counter;
 #define enable_pci_on_sw2           PCMSK0 |= (1 << PCINT6);
 
 
-#define switch_1_down  ((PIND & 0x80)^0x80)
-#define switch_1_up   (PIND & 0x80)
-#define switch_3_down ((PIND & 0x04)^0x04)
-#define switch_3_up   (PIND & 0x04)
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
 
@@ -146,8 +146,6 @@ while(1){\
 do{Serial.write("R?    ");}  while((isCharavailable_A (50) == 0));\
 User_response = Serial.read();\
 if((User_response == 'R') || (User_response == 'r'))break;} Serial.write("\r\n");
-
-
 
 
 
