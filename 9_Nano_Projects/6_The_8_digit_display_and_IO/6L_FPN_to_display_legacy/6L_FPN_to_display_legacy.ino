@@ -24,7 +24,7 @@ char  expnt;
 char counter = 0;
 
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino_IO_Extra;
 
 Serial.write("\r\nEnter scientific number \
 & terminate with Return key.\r\n");
