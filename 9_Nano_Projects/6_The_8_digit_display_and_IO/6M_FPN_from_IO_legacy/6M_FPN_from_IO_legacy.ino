@@ -62,8 +62,8 @@ int main (void){
 
 if(!(watch_dog_reset))
 
-{Serial.write("\r\nPress: sw_3 to populate digit_0, sw_1 to shift the display left\r\n\
-sw_2 to enter the number and sw3 to do some arithmetic.\r\n\
+{Serial.write("\r\nPress: sw_1 to populate digit_0, sw_3 to shift the display left\r\n\
+sw_2 to enter the number and sw1 to do some arithmetic.\r\n\
 Note: display flashes to indicate number has been entered.\r\n");}
 
 else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
@@ -80,11 +80,11 @@ Significand = Fraction_to_Binary_Signed(Significand, Denominator);
 I2C_Tx_float_num(Significand, expnt);
 I2C_Tx_float_display_control;
 
-while(switch_3_down);
+while(switch_1_down);
 
 x1 = pow(x1, power); }                                //Do some arithmetic
 
-while(switch_3_up);
+while(switch_1_up);
 SW_reset;}
 
 
@@ -202,8 +202,8 @@ while(switch_2_down);}
 /*************************************************************************/
 ISR(PCINT2_vect){
   if((switch_1_up) && (switch_3_up))return;
-  while(switch_3_down){scroll_display_zero();Timer_T0_10mS_delay_x_m(20);}
-  if(switch_1_down)shift_display_left();
+  while(switch_1_down){scroll_display_zero();Timer_T0_10mS_delay_x_m(20);}
+  if(switch_3_down)shift_display_left();
   Timer_T0_10mS_delay_x_m(20);
 clear_PCI_on_sw1_and_sw3;}
 
