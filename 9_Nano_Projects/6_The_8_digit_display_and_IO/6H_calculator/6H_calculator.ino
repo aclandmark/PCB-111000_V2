@@ -40,8 +40,8 @@ int main (void){
 
 if(!(watch_dog_reset))
 
-{Serial.write("Press: sw_3 to populate digit_0, sw1 to shift the display left\r\n\
-sw_2 to enter the number and sw1 to do some arithmetic.\r\n\
+{Serial.write("Press: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
+sw_2 to enter the number and sw1 to select a function.\r\n\
 Note: display flashes to indicate number has been entered.\r\n");}
 
 else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
@@ -49,13 +49,13 @@ else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
  x1 = fpn_from_IO();
  Sc_Num_to_PC_A(x1,1,6 ,' ');
  I2C_FPN_to_display(x1);
-while(switch_3_up);
+while(switch_1_up);
   
 while(1){
 op = 0;
 cli();
 I2C_Tx_any_segment_clear_all();
-while(switch_3_down)
+while(switch_1_down)
 {op = op%8;
 I2C_Tx_any_segment('d', 7- op);
 op += 1;
@@ -83,9 +83,12 @@ Serial.write ("\r\n");
 I2C_FPN_to_display(result);
 x1 = result;
 
-while(switch_3_up);}
+while(switch_1_up);
+if (switch_3_down)break;}
 
-while(switch_3_up);
+cli();
+while((switch_1_down) || (switch_3_down));
+I2C_Tx_any_segment_clear_all();
 SW_reset;}
 
 
@@ -98,7 +101,7 @@ float fpn_from_IO()
   char sign = '+';
   
   for(int m = 0; m <= 14; m++)FPN_string[m] = 0;
-  
+    
   set_up_PCI;
   enable_PCI;
   
@@ -130,16 +133,16 @@ return num;}
 /*************************************************************************/
 int FPN_as_string(char * FPN_num_string){              //Returns the exponent
 
-char keypress = 0;
-
 Data_Entry_complete = 0;
 digit_entry = 0;
+zero_detect = 0;
   
 while(1){                                               //Data entry loop
 while (!(digit_entry));                                 //Wait here while each digit is entered
+
 digit_entry = 0;
 if (Data_Entry_complete)break;                          //Leave loop when data entry is complete
-*(FPN_num_string++) = digits[1]; _delay_us(1);}         //Increment string adddress after saving digit 
+*(FPN_num_string++) = digits[1]; _delay_us(100);}         //Increment string adddress after saving digit 
 
 *(FPN_num_string++) = digits[0];                        //Save final digit
 *FPN_num_string = '\r';   }                              //Terminate string with cr.
@@ -152,6 +155,9 @@ if (Data_Entry_complete)break;                          //Leave loop when data e
 /*************************************************************************/
 ISR(PCINT0_vect){
   if(switch_2_up)return;                                 //Ignore switch release
+
+if(!(zero_detect))return;
+  
   I2C_Tx_any_segment_clear_all();
   Timer_T0_10mS_delay_x_m(25);                           //Flash display
   I2C_Tx_8_byte_array(digits);
@@ -163,9 +169,12 @@ while(switch_2_down);}
 /*************************************************************************/
 ISR(PCINT2_vect){
   if((switch_1_up) && (switch_3_up))return;
-  while(switch_3_down){scroll_display_zero();
+  while(switch_1_down){scroll_display_zero();
   Timer_T0_10mS_delay_x_m(20);}
-  if(switch_1_down)shift_display_left();
+
+if((!(zero_detect))  && (digits[0] != '0'))zero_detect = 1;
+  
+  if(switch_3_down)shift_display_left();
   Timer_T0_10mS_delay_x_m(20);
 clear_PCI_on_sw1_and_sw3;}
 
@@ -173,6 +182,7 @@ clear_PCI_on_sw1_and_sw3;}
 
 /*************************************************************************/
 void shift_display_left(void){
+  
   scroll_control &= (~(0x14));                        //negative sign & first char disabled
 
   switch(digits[0]){
