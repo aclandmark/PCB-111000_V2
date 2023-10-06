@@ -36,15 +36,16 @@ int main (void){
   char op;
   float x1, x2, result;
  
-  setup_HW_Arduino_IO;
+  setup_HW_Arduino_IO_Extra;
 
 if(!(watch_dog_reset))
 
-{Serial.write("Press: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
+{Serial.write("\r\nPress: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
 sw_2 to enter the number and sw1 to select a function.\r\n\
-Note: display flashes to indicate number has been entered.\r\n");}
+Note: display flashes to indicate number has been entered.\r\n\
+Press sw_3 then sw_1 to reset (release slowly).\r\n");}
 
-else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
+else {Serial.write("\r\nRestarted.\r\n\r\n"); watch_dog_reset = 0;}
   
  x1 = fpn_from_IO();
  Sc_Num_to_PC_A(x1,1,6 ,' ');
@@ -52,6 +53,8 @@ else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
 while(switch_1_up);
   
 while(1){
+  if (switch_3_down)break;
+
 op = 0;
 cli();
 I2C_Tx_any_segment_clear_all();
@@ -83,8 +86,7 @@ Serial.write ("\r\n");
 I2C_FPN_to_display(result);
 x1 = result;
 
-while(switch_1_up);
-if (switch_3_down)break;}
+while(switch_1_up);}
 
 cli();
 while((switch_1_down) || (switch_3_down));
@@ -135,7 +137,7 @@ int FPN_as_string(char * FPN_num_string){              //Returns the exponent
 
 Data_Entry_complete = 0;
 digit_entry = 0;
-zero_detect = 0;
+non_zero_detect = 0;
   
 while(1){                                               //Data entry loop
 while (!(digit_entry));                                 //Wait here while each digit is entered
@@ -156,7 +158,9 @@ if (Data_Entry_complete)break;                          //Leave loop when data e
 ISR(PCINT0_vect){
   if(switch_2_up)return;                                 //Ignore switch release
 
-if(!(zero_detect))return;
+if(switch_3_down){shift_digits_right;non_zero_detect = 1;}                     //Over ride zero detect mechanism
+
+if(!(non_zero_detect))return;                                //Detects entries of Zero, minus or d.p. only
   
   I2C_Tx_any_segment_clear_all();
   Timer_T0_10mS_delay_x_m(25);                           //Flash display
@@ -169,12 +173,18 @@ while(switch_2_down);}
 /*************************************************************************/
 ISR(PCINT2_vect){
   if((switch_1_up) && (switch_3_up))return;
+
+if(switch_1_down)non_zero_detect= 0;
+  
   while(switch_1_down){scroll_display_zero();
   Timer_T0_10mS_delay_x_m(20);}
 
-if((!(zero_detect))  && (digits[0] != '0'))zero_detect = 1;
+if((!(non_zero_detect))  && (digits[0] != '0')
+&& (digits[0] != '-') && (digits[0] != '.')
+ && (digits[0] != 'e'))non_zero_detect = 1;
   
   if(switch_3_down)shift_display_left();
+  
   Timer_T0_10mS_delay_x_m(20);
 clear_PCI_on_sw1_and_sw3;}
 
