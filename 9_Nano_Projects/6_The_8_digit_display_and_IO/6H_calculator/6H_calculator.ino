@@ -27,7 +27,7 @@ IT INTRODUCES
                
 */
 
-
+//CHANGE DIGITS ARRAY SIZE TO 15
 
 #include "Calculator_header.h"
 
@@ -101,9 +101,9 @@ float fpn_from_IO()
   char FPN_string[15];
   float num = 0.0;
   char sign = '+';
-  
-  for(int m = 0; m <= 14; m++)FPN_string[m] = 0;
     
+  for(int m = 0; m <= 14; m++)FPN_string[m] = 0;
+   
   set_up_PCI;
   enable_PCI;
   
@@ -135,6 +135,8 @@ return num;}
 /*************************************************************************/
 int FPN_as_string(char * FPN_num_string){              //Returns the exponent
 
+char test;
+
 Data_Entry_complete = 0;
 digit_entry = 0;
 non_zero_detect = 0;
@@ -144,10 +146,16 @@ while (!(digit_entry));                                 //Wait here while each d
 
 digit_entry = 0;
 if (Data_Entry_complete)break;                          //Leave loop when data entry is complete
-*(FPN_num_string++) = digits[1]; _delay_us(100);}         //Increment string adddress after saving digit 
+//*(FPN_num_string++) = digits[1]; _delay_us(100);
+}                                                        //Increment string adddress after saving digit 
+//*(FPN_num_string++) = digits[0];                        //Save final digit
+//*FPN_num_string = '\r';   
 
-*(FPN_num_string++) = digits[0];                        //Save final digit
-*FPN_num_string = '\r';   }                              //Terminate string with cr.
+
+*(FPN_num_string) = '\r'; 
+{int m = 0; while (digits[m]){shift_FPN_num_string_left; *(FPN_num_string)=digits[m++] ;}}
+//Serial.print(FPN_num_string);
+}     
 
 
 
