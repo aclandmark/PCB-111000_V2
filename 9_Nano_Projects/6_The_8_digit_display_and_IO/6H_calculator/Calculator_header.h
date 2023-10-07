@@ -41,8 +41,12 @@ I2C_Tx_8_byte_array(digits);
 
 #define clear_digits {for(int m = 0; m<=7; m++)digits[m]=0;}
 #define shift_digits_left {for (int n = 0; n < 7; n++){digits[7-n] = digits[6-n];}}
-
 #define shift_digits_right {for (int n = 0; n < 7; n++){digits[n] = digits[n+1];}}
+
+#define shift_FPN_num_string_left   {for (int n = 0; n < 14; n++){*(FPN_num_string + 14 - n) = *(FPN_num_string + 13 - n);}}
+
+//#define shift_test_string_left      {for (int n = 0; n < 14; n++){*(FPN_test_string + 14 -(char)n) = *(FPN_test_string + 13-(char)n);}}
+
 
 
 /*****************************************************************************/
