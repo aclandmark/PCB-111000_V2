@@ -10,7 +10,7 @@ char str_counter;
 volatile char Data_Entry_complete, digit_entry;
 volatile char scroll_control;
 char non_zero_detect;
-char digits[8];
+char digits[15];
 
 
 
@@ -21,7 +21,7 @@ char digits[8];
 
 #define set_up_PCI      PCICR |= ((1 << PCIE0) | (1 << PCIE2))
 #define enable_PCI      PCMSK0 |= (1 << PCINT6);    PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
-
+#define disable_PCI_on_sw1_and_sw3     PCMSK2 &= (~((1 << PCINT18) | (1 << PCINT23)));
 #define   clear_PCI_on_sw1_and_sw3   PCIFR |= (1<< PCIF2);
 
 
@@ -39,13 +39,11 @@ digits[0] = '0';\
 I2C_Tx_8_byte_array(digits);
 
 
-#define clear_digits {for(int m = 0; m<=7; m++)digits[m]=0;}
-#define shift_digits_left {for (int n = 0; n < 7; n++){digits[7-n] = digits[6-n];}}
-#define shift_digits_right {for (int n = 0; n < 7; n++){digits[n] = digits[n+1];}}
+#define clear_digits {for(int m = 0; m<=14; m++)digits[m]=0;}
+#define shift_digits_left {for (int n = 0; n < 14; n++){digits[14-n] = digits[13-n];}}
+#define shift_digits_right {for (int n = 0; n < 14; n++){digits[n] = digits[n+1];}}
 
 #define shift_FPN_num_string_left   {for (int n = 0; n < 14; n++){*(FPN_num_string + 14 - n) = *(FPN_num_string + 13 - n);}}
-
-//#define shift_test_string_left      {for (int n = 0; n < 14; n++){*(FPN_test_string + 14 -(char)n) = *(FPN_test_string + 13-(char)n);}}
 
 
 
