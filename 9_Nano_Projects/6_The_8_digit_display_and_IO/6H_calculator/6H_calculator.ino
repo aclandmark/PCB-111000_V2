@@ -135,30 +135,20 @@ return num;}
 /*************************************************************************/
 int FPN_as_string(char * FPN_num_string){              //Returns the exponent
 
-char test;
-
 Data_Entry_complete = 0;
 digit_entry = 0;
 non_zero_detect = 0;
   
 while(1){                                               //Data entry loop
+//sw_3_status = 0;
 while (!(digit_entry));                                 //Wait here while each digit is entered
 
 digit_entry = 0;
-if (Data_Entry_complete)break;                          //Leave loop when data entry is complete
-//*(FPN_num_string++) = digits[1]; _delay_us(100);
-}                                                        //Increment string adddress after saving digit 
-//*(FPN_num_string++) = digits[0];                        //Save final digit
-//*FPN_num_string = '\r';   
-
-
+if (Data_Entry_complete)break;}                          //Leave loop when data entry is complete
+                                                         //Increment string adddress after saving digit 
 *(FPN_num_string) = '\r'; 
 {int m = 0; while (digits[m]){shift_FPN_num_string_left; *(FPN_num_string)=digits[m++] ;}}
-//Serial.print(FPN_num_string);
 }     
-
-
-
 
 
 
@@ -166,7 +156,8 @@ if (Data_Entry_complete)break;                          //Leave loop when data e
 ISR(PCINT0_vect){
   if(switch_2_up)return;                                 //Ignore switch release
 
-if(switch_3_down){shift_digits_right;non_zero_detect = 1;}                     //Over ride zero detect mechanism
+if(switch_3_down)
+{if(digits[1])shift_digits_right;non_zero_detect = 1;}                     //Over ride zero detect mechanism
 
 if(!(non_zero_detect))return;                                //Detects entries of Zero, minus or d.p. only
   
@@ -179,11 +170,14 @@ while(switch_2_down);}
 
 
 /*************************************************************************/
-ISR(PCINT2_vect){
+ISR(PCINT2_vect){sei();
   if((switch_1_up) && (switch_3_up))return;
 
+  sei();
+  disable_PCI_on_sw1_and_sw3;
+
 if(switch_1_down)non_zero_detect= 0;
-  
+ 
   while(switch_1_down){scroll_display_zero();
   Timer_T0_10mS_delay_x_m(20);}
 
@@ -194,7 +188,10 @@ if((!(non_zero_detect))  && (digits[0] != '0')
   if(switch_3_down)shift_display_left();
   
   Timer_T0_10mS_delay_x_m(20);
-clear_PCI_on_sw1_and_sw3;}
+clear_PCI_on_sw1_and_sw3;
+
+while(switch_3_down);
+enable_PCI;}
 
 
 
