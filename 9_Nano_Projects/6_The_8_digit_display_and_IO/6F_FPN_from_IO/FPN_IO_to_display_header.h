@@ -19,14 +19,18 @@ char digits[8];
 
 #define set_up_PCI      PCICR |= ((1 << PCIE0) | (1 << PCIE2))
 #define enable_PCI      PCMSK0 |= (1 << PCINT6);    PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
+#define disable_PCI     PCMSK0 &= (~(1 << PCINT6));    PCMSK2 &= (~((1 << PCINT18) | (1 << PCINT23)));
+#define clear_PCI_on_sw1_and_sw3   PCIFR |= (1<< PCIF2);
 
-#define   clear_PCI_on_sw1_and_sw3   PCIFR |= (1<< PCIF2);
+#define disable_PCI_on_sw1  PCMSK2 &= (~(1 << PCINT18));
+#define disable_PCI_on_sw3  PCMSK2 &= (~(1 << PCINT23));
+#define enable_PCI_on_sw1  PCMSK2 |= (1 << PCINT18);
+#define enable_PCI_on_sw3  PCMSK2 |= (1 << PCINT23);
 
-
-#define switch_1_down  ((PIND & 0x80)^0x80)
-#define switch_1_up   (PIND & 0x80)
-#define switch_3_down ((PIND & 0x04)^0x04)
-#define switch_3_up   (PIND & 0x04)
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
 
