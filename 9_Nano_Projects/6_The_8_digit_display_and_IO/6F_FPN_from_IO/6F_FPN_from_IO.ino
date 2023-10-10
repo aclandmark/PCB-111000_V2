@@ -38,27 +38,34 @@ int main (void){
  
   setup_HW_Arduino_IO_Extra;
 
+while(switch_3_down);
+
 if(!(watch_dog_reset))
 
 {Serial.write("\r\nFPN from IO\r\n\
-Press: sw_3 to populate digit_0, sw1 to shift the display left\r\n\
-sw_2 to enter the number and sw3 to do some arithmetic.\r\n\
+Press: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
+sw_2 to enter the number and sw1 to do some arithmetic.\r\n\
 Note: display flashes to indicate number has been entered.\r\n");}
 
 else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
   
  x1 = fpn_from_IO();
  if(x1 > 0.0)power = 1.2; else power = 3.0;
+
+disable_PCI;
  
 while(1){
 Sc_Num_to_PC_A(x1,1,6 ,'\r');
 I2C_FPN_to_display(x1);
 
-while(switch_3_down);
+while(switch_1_down);
+if(switch_3_down)break;
 
 x1 = pow(x1, power); }                                //Do some arithmetic
 
-while(switch_3_up);
+I2C_Tx_any_segment_clear_all;
+
+while(switch_1_down);
 SW_reset;}
 
 
@@ -112,7 +119,7 @@ while(1){                                               //Data entry loop
 while (!(digit_entry));                                 //Wait here while each digit is entered
 digit_entry = 0;
 if (Data_Entry_complete)break;                          //Leave loop when data entry is complete
-*(FPN_num_string++) = digits[1]; _delay_us(10);}         //Increment string adddress after saving digit was 1us
+*(FPN_num_string++) = digits[1]; _delay_us(100);}         //Increment string adddress after saving digit was 1us
 
 *(FPN_num_string++) = digits[0];                        //Save final digit
 *FPN_num_string = '\r';   }                              //Terminate string with cr.
@@ -135,10 +142,14 @@ while(switch_2_down);}                                  //Extra line
 
 /*************************************************************************/
 ISR(PCINT2_vect){
-  if((switch_3_up) && (switch_1_up))return;
-  while(switch_3_down){scroll_display_zero();
+  if((switch_1_up) && (switch_3_up))return;
+
+  if(switch_1_down)enable_PCI_on_sw3;
+  while(switch_1_down){scroll_display_zero();
   Timer_T0_10mS_delay_x_m(20);}
-  if(switch_1_down)shift_display_left();
+  
+  if(switch_3_down){disable_PCI_on_sw3;shift_display_left();}
+  
   Timer_T0_10mS_delay_x_m(20);
 clear_PCI_on_sw1_and_sw3;}
 
