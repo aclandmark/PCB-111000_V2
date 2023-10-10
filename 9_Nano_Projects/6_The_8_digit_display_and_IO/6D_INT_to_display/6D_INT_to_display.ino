@@ -37,9 +37,9 @@ Serial.write("\r\nRunning arithmetic & Geometric averages:\r\n\
 Enter positive numbers \r\n\
 & terminate with Return key.\r\n\
 To display interim reults press SW1 before -cr-.\r\n\
-Press sw1 twice to resume entering numbers.\r\n\
+Press SW1 twice to resume entering numbers.\r\n\
 Note: Zero entry is ignored.\r\n\
-Press SW3 to pause the display\r\n\
+Press SW2 to pause the display\r\n\
 Press reset to repeat.\r\n");
 
 num_from_KBD = Int_KBD_to_display_A(digits);
