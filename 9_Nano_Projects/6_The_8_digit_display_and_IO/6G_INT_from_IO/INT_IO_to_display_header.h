@@ -19,6 +19,10 @@ char digits[8];
 
 #define set_up_PCI      PCICR |= ((1 << PCIE0) | (1 << PCIE2))
 #define enable_PCI      PCMSK0 |= (1 << PCINT6);    PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
+#define disable_PCI_on_sw1  PCMSK2 &= (~(1 << PCINT18));
+#define disable_PCI_on_sw3  PCMSK2 &= (~(1 << PCINT23));
+#define enable_PCI_on_sw1  PCMSK2 |= (1 << PCINT18);
+#define enable_PCI_on_sw3  PCMSK2 |= (1 << PCINT23);
 
 #define   clear_PCI_on_sw1_and_sw3   PCIFR |= (1<< PCIF2);
 
@@ -28,17 +32,17 @@ PCMSK2 &= (~((1 << PCINT18) | (1 << PCINT23)));
 
 #define message_1 \
 "\r\n\
-Press sw3 to populate digits[0]\r\n\
-sw1 to shift display left\r\n\
+Press sw1 to populate digits[0]\r\n\
+sw3 to shift display left\r\n\
 sw2 to enter the number\r\n\
-sw3 to pause the display \r\n\
+sw1 to pause the display \r\n\
 and restart the program.\r\n"
 
 
-#define switch_1_down  ((PIND & 0x80)^0x80)
-#define switch_1_up   (PIND & 0x80)
-#define switch_3_down ((PIND & 0x04)^0x04)
-#define switch_3_up   (PIND & 0x04)
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
 
