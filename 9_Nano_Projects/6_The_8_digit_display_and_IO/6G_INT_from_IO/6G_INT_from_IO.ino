@@ -33,12 +33,12 @@ Serial.print(Num_1); Serial.write("\r\n");
 I2C_Tx_long(Num_1);                                           //Sends number to the display
 _delay_ms(100);
 
-while(switch_3_down);
+while(switch_1_down);
 
 Num_1 = (Num_1 / 2) *3;} 
 while ((Num_1 < 99999999) && (Num_1 > -9999999));                   //Do some arithmetic
 
-while(switch_3_up);
+while(switch_1_up);
 
 Num_1 = (Num_1 / 3) *2; 
 
@@ -48,9 +48,9 @@ Serial.print(Num_1);
 Serial.write("\r\n");                                             
 I2C_Tx_long(Num_1);
 _delay_ms(100);
-while(switch_3_down);}while (counter-1);
+while(switch_1_down);}while (counter-1);
 
-while(switch_3_up);
+while(switch_1_up);
 SW_reset;}
 
 
@@ -73,7 +73,8 @@ return I2C_displayToNum();}                                         //Acquire bi
 
 /********************************************************************************************************************/
 ISR(PCINT2_vect) {                                                //input number: store keypresses in array -digits
-while(switch_3_down){                                             //Use switch 1 to select keypress 0...9
+if(switch_1_down)enable_PCI_on_sw3;
+while(switch_1_down){                                             //Use switch 1 to select keypress 0...9
     switch(digits[0]){                                            //Test digits[0]
       case '9': if(!(digits[1]))                                  //If its 9 scroll onto "-"
       digits[0] = '-';                                            //but only if this is the first entry (i.e. digits[1] is 0.
@@ -83,8 +84,8 @@ while(switch_3_down){                                             //Use switch 1
     I2C_Tx_8_byte_array(digits);                                  //Send value to the display
     Timer_T0_10mS_delay_x_m(25);}                                 //return to Line A when sw1 is released
 
-if(switch_1_down) {                                               //Use switch 3 to shift display left
-  shift_digits_left; digits[0] = '0';                             //shift the display and initialise digit[0] (make it display '0')
+if(switch_3_down) {disable_PCI_on_sw3;                           //Use switch 3 to shift display left
+    shift_digits_left; digits[0] = '0';                             //shift the display and initialise digit[0] (make it display '0')
   I2C_Tx_8_byte_array(digits);}}                                  //update the display and return to Line A
 
 
