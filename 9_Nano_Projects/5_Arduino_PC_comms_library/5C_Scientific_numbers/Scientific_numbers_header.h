@@ -10,14 +10,14 @@ char str_counter;
 #define T0_delay_10ms 5,178
 #define T1_delay_100ms 3, 0x9E62
 #define T2_delay_10ms 7,178
-
+/*
 #define switch_1_down  ((PIND & 0x80)^0x80)
 #define switch_1_up   (PIND & 0x80)
 #define switch_3_down ((PIND & 0x04)^0x04)
 #define switch_3_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
-
+*/
 
 
 /*****************************************************************************/
