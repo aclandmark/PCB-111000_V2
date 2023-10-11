@@ -30,7 +30,7 @@ sei();
 if (watch_dog_reset == 1) 
 {watch_dog_reset = 0;Serial.write("?\t");}
 else Serial.write("\r\nEstimate value for PIE. Enter radius (50000 max)?\r\n\
-Push and hold SW1 to repeat. SW3 to pause display.\r\n\t");
+Push and hold SW1 to repeat. SW2 to pause display.\r\n\t");
 
 
 
