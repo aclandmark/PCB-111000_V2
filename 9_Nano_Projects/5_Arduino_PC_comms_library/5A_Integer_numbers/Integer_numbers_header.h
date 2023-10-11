@@ -11,6 +11,7 @@ char str_counter;
 #define T1_delay_100ms 3, 0x9E62
 #define T2_delay_10ms 7,178
 
+/*
 #define switch_1_down  ((PIND & 0x80)^0x80)
 #define switch_1_up   (PIND & 0x80)
 #define switch_3_down ((PIND & 0x04)^0x04)
@@ -18,7 +19,7 @@ char str_counter;
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
 
-
+*/
 
 /*****************************************************************************/
 #define setup_HW_Arduino_IO \
@@ -158,7 +159,7 @@ TWCR = (1 << TWINT);
 
 /*****************************************************************************/
 #include "Resources_nano_projects\Subroutines\HW_timers.c"
-#include "Resources_nano_projects\PC_commsBasic_Rx_Tx_Arduino.c"
+#include "Resources_nano_projects\PC_comms\Basic_Rx_Tx_Arduino.c"
 #include "Resources_nano_projects\Chip2chip_comms\I2C_subroutines_1.c"
 #include "Resources_nano_projects\Chip2chip_comms\I2C_slave_Rx_Tx.c"
 #include "Resources_nano_projects\Subroutines\Random_and_prime_nos.c"
