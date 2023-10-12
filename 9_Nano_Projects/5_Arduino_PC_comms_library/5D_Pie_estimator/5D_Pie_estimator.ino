@@ -23,7 +23,7 @@ char Num_string[15];
 float pie;
 
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino_IO_Extra;
 
 sei();
 
