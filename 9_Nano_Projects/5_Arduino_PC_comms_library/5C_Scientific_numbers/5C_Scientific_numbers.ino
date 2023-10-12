@@ -42,22 +42,29 @@ int main (void)
     float  num_1, num_2, num_3;
     float index;
     char pre_dp;
+    char post_dp;
  
  setup_HW_Arduino_IO_Extra;
     
    if (watch_dog_reset == 1) {watch_dog_reset = 0; User_prompt_A;}
   else {Serial.write("\r\n\r\nUsing Arduino functions to receive and print scientific numbers.\r\n");}
-   Serial.write("\r\nEnter scientific number\r\nthen the number of digits before the decimal point.\r\n");
+   Serial.write("\r\nEnter scientific number\r\nthen the number of digits before and after the decimal point.\r\n");
    
 num_1 = Sc_Num_from_PC_A(num_string, Buff_Length);
 
 while(1){pre_dp = waitforkeypress_A();
 if ((pre_dp < '0')||(pre_dp > '9'))Serial.write("!");
 else break;}
+
+while(1){post_dp = waitforkeypress_A();
+if ((pre_dp < '0')||(pre_dp > '9'))Serial.write("!");
+else break;}
+
 pre_dp -= '0';
+post_dp -= '0';
 
 newline_A;
-  Sc_Num_to_PC_A(num_1,pre_dp,6,'\r');
+  Sc_Num_to_PC_A(num_1,pre_dp,post_dp,'\r');
 
 if (num_1 < 0.0) index = 3;                                   //Raise negative numbers to the power of 3
 else {
@@ -68,7 +75,7 @@ while(1){
   while(!(Serial.available()))wdr();
 Serial.read();                                            //The equivalent of waitforkeypress()
 num_2 = pow (num_1,index);                                    //-C- library function
-Sc_Num_to_PC_A_Local(num_2, pre_dp, 6, '\r');
+Sc_Num_to_PC_A_Local(num_2, pre_dp, post_dp, '\r');
 
 if ((index < 0.0) || (index > 1.0));
 else 
