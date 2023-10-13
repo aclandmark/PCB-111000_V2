@@ -189,7 +189,7 @@ int main (void)                          //Example 7A
   setup_HW;
 
   wdt_enable(WDTO_30MS);
-  while(switch_3_down)wdr();
+  while(switch_1_down)wdr();
   
   while (1)
   { I2C_Tx_2_integers(PORT_1, ~PORT_1);
@@ -205,7 +205,7 @@ int main (void)                          //Example 7A
     if (overflow)PORT_1 |= 1;
     if (PORT_1 & 0x8000) overflow = 1;
     else overflow = 0;
-    while(switch_3_down);
+    while(switch_1_down);
   }
   }
 
@@ -253,7 +253,7 @@ int main (void)                          //Example 8
   setup_HW;
   wdt_enable(WDTO_30MS);
   I2C_Tx_any_segment_clear_all();
-  while(switch_3_down)wdr();
+  while(switch_1_down)wdr();
 
 
   PRN_counter = 0;
@@ -276,7 +276,7 @@ int main (void)                          //Example 8
       backup_the_display(letter, digit_num);
       seg_counter += 1;
       Timer_T0_10mS_delay_x_m(8);
-       while(switch_3_down);
+       while(switch_1_down);
     }
     direction ^= 1;
     seg_counter = 0;
