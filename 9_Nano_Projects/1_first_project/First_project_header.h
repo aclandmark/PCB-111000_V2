@@ -5,7 +5,7 @@
 char watch_dog_reset = 0;
 char str_counter;
 
-#define switch_3_down  ((PIND & 0x04)^0x04)
+#define switch_1_down  ((PIND & 0x04)^0x04)
 
 /*****************************************************************************/
 #define setup_HW \
