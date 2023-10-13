@@ -122,7 +122,7 @@ for (int m = 14; m; m--)
     PORT_2 = 0x8000;
     for (int m = 0; m <= 7; m++)
     { I2C_Tx_2_integers(PORT_1 | PORT_2,
-                             (PORT_1 << 8)  | (PORT_2 >> 8));
+      (PORT_1 << 8)  | (PORT_2 >> 8));
       _delay_ms(60);
       PORT_1 = PORT_1 << 1;
       PORT_2 = PORT_2 >> 1;
