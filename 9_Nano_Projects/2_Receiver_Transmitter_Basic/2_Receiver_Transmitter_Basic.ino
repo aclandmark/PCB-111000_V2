@@ -99,7 +99,7 @@ int main (void)                          //Example 3
 int main (void)                          //Example 4
   { setup_HW;
   wdt_enable(WDTO_120MS);
-  while(switch_3_down)wdr();
+  while(switch_1_down)wdr();
   
   String_to_PC_Basic("\r\nDefining and using text strings\r\n");
   const char *message_1 = "Hello world\r\n";
@@ -110,8 +110,8 @@ int main (void)                          //Example 4
   String_to_PC_Basic(message_2);
   String_to_PC_Basic(message_3);
   String_to_PC_Basic(message_4);
-  while(switch_3_up)wdr();
-  while(switch_3_down);
+  while(switch_1_up)wdr();
+  while(switch_1_down);
   return 1;
   }  
 
@@ -123,7 +123,7 @@ int main (void)                          //Example 5
   { char symbol = '!';
   setup_HW;
   wdt_enable(WDTO_120MS);
-  while(switch_3_down)wdr();
+  while(switch_1_down)wdr();
   
   newline_Basic();
   while (symbol <= '~')
@@ -133,8 +133,8 @@ int main (void)                          //Example 5
     if (!((symbol - '!') % 8))newline_Basic();
     else Char_to_PC_Local('\t');
   }
-  while(switch_3_up)wdr();
-  while(switch_3_down);
+  while(switch_1_up)wdr();
+  while(switch_1_down);
   }
   
 
@@ -148,7 +148,7 @@ int main (void)                          //Example 5
   char s[12];
   setup_HW;
   wdt_enable(WDTO_120MS);
-  while(switch_3_down)wdr();
+  while(switch_1_down)wdr();
   
   do {
     s[i++] = number % 10 + '0';
@@ -159,8 +159,8 @@ int main (void)                          //Example 5
     Char_to_PC_Basic(s[m - 1]);
  
  newline_Basic();
- while(switch_3_up)wdr();
-  while(switch_3_down);
+ while(switch_1_up)wdr();
+  while(switch_1_down);
   return 1;
   } 
 
@@ -179,7 +179,7 @@ int main (void)                          //Example 7
   }
   Num_to_PC_Local(num * 2);
     I2C_Tx_long(num * 2);
-    while(switch_3_up);
+    while(switch_1_up);
     newline_Basic();
   SW_reset;
   return 1;
@@ -212,7 +212,7 @@ int main (void)                          //Example 8
     Char_to_PC_Basic(Num_string[m - 1]);
 
   I2C_Tx_long(num);
-while(switch_3_up);
+while(switch_1_up);
     newline_Basic();
   SW_reset;
   return 1;
