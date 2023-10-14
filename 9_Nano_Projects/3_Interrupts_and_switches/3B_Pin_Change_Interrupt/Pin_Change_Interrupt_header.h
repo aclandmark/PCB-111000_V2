@@ -18,10 +18,10 @@ char watch_dog_reset = 0;
 #define enable_pci_on_sw2           PCMSK0 |= (1 << PCINT6);
 
 
-#define switch_1_down  ((PIND & 0x80)^0x80)
-#define switch_1_up   (PIND & 0x80)
-#define switch_3_down ((PIND & 0x04)^0x04)
-#define switch_3_up   (PIND & 0x04)
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
 
@@ -38,35 +38,17 @@ while (!(PIND & (1 << PD1)));\
 Timer_T0_10mS_delay_x_m(5);\
 OSC_CAL;\
 setup_PC_comms_Basic(0,16);\
-I2C_Tx_LED_dimmer();
-
-
-
-/*****************************************************************************/
-#define setup_HW_Extra \
-setup_HW;\
+I2C_Tx_LED_dimmer();\
 \
+\
+/*OPTIONAL Setup_HW code gives default ap*/\
 Timer_T0_10mS_delay_x_m(1);\
 I2C_TX_328_check();\
 waiting_for_I2C_master;\
 if (receive_byte_with_Nack()==1)\
 {TWCR = (1 << TWINT);\
-String_to_PC_Basic("\r\nPress\r\n\
-1 for OS version\r\n\
-2 for system data\r\n\
-3 Message from the OS (x to escape)\r\n\
-4 Default project\r\n\
-0 to escape\r\n");\
-switch (waitforkeypress_Basic()){\
-case '0':break;\
-case '1':I2C_Rx_get_version('0');break;\
-case '2':I2C_Rx_get_version('1');break;\
-case '3':do\
-{Read_Hello_world_string();newline_Basic();}\
-while (waitforkeypress_Basic() != 'x');\
-break;\
-case '4':wdt_enable(WDTO_30MS);\
-I2C_Tx_display(); break;}}\
+wdt_enable(WDTO_30MS);\
+I2C_Tx_display();}\
 else TWCR = (1 << TWINT);
 
 
