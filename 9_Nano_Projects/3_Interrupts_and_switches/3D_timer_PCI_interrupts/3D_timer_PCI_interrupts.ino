@@ -59,8 +59,8 @@ ISR(PCINT2_vect)
 { if ((switch_1_up) && (switch_2_up) && (switch_3_up)) {
     return;
   }
-  if (switch_1_down) eeprom_write_byte((uint8_t*)0x0, 0);
-  if (switch_3_down) eeprom_write_byte((uint8_t*)0x0, 1);
+  if (switch_3_down) eeprom_write_byte((uint8_t*)0x0, 0);
+  if (switch_1_down) eeprom_write_byte((uint8_t*)0x0, 1);
  
   SW_reset;
 }
