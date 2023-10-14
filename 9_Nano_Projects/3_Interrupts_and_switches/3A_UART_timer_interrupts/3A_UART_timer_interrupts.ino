@@ -31,7 +31,7 @@ int main (void)
   setup_HW;
 
 wdt_enable(WDTO_120MS);
-  while(switch_3_down)wdr();
+  while(switch_1_down)wdr();
   
   _delay_ms(10);
   sei();
@@ -42,11 +42,11 @@ wdt_enable(WDTO_120MS);
   T1_100ms_clock_tick();
   counter = 1;
   newline_Basic();
-  while((switch_2_up) && (switch_3_up))wdr();
+  while((switch_1_up) && (switch_2_up))wdr();
   
-  if(switch_3_down){cli(); while(1);}
+  if(switch_1_down){cli(); while(1);}
   
-  while(switch_3_up)
+  while(switch_1_up)
   { 
     if((!(counter%33)) && (switch_2_down)){
 Num_to_PC_Basic(counter); Char_to_PC_Basic('\t');
@@ -57,7 +57,7 @@ Num_to_PC_Basic((counter * counter)); newline_Basic();
          wdr();
   }
    
-    while(switch_3_down);
+    while(switch_1_down);
 }
 
 
