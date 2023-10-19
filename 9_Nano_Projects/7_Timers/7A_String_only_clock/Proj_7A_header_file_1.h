@@ -1,11 +1,9 @@
 
-#include "Proj_7A_header_file_2.h"
-
 
 char watch_dog_reset = 0;
 char User_response;
 char num_as_string[12];
-
+char str_counter;
 
 
 /*****************************************************************************/
@@ -147,12 +145,54 @@ TWDR;
 TWCR = (1 << TWINT);
 
 
-#include "UNO_proj_resources/Chip2chip_comms/I2C_slave_Rx_Tx.c"
-#include "UNO_proj_resources/Chip2chip_comms/I2C_subroutines_1.c"
-#include "UNO_proj_resources/Subroutines/HW_timers.c"
-#include "UNO_proj_resources/PC_comms/Basic_Rx_Tx_Arduino.c"
-#include "UNO_proj_resources/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
 
 
+
+/************Define clock memory locations********************/
+#define HoursH digits[7]
+#define HoursL digits[6]
+#define MinsH digits[5]
+#define MinsL digits[4]
+#define SecsH digits[3]
+#define SecsL digits[2]
+#define deci_SecsH digits[1]
+#define deci_SecsL digits[0]
+
+
+
+/***********Define clock display functions and modes***************/
+#define reset_clock_1   {digits[0] = 0; for (int m = 1; m < 8; m++)digits[m] = '0'; }
+
+
+
+#define AT_clock_mode 'C'
+#define AT_exit_stop_watch 10, '1'
+#define AT_mode_1 1
+
+#define display_clock 'D', '1'
+#define hide_clock 'D', '2'
+#define pause_clock 'D', '3'
+#define increment_seconds 'D', '5'
+#define decrement_minutes 'D', '6'
+#define decrement_seconds 'D', '7'
+#define increment_minutes 'D', '8'
+
+#define display_current_time 'E', '1'
+#define display_stored_times 'E', '4'
+#define store_time 'E', '2'
+#define one100ms_mode 'E', '1'
+#define ten_ms_mode 'E', '2'
+
+
+
+
+/*****************************************************************************************/
+#include "Resources_nano_projects\Subroutines\HW_timers.c"
+#include "Resources_nano_projects\PC_comms\Basic_Rx_Tx_Arduino.c"
+#include "Resources_nano_projects\PC_comms\Arduino_Rx_Tx_UNO_pcb.c"
+#include "Resources_nano_projects\Chip2chip_comms\I2C_slave_Rx_Tx.c"
+#include "Resources_nano_projects\Chip2chip_comms\I2C_subroutines_1.c"
+//#include "Resources_nano_projects\Chip2chip_comms\I2C_subroutines_2.c"
+#include "Resources_nano_projects\Subroutines\Random_and_prime_nos.c"
 
 /*****************************************************************************/
