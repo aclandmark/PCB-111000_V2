@@ -28,7 +28,7 @@ char digits[8];
 int main (void){
 char User_response;
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino_IO_Extra;
 
 Serial.write("Press 'R' to enter time or 'r' to start at time zero  ");
 User_prompt_A;
