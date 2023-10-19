@@ -54,7 +54,7 @@ volatile char Data_Entry_complete=0;
 int main (void){
 char display_mode;
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino_IO_Extra;
 if (switch_1_down)
 {User_prompt_A; 
 User_instructions;
@@ -80,12 +80,12 @@ case 'B':if(switch_1_down){display_mode = 0;I2C_Tx_Clock_command(display_clock);
 case 'C':if(switch_3_down){display_mode = 0; I2C_Tx_Clock_command(display_clock);while(switch_3_down);}break;
 
 
-case 1: if (switch_1_down){I2C_Tx_Clock_command(increment_seconds);Timer_T0_10mS_delay_x_m(20);}
-    if (switch_3_down){I2C_Tx_Clock_command(increment_minutes);Timer_T0_10mS_delay_x_m(20);}
+case 1: if (switch_3_down){I2C_Tx_Clock_command(increment_seconds);Timer_T0_10mS_delay_x_m(20);}
+    if (switch_1_down){I2C_Tx_Clock_command(increment_minutes);Timer_T0_10mS_delay_x_m(20);}
     if(switch_2_down){ while (switch_2_down);display_mode = 0; }break;
     
-case 2: if (switch_1_down){I2C_Tx_Clock_command(decrement_seconds);Timer_T0_10mS_delay_x_m(20);}
-    if (switch_3_down){I2C_Tx_Clock_command(decrement_minutes);Timer_T0_10mS_delay_x_m(20);}
+case 2: if (switch_3_down){I2C_Tx_Clock_command(decrement_seconds);Timer_T0_10mS_delay_x_m(20);}
+    if (switch_1_down){I2C_Tx_Clock_command(decrement_minutes);Timer_T0_10mS_delay_x_m(20);}
     if(switch_2_down){while (switch_2_down);display_mode = 0; }break;}}}  
 
 
@@ -110,7 +110,7 @@ start_time[7-m] = temp;}}
 
 
 /******************************************************************************************************************************/
-ISR(PCINT0_vect) {                                                             //input number: store keypresses in array -start_time
+ISR(PCINT2_vect) {                                                             //input number: store keypresses in array -start_time
 if((switch_1_up) && (switch_3_up))return;
 Timer_T0_10mS_delay_x_m(5);                                                   //Place delay here to trap bounce on sw release
 clear_PCI_on_sw1_and_sw3;
@@ -166,7 +166,7 @@ I2C_Tx_8_byte_array(start_time);}                                           //Ke
       
 
 
-if (switch_1_down){                                                         //Switch_1: Used to select a character and move onto the next digit
+if (switch_3_down){                                                         //Switch_1: Used to select a character and move onto the next digit
 switch(digit_num){
 case 7: case 4: case 1:
 digit_num--;start_time[digit_num] = '_';break;
