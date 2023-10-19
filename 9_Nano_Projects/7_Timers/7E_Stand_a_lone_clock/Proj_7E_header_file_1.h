@@ -14,7 +14,7 @@ long deci_sec_counter;
 
 #define message_1 \
 "\r\nSTAND-a-LONE CLOCK\r\n\
-Use sw3 and 1 to enter time (24Hr clock)\r\n\
+Use sw1 and 3 to enter time (24Hr clock)\r\n\
 and sw3 to start the clock.\r\n\
 Press sw1 to toggle the display on and off\r\n"
 
@@ -23,9 +23,9 @@ Press sw1 to toggle the display on and off\r\n"
 To adjust the clock:\r\n"
 
 #define message_3 \
-"pulse sw3 then press sw3 and sw1 to advance the time\r\n\
+"pulse sw2 then press sw1 or sw3 to advance the time\r\n\
 or press and hold sw2 (for 500ms)\r\n\
-then press sw1 and sw3 to retard the time\r\n\
+then press sw1 or sw3 to retard the time\r\n\
 Always pulse sw2 when the time is correct\r\n"
 
 #define User_instructions \
