@@ -54,22 +54,22 @@ while(switch_1_down || switch_3_down);                    //wait for switch rele
 TIMSK1 |= (1 << TOIE1); sei();                            //Enable timer 1 interrupt
 
 while(1){                                                //Infinite loop, requires sw2 interrupt to exit
-while(switch_1_up && switch_2_up);                      //wait for a keypress
+while(switch_1_up && switch_3_up);                      //wait for a keypress
 
-if(switch_1_down)
+if(switch_3_down)
 {I2C_Tx_Clock_command(store_time);                       //save time and pause clock display
-while (switch_1_down);                                  //wait for key release
+while (switch_3_down);                                  //wait for key release
 I2C_Tx_Clock_command(display_current_time);}            //clock display continues as normal
 
 Timer_T1_sub_with_interrupt(T1_delay_50ms);               //50mS pause: avoids switch bounce
 while(T1_ovf_flag == 0);T1_ovf_flag = 0;                  //T1_ovf_flag is reset by T1 ISR after a 50ms delay
 
-if(switch_2_down)                                         //read stored times at 200ms intervals
+if(switch_1_down)                                         //read stored times at 200ms intervals
 {I2C_Tx_Clock_command(display_stored_times);              //if sw1 is held down
 Timer_T0_10mS_delay_x_m(20);}   
-if(switch_1_down && switch_2_down)                        //press sw3 while sw1` is still held down to
+if(switch_1_down && switch_3_down)                        //press sw3 while sw1` is still held down to
 {I2C_Tx_Clock_command(display_current_time);              //continue clock display 
-while(switch_1_down || switch_2_down);}}}                   //wait until both switches have been released
+while(switch_1_down || switch_3_down);}}}                   //wait until both switches have been released
    
 
 
@@ -79,9 +79,9 @@ ISR(TIMER1_OVF_vect) {TCCR1B = 0; T1_ovf_flag = 1;}       //stop timer 1 and set
 
 
 /**********************************************************************************************************/
-ISR(PCINT2_vect) {if(switch_3_up){return;}
+ISR(PCINT0_vect) {if(switch_2_up){return;}
 I2C_Tx_Clock_command(AT_exit_stop_watch);
-while(switch_3_down);
+while(switch_2_down);
 SW_reset;}
 
 
