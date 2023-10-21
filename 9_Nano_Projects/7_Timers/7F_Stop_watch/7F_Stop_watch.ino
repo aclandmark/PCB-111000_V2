@@ -17,11 +17,11 @@
 
 USER INSTRUCTIONS
 
-  sw1 selects 100ms clock, sw2 a 10ms clock
-  Press sw1 to pause SW and save time
-  Press sw2 the read back saved times
-  Pressing sw1 to restore SW
-  Press sw3 to re-initialise SW
+  sw3 selects 100ms clock, sw1 a 10ms clock
+  Press sw3 to pause SW and save time
+  Press sw1 the read back saved times
+  Pressing sw3 to restore SW
+  Press sw2 to re-initialise SW
 
 Switch location SW1(PD2) - SW2(PD7) – SW3(PB2)*/
 
@@ -38,18 +38,18 @@ int main (void){
 
 setup_HW_Arduino_IO;
 set_up_PCI;
-enable_pci;
+enable_PCI;
 
-disable_pci_on_sw1_and_sw2;                               //pci on sw1 & 3 not required 
+disable_PCI_on_sw1_and_sw3;                               //pci on sw1 & 3 not required 
 {char digit_num=0; for (int m = 0; m < 8; m++)            //initialise display by
 {I2C_Tx_any_segment('d', digit_num++);}}                  //illuminating seg "d" on each digit
 
-while(switch_1_up && switch_2_up);                        //wait for a keypress
+while(switch_1_up && switch_3_up);                        //wait for a keypress
 I2C_Tx_any_segment_clear_all();                           //clear display
-if(switch_2_down){I2C_Tx_Clock_command(one100ms_mode);}   //sw_1 selects 100ms clock
-if(switch_1_down){I2C_Tx_Clock_command(ten_ms_mode);}     //sw_3 selects 10ms clock
+if(switch_1_down){I2C_Tx_Clock_command(one100ms_mode);}   //sw_1 selects 100ms clock
+if(switch_3_down){I2C_Tx_Clock_command(ten_ms_mode);}     //sw_3 selects 10ms clock
 Timer_T0_10mS_delay_x_m(5);                               //50ms delay for switch bounce
-while(switch_1_down || switch_2_down);                    //wait for switch release
+while(switch_1_down || switch_3_down);                    //wait for switch release
 
 TIMSK1 |= (1 << TOIE1); sei();                            //Enable timer 1 interrupt
 
@@ -79,7 +79,7 @@ ISR(TIMER1_OVF_vect) {TCCR1B = 0; T1_ovf_flag = 1;}       //stop timer 1 and set
 
 
 /**********************************************************************************************************/
-ISR(PCINT0_vect) {if(switch_3_up){return;}
+ISR(PCINT2_vect) {if(switch_3_up){return;}
 I2C_Tx_Clock_command(AT_exit_stop_watch);
 while(switch_3_down);
 SW_reset;}
