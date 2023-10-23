@@ -52,6 +52,15 @@ else return 1;}
 
 
 
+/*********************************************************************/
+char hex_digit (char data){
+switch(data){
+case '0': case '1': case '2': case '3': case '4': case '5': case '6':
+case '7': case '8': case '9': case 'A': case 'B': case 'C': case 'D':
+case 'E': case 'F': return 1; break;
+default: return 0; break;}}
+
+
 
 /**********************************************************************************************************************************************************************************/
 void Check_num_for_to_big_or_small(float num)											//Exits if the result of floating point arithmetic exceeds permitted limits 
