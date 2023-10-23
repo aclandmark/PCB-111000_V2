@@ -110,7 +110,7 @@ Hex_to_PC_A(New_UC_value, Num_string, '\t');
 New_UC_value = receive_byte_with_Nack();
 clear_I2C_interrupt;
 //Num_to_PC(16, New_UC_value); newline_A();}
-Hex_to_PC_A(New_UC_value, Num_string. '\r');
+Hex_to_PC_A(New_UC_value, Num_string, '\r');}
 
 Serial.write("AK to repeat\r\n");
 waitforkeypress_A();SW_reset;}
