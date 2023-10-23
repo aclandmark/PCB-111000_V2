@@ -30,9 +30,9 @@ int main (void){
 
 long percentage_error;
 int Results[41], error;
-char osccal_MIN;
-char cal_UC, OSCCAL_DV;
-char  New_UC_value;  
+unsigned char osccal_MIN;
+unsigned char cal_UC, OSCCAL_DV;
+unsigned char  New_UC_value;  
 char cal_mode=1, Test_res;
 char Num_string[12];
 
@@ -53,26 +53,19 @@ Results[m] = (Results[m] << 8) + receive_byte_with_Ack();}
 cal_UC = receive_byte_with_Nack();                                      //Receive 328 OSCCAL_User Value
 clear_I2C_interrupt;
 
-//Num_to_PC(16, cal_UC ); newline_A();                                  //Print User cal factor
-Hex_to_PC_A(cal_UC,Num_string, '\r');
+Hex_to_PC_A(cal_UC,Num_string, '\r');                                   //Print User cal factor
 
 Serial.write("Cal factor default value   \t");                          //Print OSCCAL_default_Value
-//Num_to_PC(16, OSCCAL_DV ); newline_A();
 Hex_to_PC_A(OSCCAL_DV,Num_string, '\r');
 
 for(int m = 0; m <= 40; m++)                                            //Print table of values
-{//Num_to_PC(16,osccal_MIN); Serial.write("   \t");
-Hex_to_PC_A(osccal_MIN,Num_string, '\t');
-//Num_to_PC(10,Results[m]); Serial.write("   \t");
+{Hex_to_PC_A(osccal_MIN,Num_string, '\t');
 Int_Num_to_PC_A(Results[m],Num_string, '\t');
-
 percentage_error = Results[m];
-//Num_to_PC(10,percentage_error*100/62500);Char_to_PC('%');
 Int_Num_to_PC_A(percentage_error*100/62500, Num_string, '%');
-
 osccal_MIN++;newline_A();}
 
-Serial.write("Enter new user cal value\r\n\
+Serial.write("Enter new user cal value (Use capitol letters)\r\n\
 or enter FF to delete the user cal");                                   //Request new OSCCAL_User_Value
 
 New_UC_value = Hex_from_KBD();
@@ -82,7 +75,7 @@ while(1){
 if(waitforkeypress_A() == 'y')break; 
 else {newline_A();Serial.write('?');New_UC_value = Hex_from_KBD();Serial.write(" y?");}}
 
-waiting_for_I2C_master;                                             //Send OSCCAL_User_Value to AT328 device
+waiting_for_I2C_master;                                               //Send OSCCAL_User_Value to AT328 device
 send_byte_with_Nack(New_UC_value);                                   //mini-OS will test that User cal is suitable
 clear_I2C_interrupt;
 
@@ -109,7 +102,6 @@ Hex_to_PC_A(New_UC_value, Num_string, '\t');
 
 New_UC_value = receive_byte_with_Nack();
 clear_I2C_interrupt;
-//Num_to_PC(16, New_UC_value); newline_A();}
 Hex_to_PC_A(New_UC_value, Num_string, '\r');}
 
 Serial.write("AK to repeat\r\n");
