@@ -191,4 +191,32 @@ return (long)FPN; }
 
 
 
+/*****************************************************************************************/
+long Hex_from_KBD(void){
+char keypress, sign = '+';
+long number;
+
+do
+{keypress =  waitforkeypress_A();} 
+while ((!(hex_digit(keypress)))&& (keypress != '-'));//(non_hex_char(keypress));
+
+newline_A(); Serial.write(keypress);
+
+if(keypress == '-') {sign = '-'; number = 0;}
+
+else {keypress -= '0';
+if (keypress > 9)keypress -= 7;
+number =  keypress;}
+
+while(1){
+if ((keypress = wait_for_return_key_A())  =='\r')break;
+if (hex_digit (keypress))	
+{Serial.write(keypress);
+keypress -= '0';
+if (keypress > 9)keypress -= 7;
+
+number = number * 0x10 + keypress;}}
+
+if(sign == '-')number*= -1;					
+return number;}
 
