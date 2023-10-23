@@ -42,25 +42,25 @@ Serial.write("\r\nATMEGA 328 manual calibration (please wait 10 seconds)\r\n\
 Cal factor user value   \t");
 
 
-I2C_Tx(1, 'N', &cal_mode);                    //Initiate Atmega 328 calibration mode
-waiting_for_I2C_master;                     //Atmega 328 accepts request to calibrate             
-OSCCAL_DV = receive_byte_with_Ack();              //Receive 328 OSCCAL_default Value
-osccal_MIN = receive_byte_with_Ack();               //Working value + 20  
+I2C_Tx(1, 'N', &cal_mode);                                              //Initiate Atmega 328 calibration mode
+waiting_for_I2C_master;                                                 //Atmega 328 accepts request to calibrate             
+OSCCAL_DV = receive_byte_with_Ack();                                    //Receive 328 OSCCAL_default Value
+osccal_MIN = receive_byte_with_Ack();                                   //Working value + 20  
 
-for(int m = 0; m <= 40; m++){                 //Receive table giving 40 calibration error results
+for(int m = 0; m <= 40; m++){                                           //Receive table giving 40 calibration error results
 Results[m] = receive_byte_with_Ack();
 Results[m] = (Results[m] << 8) + receive_byte_with_Ack();}  
-cal_UC = receive_byte_with_Nack();                //Receive 328 OSCCAL_User Value
+cal_UC = receive_byte_with_Nack();                                      //Receive 328 OSCCAL_User Value
 clear_I2C_interrupt;
 
-//Num_to_PC(16, cal_UC ); newline_A();                //Print User cal factor
+//Num_to_PC(16, cal_UC ); newline_A();                                  //Print User cal factor
 Hex_to_PC_A(cal_UC,Num_string, '\r');
 
-Serial.write("Cal factor default value   \t");          //Print OSCCAL_default_Value
+Serial.write("Cal factor default value   \t");                          //Print OSCCAL_default_Value
 //Num_to_PC(16, OSCCAL_DV ); newline_A();
 Hex_to_PC_A(OSCCAL_DV,Num_string, '\r');
 
-for(int m = 0; m <= 40; m++)                  //Print table of values
+for(int m = 0; m <= 40; m++)                                            //Print table of values
 {//Num_to_PC(16,osccal_MIN); Serial.write("   \t");
 Hex_to_PC_A(osccal_MIN,Num_string, '\t');
 //Num_to_PC(10,Results[m]); Serial.write("   \t");
@@ -73,7 +73,7 @@ Int_Num_to_PC_A(percentage_error*100/62500, Num_string, '%');
 osccal_MIN++;newline_A();}
 
 Serial.write("Enter new user cal value\r\n\
-or enter FF to delete the user cal");             //Request new OSCCAL_User_Value
+or enter FF to delete the user cal");                                   //Request new OSCCAL_User_Value
 
 New_UC_value = Hex_from_KBD();
 Serial.write ("\r\nPress y if OK or AOK and repeat");
@@ -82,8 +82,8 @@ while(1){
 if(waitforkeypress_A() == 'y')break; 
 else {newline_A();Serial.write('?');New_UC_value = Hex_from_KBD();Serial.write(" y?");}}
 
-waiting_for_I2C_master;                     //Send OSCCAL_User_Value to AT328 device
-send_byte_with_Nack(New_UC_value);                //mini-OS will test that User cal is suitable
+waiting_for_I2C_master;                                             //Send OSCCAL_User_Value to AT328 device
+send_byte_with_Nack(New_UC_value);                                   //mini-OS will test that User cal is suitable
 clear_I2C_interrupt;
 
 /**************************************/
@@ -91,7 +91,7 @@ waiting_for_I2C_master;
 Test_res =  receive_byte_with_Ack();
 
 
-if(Test_res == 'X'){                      //min-OS rejects user-cal value just entered
+if(Test_res == 'X'){                                                //min-OS rejects user-cal value just entered
 error = receive_byte_with_Ack();
 error = (error << 8) + receive_byte_with_Nack();clear_I2C_interrupt;
 newline_A(); 
@@ -100,7 +100,7 @@ Int_Num_to_PC_A(error,Num_string, ' ');
 Serial.write("  Error too great! Try again."); 
 newline_A();}
 
-if(Test_res == 'Y'){                      //min-OS accepts user-cal value just entered
+if(Test_res == 'Y'){                                                //min-OS accepts user-cal value just entered
 Serial.write("\r\nValues saved to EEPROM   \t");
 
 New_UC_value = receive_byte_with_Ack();
@@ -114,3 +114,8 @@ Hex_to_PC_A(New_UC_value, Num_string, '\r');}
 
 Serial.write("AK to repeat\r\n");
 waitforkeypress_A();SW_reset;}
+
+
+
+
+/*********************************************************************************************************************************/
