@@ -118,10 +118,13 @@ ltoa(Int_num, num_as_string, 10);								//Long to askii
 Serial.print(num_as_string);Serial.print(next_char);}
 
 
+
+/******************************************************************************************/
 void Hex_to_PC_A(long Hex_num, char * num_as_string, char next_char)
 {
 ltoa(Hex_num, num_as_string, 16);								//Long to askii
 Serial.print(num_as_string);Serial.print(next_char);}
+
 
 
 /*****************************************************************************************/
