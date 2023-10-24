@@ -32,7 +32,7 @@ int main (void){
 
 
 long percentage_error;
-int Result, error;
+long Result, error;
 unsigned char osccal_MIN;
 unsigned char cal_UC, OSCCAL_DV;
 unsigned char  New_UC_value;  
@@ -42,19 +42,34 @@ char Num_string[12];
 setup_HW_Arduino_IO_Extra;
 
 Serial.write("\r\nATMEGA 328 manual calibration (please wait 10 seconds)\r\n\
-Cal factor user value   \t");
+Cal factor user value   \r\n");
 
 
 scan_328_cal_factors();
-for(int m = 0x10;m <=0xf0; m++){
+for(int m = 0x10;m < 0xf0; m++){
+
+waiting_for_I2C_master;
 Result = receive_byte_with_Ack();
 Result = (Result << 8) + receive_byte_with_Ack();
+clear_I2C_interrupt;
 Hex_to_PC_A(m,Num_string, '\t');
-Int_Num_to_PC_A(Result,Num_string, '\t');
+Int_Num_to_PC_A(m,Num_string, '\t');
+//Int_Num_to_PC_A(Result,Num_string, '\t');
+percentage_error = Result;
+Int_Num_to_PC_A(percentage_error*100/62500, Num_string, '\t');//'%'
+newline_A();
+_delay_ms(50);}
+
+waiting_for_I2C_master;
+Result = receive_byte_with_Ack();
+Result = (Result << 8) + receive_byte_with_Nack();
+clear_I2C_interrupt;
+Hex_to_PC_A(0xf0,Num_string, '\t');
+Int_Num_to_PC_A(0xf0,Num_string, '\t');
+//Int_Num_to_PC_A(Result,Num_string, '\t');
 percentage_error = Result;
 Int_Num_to_PC_A(percentage_error*100/62500, Num_string, '%');
-newline_A();}
-clear_I2C_interrupt;
+newline_A();
 
 
 
