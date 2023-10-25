@@ -88,7 +88,6 @@ if(Test_res == 'X'){                                                //min-OS rej
 error = receive_byte_with_Ack();
 error = (error << 8) + receive_byte_with_Nack();clear_I2C_interrupt;
 newline_A(); 
-//Num_to_PC(10, error); 
 Int_Num_to_PC_A(error,Num_string, ' ');
 Serial.write("  Error too great! Try again."); 
 newline_A();}
@@ -97,7 +96,6 @@ if(Test_res == 'Y'){                                                //min-OS acc
 Serial.write("\r\nValues saved to EEPROM   \t");
 
 New_UC_value = receive_byte_with_Ack();
-//Num_to_PC(16, New_UC_value); Serial.write("   \t");
 Hex_to_PC_A(New_UC_value, Num_string, '\t');
 
 New_UC_value = receive_byte_with_Nack();
