@@ -23,11 +23,13 @@ volatile long error_SUM;
 unsigned char OSCCAL_WV, OSCCAL_DV, New_UC_value;
 volatile int EA_counter, EA_buff_ptr;
 char cal_mode;
+char Num_string[12];
+
 
 int main (void){
 long error;
 
-setup_HW;                             //"setup_HW_E;"initially saves default OSCCAL in 0x1F9 and
+setup_HW_Arduino_IO_Extra;                             //"setup_HW_E;"initially saves default OSCCAL in 0x1F9 and
 
 TIMSK1 |= (1 << TOIE1);                     //Enable T1 interrupt
 I2C_initiate_7_8125mS_ref();                    //Request Mode P: 7.8125mS ref signal from master
@@ -45,17 +47,17 @@ cal_mode = 1;
 for(int m = 0; m < 15; m++)error = emergency_cal();       //warm-up time
 
 for(int m = 0x10; m <= 0xF0; m++){                  //results are stored in array "buffer"
-OSCCAL = m; if (!(m%5))Char_to_PC('.');
+OSCCAL = m; if (!(m%5))Serial.write('.');
 if ((error = emergency_cal()) < 1000)break;}
 waiting_for_I2C_master;
 send_byte_with_Nack(0);                       //Master responds by exiting mode P
 clear_I2C_interrupt;
-cli();
+//cli();
 TIMSK1 &= (~(1 << TOIE1));                      //Disable T1 interrupt
-newline(); 
-String_to_PC("Approx. cal factor ");Num_to_PC(16, OSCCAL);  
-String_to_PC("   Error "); Num_to_PC(10, error);
-newline();
+newline_A(); 
+Serial.write("Approx. cal factor ");Hex_to_PC_A(OSCCAL, Num_string, ' ');  
+Serial.write("   Error "); Int_Num_to_PC_A(error, Num_string, '\r');
+//newline_A();
 
 
 cal_mode = 5;
@@ -77,14 +79,14 @@ if (error > 500) OSCCAL_WV = OSCCAL;
 waiting_for_I2C_master;
 send_byte_with_Nack(0);                       //Master responds by exiting mode P
 clear_I2C_interrupt;
-String_to_PC("Cal factor ");
-Num_to_PC(16, OSCCAL);
-String_to_PC("   Error ");
-Num_to_PC(10, error);
+Serial.write("Cal factor ");
+Hex_to_PC_A(OSCCAL, Num_string, ' ');
+Serial.write("   Error ");
+Int_Num_to_PC_A(error, Num_string, ' ');
 
 
-String_to_PC("\r\nSave? y or AOK\r\n");
-if(waitforkeypress() == 'y'){
+Serial.write("\r\nSave? y or AOK\r\n");
+if(waitforkeypress_A() == 'y'){
 New_UC_value = OSCCAL;
 
 
@@ -94,15 +96,15 @@ eeprom_write_byte((uint8_t*)0x1FF, New_UC_value);
 Timer_T0_sub(T0_delay_10ms);
 
     
-String_to_PC("Values saved to EEPROM   ");              //Echo values back from the EEPROM
-Num_to_PC(16,eeprom_read_byte((uint8_t*)0x1FE));
-String_to_PC ("    ");
-Num_to_PC(16,eeprom_read_byte((uint8_t*)0x1FF));
-newline();}
-else String_to_PC("Not saved\r\n");
+Serial.write("Values saved to EEPROM   ");              //Echo values back from the EEPROM
+Hex_to_PC_A(eeprom_read_byte((uint8_t*)0x1FE), Num_string, ' ');
+Serial.write ("    ");
+Hex_to_PC_A(eeprom_read_byte((uint8_t*)0x1FF), Num_string, ' ');
+newline_A();}
+else Serial.write("Not saved\r\n");
 
-String_to_PC("\r\nAK to repeat\r\n");
-  waitforkeypress();SW_reset;}
+Serial.write("\r\nAK to repeat\r\n");
+  waitforkeypress_A();SW_reset;}
 
 
 
