@@ -4,46 +4,10 @@
 
 char watch_dog_reset = 0;
 char User_response;
-char str_counter;
-
-
-volatile char Data_Entry_complete, digit_entry;
-volatile char scroll_control;
-char non_zero_detect;
-char digits[15];
-
-
 
 #define T0_delay_10ms 5,178
 #define T1_delay_100ms 3, 0x9E62
 #define T2_delay_10ms 7,178
-
-
-#define set_up_PCI      PCICR |= ((1 << PCIE0) | (1 << PCIE2))
-#define enable_PCI      PCMSK0 |= (1 << PCINT6);    PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
-#define disable_PCI_on_sw1_and_sw3     PCMSK2 &= (~((1 << PCINT18) | (1 << PCINT23)));
-#define   clear_PCI_on_sw1_and_sw3   PCIFR |= (1<< PCIF2);
-
-
-#define switch_3_down  ((PIND & 0x80)^0x80)
-#define switch_3_up   (PIND & 0x80)
-#define switch_1_down ((PIND & 0x04)^0x04)
-#define switch_1_up   (PIND & 0x04)
-#define switch_2_down ((PINB & 0x40)^0x40)
-#define switch_2_up   (PINB & 0x40)
-
-
-#define Init_display_for_pci_data_entry \
-clear_digits;\
-digits[0] = '0';\
-I2C_Tx_8_byte_array(digits);
-
-
-#define clear_digits {for(int m = 0; m<=14; m++)digits[m]=0;}
-#define shift_digits_left {for (int n = 0; n < 14; n++){digits[14-n] = digits[13-n];}}
-#define shift_digits_right {for (int n = 0; n < 14; n++){digits[n] = digits[n+1];}}
-
-#define shift_FPN_num_string_left   {for (int n = 0; n < 14; n++){*(FPN_num_string + 14 - n) = *(FPN_num_string + 13 - n);}}
 
 
 
@@ -63,37 +27,6 @@ Serial.begin(115200);\
 while (!Serial);\
 sei();\
 I2C_Tx_LED_dimmer();
-
-
-
-/*****************************************************************************/
-#define setup_HW_Arduino_IO_Extra \
-setup_HW_Arduino_IO;\
-\
-Timer_T0_10mS_delay_x_m(1);\
-I2C_TX_328_check();\
-waiting_for_I2C_master;\
-if (receive_byte_with_Nack()==1)\
-{TWCR = (1 << TWINT);\
-Serial.write("\r\nPress\r\n\
-1 for OS version\r\n\
-2 for system data\r\n\
-3 Message from the OS (x to escape)\r\n\
-4 Default project\r\n\
-0 to escape\r\n");\
-switch (waitforkeypress_A()){\
-case '0':break;\
-case '1':I2C_Rx_get_version_A('0');break;\
-case '2':I2C_Rx_get_version_A('1');break;\
-case '3':str_counter = 0; do\
-{Read_Hello_world_string_A();newline_A();\
-str_counter += 1;\
-waitforkeypress_A();}\
-while (str_counter < 3);\
-break;\
-case '4':wdt_enable(WDTO_30MS);\
-I2C_Tx_display(); break;}}\
-else TWCR = (1 << TWINT);
 
 
 
@@ -180,9 +113,9 @@ TWDR;
 #define clear_I2C_interrupt \
 TWCR = (1 << TWINT);
 
-
 #define waiting_for_I2C_master_with_ISR \
 TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWIE);
+
 
 
 /*****************************************************************************/
@@ -190,9 +123,7 @@ TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWIE);
 #include "Resources_nano_projects\PC_comms\Basic_Rx_Tx_Arduino.c"
 #include "Resources_nano_projects\Chip2chip_comms\I2C_subroutines_1.c"
 #include "Resources_nano_projects\Chip2chip_comms\I2C_slave_Rx_Tx.c"
-#include "Resources_nano_projects\Subroutines\Random_and_prime_nos.c"
 #include "Resources_nano_projects\PC_comms\Arduino_Rx_Tx_UNO_pcb.c"
-#include "Resources_nano_projects\Subroutines\FPN_DIY_IO.c"
 #include "Resources_nano_projects\PC_comms\KBD_to_display.c"
 
 
