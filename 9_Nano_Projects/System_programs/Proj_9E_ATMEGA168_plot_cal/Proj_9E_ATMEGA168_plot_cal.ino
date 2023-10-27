@@ -30,7 +30,6 @@ _delay_ms(10);
   
 for(int m = 0x10; m <= 0xF0; m++){ 
 error = compute_single_error(m);
-sei();
 Int_Num_to_PC_A(m, Num_string, '\t');
 Int_Num_to_PC_A(error, Num_string, ' '); 
 Serial.write("   \t");
@@ -96,7 +95,9 @@ clear_I2C_interrupt;}
 /**********************************************************************************************/
 long compute_single_error(char OSCCAL_TV){         //Trial value
 long error;
+char SREG_bkp;
 
+SREG_bkp = SREG;
 OSCCAL = OSCCAL_TV;                             //Set OSCCAL equal to the trial value           
 TIMSK1 |= (1 << TOIE1);                         //Enable T1 interrupt
 I2C_initiate_7_8125mS_ref();                    //Request Mode P: 7.8125mS ref signal from master
@@ -110,7 +111,7 @@ waiting_for_I2C_master;
 send_byte_with_Nack(0);                         //Master responds by exiting mode P
 clear_I2C_interrupt;
 TIMSK1 &= (~(1 << TOIE1));                      //Disable T1 interrupt
-cli();
+SREG = SREG_bkp;
 OSCCAL = OSCCAL_WV;                             //Restore safe value of OSCCAL
 return error;} 
 
