@@ -40,9 +40,6 @@ IT INTRODUCES
   checks the calibration of the Atmega 328 or gives a demonstration of the multiplexer operation.
 */
 
-int compute_single_error(char);
-
-
 #include "Proj_9A_header_file.h"
 
 volatile char T1_OVF;
@@ -81,7 +78,6 @@ waiting_for_I2C_master;                             //Energise  slave I2C and wa
 send_byte_with_Nack(1);                             //Master will respond by staying in mode P
 clear_I2C_interrupt;                                //House keeping
 TCNT1=0;TCCR1B = 1;                                 //Start T1 with no prescalling (at 8MHz)
-sei();                                              //Global interrupt enable
 
 OSCCAL -= 20;                                       //Compute cal errors for 40 values of OSCCAL
 for(int m = 0; m <= 40; m++){                       //results are stored in array "buffer"
@@ -102,7 +98,7 @@ percentage_error = buffer[m];
 Int_Num_to_PC_A(percentage_error*100/62500, Num_string,'%');
 newline_A();}
 
-Serial.write("Enter new user cal value\r\n\
+Serial.write("Enter new user cal value (Use capitol letters)\r\n\
 or enter FF to delete the user cal");           //Request new OSCCAL_User_Value
 
 New_UC_value = Hex_from_KBD();
@@ -119,8 +115,13 @@ New_UC_value = Hex_from_KBD();Serial.write(" y?");}}
 /************Exit if user enters 0xFF*************************/
 
 if(New_UC_value == 0xFF){
-eeprom_write_byte((uint8_t*)0x1FE, 0xFF);         //Delete user cal value
-eeprom_write_byte((uint8_t*)0x1FF, 0xFF);
+  if ((error = compute_single_error(OSCCAL_DV)) > 1000)
+  {eeprom_write_byte((uint8_t*)0x1FE, OSCCAL_WV);
+eeprom_write_byte((uint8_t*)0x1FF, OSCCAL_WV);
+Serial.write("\n\rDefault value not OK");}
+else
+{eeprom_write_byte((uint8_t*)0x1FE, 0xFF);         //Delete user cal value
+eeprom_write_byte((uint8_t*)0x1FF, 0xFF);}
 SW_reset;}
 
 
@@ -131,8 +132,8 @@ if ((error = compute_single_error(New_UC_value)) > 1000)
 Int_Num_to_PC_A(error, Num_string, ' ');
 Serial.write("  Error too great!"); 
 newline_A();
-eeprom_write_byte((uint8_t*)0x1FE, 0xFF);         //Delete user cal value
-eeprom_write_byte((uint8_t*)0x1FF, 0xFF);
+eeprom_write_byte((uint8_t*)0x1FE, OSCCAL_WV);         //Delete user cal value
+eeprom_write_byte((uint8_t*)0x1FF, OSCCAL_WV);
 SW_reset;}                                        //Abort and automatically repeat calibration process
 
 
@@ -203,9 +204,11 @@ clear_I2C_interrupt;}
 
 
 /**********************************************************************************************/
-int compute_single_error(char OSCCAL_TV){         //Trial value
-int error;
+long compute_single_error(char OSCCAL_TV){         //Trial value
+long error;
+char SREG_bkp;
 
+SREG_bkp = SREG;
 OSCCAL = OSCCAL_TV;                             //Set OSCCAL equal to the trial value           
 TIMSK1 |= (1 << TOIE1);                         //Enable T1 interrupt
 I2C_initiate_7_8125mS_ref();                    //Request Mode P: 7.8125mS ref signal from master
@@ -219,6 +222,6 @@ waiting_for_I2C_master;
 send_byte_with_Nack(0);                         //Master responds by exiting mode P
 clear_I2C_interrupt;
 TIMSK1 &= (~(1 << TOIE1));                      //Disable T1 interrupt
-cli();
+SREG = SREG_bkp;
 OSCCAL = OSCCAL_WV;                             //Restore safe value of OSCCAL
-return error;}        
+return error;}
