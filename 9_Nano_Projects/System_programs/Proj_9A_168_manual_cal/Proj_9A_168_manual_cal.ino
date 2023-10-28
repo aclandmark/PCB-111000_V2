@@ -55,51 +55,53 @@ char Num_string[12];
 int main (void){
 long error;
 long percentage_error;
-setup_HW_Arduino_IO_Extra;                              //"setup_HW"initially saves default OSCCAL in 0x1FD and
-OSCCAL_DV = eeprom_read_byte((uint8_t*)0x1FD);          //then checks for "user-cal" and copies it to OSCCAL if present
-OSCCAL_WV = OSCCAL;                                     //Save actual cal value: could be "user-cal" or the default OSCCAL
+setup_HW_Arduino_IO_Extra;                             //"setup_HW"initially saves default OSCCAL in 0x1FD and
+OSCCAL_DV = eeprom_read_byte((uint8_t*)0x1FD);         //then checks for "user-cal" and copies it to OSCCAL if present
+OSCCAL_WV = OSCCAL;                                    //Save actual cal value: could be "user-cal" or the default OSCCAL
 
 Serial.write("\r\nATMEGA 168 manual \
 calibration\r\n\
-Cal factor working value   \t");                      //Print the actual (working) value of OSCCAL
+Cal factor working value   \t");                       //Print the actual (working) value of OSCCAL
 Hex_to_PC_A(OSCCAL_WV, Num_string, '\r' );
-Serial.write("Cal factor default value   \t");        //Print OSCCAL_default_Value
+Serial.write("Cal factor default value   \t");         //Print OSCCAL_default_Value
 Hex_to_PC_A(OSCCAL_DV , Num_string, '\r' ); 
 
-Serial.write("Doing calculations. Please wait 10 seconds\r\n");
+Serial.write
+("Doing calculations. Please wait 10 seconds\r\n");
 
 _delay_ms(25);
-TIMSK1 |= (1 << TOIE1);                               //Enable T1 interrupt
-I2C_initiate_7_8125mS_ref();                          //Request Mode P: 7.8125mS ref signal from master
+TIMSK1 |= (1 << TOIE1);                                //Enable T1 interrupt
+I2C_initiate_7_8125mS_ref();                           //Request Mode P: 7.8125mS ref signal from master
   
 
 /*****Waiting for first I2C tick***********/
-waiting_for_I2C_master;                             //Energise  slave I2C and wait for master
-send_byte_with_Nack(1);                             //Master will respond by staying in mode P
-clear_I2C_interrupt;                                //House keeping
-TCNT1=0;TCCR1B = 1;                                 //Start T1 with no prescalling (at 8MHz)
+waiting_for_I2C_master;                               //Energise  slave I2C and wait for master
+send_byte_with_Nack(1);                               //Master will respond by staying in mode P
+clear_I2C_interrupt;                                  //House keeping
+TCNT1=0;TCCR1B = 1;                                   //Start T1 with no prescalling (at 8MHz)
 
-OSCCAL -= 20;                                       //Compute cal errors for 40 values of OSCCAL
-for(int m = 0; m <= 40; m++){                       //results are stored in array "buffer"
+OSCCAL -= 20;                                         //Compute cal errors for 40 values of OSCCAL
+for(int m = 0; m <= 40; m++){                         //results are stored in array "buffer"
 error = compute_error(1);OSCCAL++;}
 
-OSCCAL = OSCCAL_WV;                                 //Restore OSCCAL to safe value for print out
+OSCCAL = OSCCAL_WV;                                   //Restore OSCCAL to safe value for print out
 waiting_for_I2C_master;
-send_byte_with_Nack(0);                             //Master responds by exiting mode P
+send_byte_with_Nack(0);                               //Master responds by exiting mode P
 clear_I2C_interrupt;
 //cli();
-TIMSK1 &= (~(1 << TOIE1));                          //Dissable T1 interrupt
+TIMSK1 &= (~(1 << TOIE1));                            //Dissable T1 interrupt
 
 for (int m = 0; m <= 40; m++){
-Hex_to_PC_A(OSCCAL_WV - 20 + m, Num_string, '\t');  //Serial.write("   \t");
+Hex_to_PC_A(OSCCAL_WV - 20 + m, Num_string, '\t');    //Serial.write("   \t");
 Int_Num_to_PC_A(buffer[m], Num_string, ' '); 
 Serial.write("   \t");
 percentage_error = buffer[m];
 Int_Num_to_PC_A(percentage_error*100/62500, Num_string,'%');
 newline_A();}
 
-Serial.write("Enter new user cal value (Use capitol letters)\r\n\
-or enter FF to delete the user cal");           //Request new OSCCAL_User_Value
+Serial.write
+("Enter new user cal value (Use capitol letters)\r\n\
+or enter FF to delete the user cal");                 //Request new OSCCAL_User_Value
 
 New_UC_value = Hex_from_KBD();
 Serial.write ("\r\nPress y if OK or AOK and repeat");
@@ -120,7 +122,7 @@ if(New_UC_value == 0xFF){
 eeprom_write_byte((uint8_t*)0x1FF, OSCCAL_WV);
 Serial.write("\n\rDefault value not OK");}
 else
-{eeprom_write_byte((uint8_t*)0x1FE, 0xFF);         //Delete user cal value
+{eeprom_write_byte((uint8_t*)0x1FE, 0xFF);            //Delete user cal value
 eeprom_write_byte((uint8_t*)0x1FF, 0xFF);}
 SW_reset;}
 
@@ -134,7 +136,7 @@ Serial.write("  Error too great!");
 newline_A();
 eeprom_write_byte((uint8_t*)0x1FE, OSCCAL_WV);         //Delete user cal value
 eeprom_write_byte((uint8_t*)0x1FF, OSCCAL_WV);
-SW_reset;}                                        //Abort and automatically repeat calibration process
+SW_reset;}                                            //Abort and automatically repeat calibration process
 
 
 /*********Safeguard: Cal value entered at KBD is OK*********************/
@@ -167,28 +169,28 @@ long compute_error(char error_mode)
 
 
 /**********************************************************************************************/
-ISR(TIMER1_OVF_vect){T1_OVF++; }                  //T1 should count to 62500 in 7.8125ms.
+ISR(TIMER1_OVF_vect){T1_OVF++; }                    //T1 should count to 62500 in 7.8125ms.
 
-ISR(TWI_vect){                                   //T2 (mini_OS) overflows: giving a calibrated tick rate
+ISR(TWI_vect){                                    //T2 (mini_OS) overflows: giving a calibrated tick rate
 long TCNT1_BKP;
-TWDR;                                             //Read TWDR the data register
-send_byte_with_Nack(1);                           //Master responds by remaining in mode P
+TWDR;                                               //Read TWDR the data register
+send_byte_with_Nack(1);                             //Master responds by remaining in mode P
 clear_I2C_interrupt;
 
-TCCR1B = 0;                                       //Halt T1
-TCNT1_BKP = TCNT1;                                //Copy the value of TCNT1
-TCNT1 = 0;                                        //Clear TCNT1
-TCCR1B = 1;                                       //Get T1 running again ASAP (Note T2 (mini_OS) has not stopped running)
-if(EA_counter < 5)T1_OVF = 0;                     //Ignore first 5 results
-else                                              //Sum error results for the next 20 TWI interrupts
+TCCR1B = 0;                                         //Halt T1
+TCNT1_BKP = TCNT1;                                  //Copy the value of TCNT1
+TCNT1 = 0;                                          //Clear TCNT1
+TCCR1B = 1;                                         //Get T1 running again ASAP (Note T2 (mini_OS) has not stopped running)
+if(EA_counter < 5)T1_OVF = 0;                       //Ignore first 5 results
+else                                                //Sum error results for the next 20 TWI interrupts
 
-{if(T1_OVF)                                       //compute error when T1 does and does not overflow
+{if(T1_OVF)                                         //compute error when T1 does and does not overflow
 {T1_OVF = 0;
 error_SUM = error_SUM + TCNT1_BKP + 3033;}    
 else {error_SUM = error_SUM + TCNT1_BKP - 62500;}}
-EA_counter++;                                     //counter increments up to 25.
+EA_counter++;                                       //counter increments up to 25.
 
-waiting_for_I2C_master_with_ISR;}                 //Be ready for next TWI interrupt 
+waiting_for_I2C_master_with_ISR;}                   //Be ready for next TWI interrupt 
 
 
 
@@ -209,19 +211,23 @@ long error;
 char SREG_bkp;
 
 SREG_bkp = SREG;
-OSCCAL = OSCCAL_TV;                             //Set OSCCAL equal to the trial value           
-TIMSK1 |= (1 << TOIE1);                         //Enable T1 interrupt
-I2C_initiate_7_8125mS_ref();                    //Request Mode P: 7.8125mS ref signal from master
-waiting_for_I2C_master;                         //First 7.8125mS tick
-send_byte_with_Nack(1);                         //Master responds by staying in mode P
+OSCCAL = OSCCAL_TV;                               //Set OSCCAL equal to the trial value           
+TIMSK1 |= (1 << TOIE1);                           //Enable T1 interrupt
+I2C_initiate_7_8125mS_ref();                      //Request Mode P: 7.8125mS ref signal from master
+waiting_for_I2C_master;                           //First 7.8125mS tick
+send_byte_with_Nack(1);                           //Master responds by staying in mode P
 clear_I2C_interrupt;
-TCNT1=0;TCCR1B = 1;                             //Start T1 with no prescalling (at 8MHz)
+TCNT1=0;TCCR1B = 1;                               //Start T1 with no prescalling (at 8MHz)
 sei();
 error = compute_error(0);
 waiting_for_I2C_master;
-send_byte_with_Nack(0);                         //Master responds by exiting mode P
+send_byte_with_Nack(0);                           //Master responds by exiting mode P
 clear_I2C_interrupt;
-TIMSK1 &= (~(1 << TOIE1));                      //Disable T1 interrupt
+TIMSK1 &= (~(1 << TOIE1));                        //Disable T1 interrupt
 SREG = SREG_bkp;
-OSCCAL = OSCCAL_WV;                             //Restore safe value of OSCCAL
+OSCCAL = OSCCAL_WV;                               //Restore safe value of OSCCAL
 return error;}
+
+
+
+/********************************************************************************************************/
