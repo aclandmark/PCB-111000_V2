@@ -72,7 +72,7 @@ if (error > 500) error =  Calibration_tuning(OSCCAL - 2);
 if (error > 500) OSCCAL_WV = OSCCAL;
 
 waiting_for_I2C_master;
-send_byte_with_Nack(0);                                             //Master responds by exiting mode P
+send_byte_with_Nack(0);                                               //Master responds by exiting mode P
 clear_I2C_interrupt;
 Serial.write("Cal factor ");
 Hex_to_PC_A(OSCCAL, Num_string, ' ');
@@ -85,13 +85,13 @@ if(waitforkeypress_A() == 'y'){
 New_UC_value = OSCCAL;
 
 
-eeprom_write_byte((uint8_t*)0x1FE, New_UC_value);                   //Save new user cal value to EEPROM addresses 0x1F7 and 8
+eeprom_write_byte((uint8_t*)0x1FE, New_UC_value);                     //Save new user cal value to EEPROM addresses 0x1F7 and 8
 Timer_T0_sub(T0_delay_10ms);
 eeprom_write_byte((uint8_t*)0x1FF, New_UC_value);
 Timer_T0_sub(T0_delay_10ms);
 
     
-Serial.write("Values saved to EEPROM   ");                          //Echo values back from the EEPROM
+Serial.write("Values saved to EEPROM   ");                              //Echo values back from the EEPROM
 Hex_to_PC_A(eeprom_read_byte((uint8_t*)0x1FE), Num_string, ' ');
 Serial.write ("    ");
 Hex_to_PC_A(eeprom_read_byte((uint8_t*)0x1FF), Num_string, ' ');
