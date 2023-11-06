@@ -50,9 +50,15 @@ char keypress;
 
 setup_HW_Arduino_IO;
 
-if (PIND & 0x80)                                               //Push SW2 to avoid user prompt 
+
+if(switch_3_down){eeprom_write_byte((uint8_t*)(0x02),255);       //Set the EEPROM location 2 to its default value
+Serial.write("EEPROM reset\r\n"); 
+while(switch_3_down);SW_reset;}
+
+
+if (switch_1_up)                                                //Push SW1 to avoid user prompt 
 {User_prompt_A;}
-while ((PIND & 0x80)^0x80);                                     //wait for SW2 release                
+while (switch_1_down);                
 User_instructions;
 input_mode = eeprom_read_byte((uint8_t*)0x02);                 //Read mode. Default value is 255
 
