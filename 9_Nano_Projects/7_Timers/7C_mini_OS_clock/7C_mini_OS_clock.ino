@@ -19,6 +19,7 @@ at the time entered when SW2 is released.
 
 There is a problem: Use of the EEPROM means that the pcb powers up in either one of two modes so that the pcb
 can get out of step with what the user expects.
+A reset with SW3 pressed will reset the EEPROM
 
 If time is not requested as expected press the reset button.
 
