@@ -164,9 +164,12 @@ TWCR = (1 << TWINT);
 
 
 /***********Define clock display functions and modes***************/
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
-
 
 /**********************************************************************************************************************/
 #define shift_display_left   for (int p = 7;  (p); p--)\
