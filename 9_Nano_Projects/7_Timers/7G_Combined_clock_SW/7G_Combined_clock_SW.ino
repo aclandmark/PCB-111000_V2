@@ -107,7 +107,8 @@ else set_data_mode;
 
 if(data_mode_not_set)                               //Goes here following POR
 {User_prompt_A;
-User_instructions;}
+//User_instructions;
+}
 
 for(int m = 0; m<=11; m++)
 {eeprom_write_byte((uint8_t*)(m+7), 0);}            //clear BKP space
@@ -162,10 +163,10 @@ eeprom_read_byte((uint8_t*)(13-m));}
 
 /**************************Normal program continues********************************/
 set_up_PCI;
-enable_pci;
+enable_PCI;
 
-disable_pci_on_sw1;
-disable_pci_on_sw2;
+disable_PCI_on_sw1;
+disable_PCI_on_sw2;
 display_clear = 0;
 
 while(1){                                                 //Main loop: Continuously cycles through this loop (every 188uS??).  
