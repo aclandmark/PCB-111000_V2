@@ -43,19 +43,19 @@ USER INSTRUCTIONS
 
 
 Connect to pc  Should get "R   R   R   R....." user prompt
-if not hold sw3 down and reset.
+if not hold sw2 down and reset.
 Keypress R gives the user insructions
-press sw1 get message enter time 
+press sw3 get message enter time 
 Enter time 24 hour clock
 Power cycle to 5V supply if wanted 
-press sw1 then sw2 to start
-press sw2 to toggle between clock and new SW
-press sw3 to restore old SW
-press sw1 to pause, blank and restore display
-At initial POR press sw3 (rather that sw1) to get two SW's
+press sw3 then sw1 to start
+press sw1 to toggle between clock and new SW
+press sw2 to restore old SW
+press sw3 to pause, blank and restore display
+At initial POR press sw2 (rather that sw3) to get two SW's
 
-To adjust time: Press SW2 to restore clock time
-Then immediately press SW1
+To adjust time: Press SW1 to restore clock time
+Then immediately press SW3
 This will cause a WD time out
 Release sw1 to increment time
 sw2 to decrement time
