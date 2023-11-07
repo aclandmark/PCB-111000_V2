@@ -17,6 +17,10 @@ void sendString(char*);
 #define T1_delay_50ms 	5,0xFE78
 #define T2_delay_10ms 	7,178
 
+#define T2_delay_2ms  5, 131
+#define T0_delay_5ms  5,217
+
+
 /*********************************************************************/
 void nop_delay(int nop_counter){for(int q = 0; q<= nop_counter; q++) {asm("nop");}}
 
