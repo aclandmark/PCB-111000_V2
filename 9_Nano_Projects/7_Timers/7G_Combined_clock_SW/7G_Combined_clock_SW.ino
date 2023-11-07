@@ -78,6 +78,8 @@ clock_mode is storred in EEPROM address 2: When  subroutine set_time() is called
 
 
 #include "Proj_7G_header_file_1.h"
+#include "Proj_7G_header_file_2.h"
+
 
 
 long clock_time_secs=0;                              //Value is seconds: Backed up in EEPROM when SW is selected
