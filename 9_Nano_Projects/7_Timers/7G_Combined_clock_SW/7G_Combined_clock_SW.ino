@@ -96,8 +96,8 @@ clear_Arduino_WDT_flag;                             //set it to to 0xFF
 setup_HW_for_clock_SW;
 
 Timer_T1_sub(T1_delay_100ms);
-if (switch_3_down)
-{while(switch_3_down);clear_data_mode;                //Ensure that the user prompt is skipped
+if (switch_2_down)
+{while(switch_2_down);clear_data_mode;                //Ensure that the user prompt is skipped
 Timer_T1_sub(T1_delay_100ms);}
 
 else set_data_mode;
@@ -110,10 +110,10 @@ User_instructions;}
 for(int m = 0; m<=11; m++)
 {eeprom_write_byte((uint8_t*)(m+7), 0);}            //clear BKP space
 
-while(1){if(switch_3_down) 
+while(1){if(switch_2_down) 
 {clock_mode = 2;break;}                             //Select timer or clock
-    if(switch_1_down) {clock_mode = 1;break;}}
-while((switch_1_down) || (switch_3_down));
+    if(switch_3_down) {clock_mode = 1;break;}}
+while((switch_3_down) || (switch_2_down));
 
 clock_time_secs=0;
 old_clock_mode = 0;
@@ -132,10 +132,10 @@ for(int m = 0; m<3; m++){
 sec_counter = (sec_counter<< 8)
 + eeprom_read_byte((uint8_t*)(9-m));}       
 
-if((switch_1_down) && (switch_2_down)){                   //User induced watch dog timeout:
-while((switch_1_down) || (switch_2_down)){                //Use sw_1 and sw_3 to adjust time
-if((switch_1_up) && (switch_2_down)){sec_counter += 1;}
-if((switch_2_up) && (switch_1_down)){sec_counter -= 1;}
+if((switch_3_down) && (switch_1_down)){                   //User induced watch dog timeout:
+while((switch_3_down) || (switch_1_down)){                //Use sw_1 and sw_3 to adjust time
+if((switch_3_up) && (switch_1_down)){sec_counter += 1;}
+if((switch_1_up) && (switch_3_down)){sec_counter -= 1;}
 Timer_T0_10mS_delay_x_m(10);
 Calculate_time();
 digits[0]='0'; digits[1] = '0';                           //Sets mS*10 to zero  masks mS*10     
@@ -162,8 +162,8 @@ eeprom_read_byte((uint8_t*)(13-m));}
 set_up_PCI;
 enable_pci;
 
+disable_pci_on_sw1;
 disable_pci_on_sw2;
-disable_pci_on_sw3;
 display_clear = 0;
 
 while(1){                                                 //Main loop: Continuously cycles through this loop (every 188uS??).  
@@ -189,7 +189,7 @@ case 'A':
   break;
   
 case 'E':                                               //Clock ready to start: Awaiting sw3 press
-  if(switch_2_up); else{
+  if(switch_1_up); else{
   I2C_initiate_10mS_ref();                              //Initiate TWI interrupt (every 10mS)
   sei();
   clock_mode = 'B';
@@ -200,10 +200,10 @@ case 'B': if(!(TWI_flag));
 else {TWI_flag = 0; Update_sec_counter;                  //Clock running mode
 old_clock_mode = 'B'; 
 if(((86400 + sec_counter - clock_resume_time)%86400>1)
-&& ((switch_3_down) || (switch_2_down)))
-{if(switch_2_down){clock_time_secs = 
+&& ((switch_2_down) || (switch_1_down)))
+{if(switch_1_down){clock_time_secs = 
 clockTOstop_watch();clock_mode = 'F';}
-if(switch_3_down){SW_resume_time = 
+if(switch_2_down){SW_resume_time = 
 restore_stop_watch(); clock_mode = 'H';}}
 else Timer();} 
 break;                                                   //Convert clock to stop watch
@@ -211,7 +211,7 @@ break;                                                   //Convert clock to stop
 case 'F': if(!(TWI_flag)); 
 else {TWI_flag = 0; Update_sec_counter;                  //Stop watch mode     
 old_clock_mode = 'F'; 
-if(((sec_counter)>1) && ((switch_2_down)))
+if(((sec_counter)>1) && ((switch_1_down)))
 {clock_resume_time = restore_Clock();clock_mode = 'B'; }
 else Timer();}
 break;                                                  //Restore clock
@@ -220,7 +220,7 @@ case 'H': if(!(TWI_flag));
 else {TWI_flag = 0;   Update_sec_counter;               //Stop watch restored mode      
 old_clock_mode = 'H'; 
 if(((86400 + sec_counter-SW_resume_time)%86400 > 1) &&  
-(switch_2_down))
+(switch_1_down))
 {clock_resume_time = restore_Clock();clock_mode = 'B'; }
 else Timer();}
 break;  
@@ -275,7 +275,7 @@ TWCR =
 void update_7_seg_display(void){
 unsigned char Null_byte;
 cli();                                                    //Pause twi interrupt
-hold_PCI_on_sw1_and_sw2;
+hold_PCI_on_sw1_and_sw3;
 {digits[0] = digits[1]; digits[1] = 0;}                  //Optional: masks 10mS digit
 TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN);         //Enable slave mode and set Enable Acknowledge
 while (!(TWCR & (1 << TWINT)));                          //No interrupt: wait for comms from master
@@ -287,7 +287,7 @@ else{TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN);}    //ACK pulse normally r
 while (!(TWCR & (1 << TWINT)));}                          //Clear interrupt
 TWCR = 
 (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE);   //Prepare for next 10ms interrupt
-restore_PCI_on_sw1_and_sw2;
+restore_PCI_on_sw1_and_sw3;
 sei();}                                                   //re-enable twi interrupt
 
 
@@ -358,8 +358,8 @@ else
 /*****************************************************************************************************************/
 ISR(PCINT2_vect) {                                          //PORTB switch_1 interrupts
 
-if(switch_1_up)return;                                      //Ignore interrupt on switch release
-if(switch_2_up){                                            //User triggered WDTout to adjust clock
+if(switch_3_up)return;                                      //Ignore interrupt on switch release
+if(switch_1_up){                                            //User triggered WDTout to adjust clock
 
 switch(clock_mode){
 case 0: clock_mode = 1; break;                             //Enter the start timer
