@@ -4,12 +4,22 @@ char watch_dog_reset = 0;
 char MCUSR_copy;
 char User_response;
 char num_as_string[12];
-//char str_counter;
 
-//char digits[8], charH, charL ;
-//char Hours, Minutes, Seconds, deci_Secs;
-//long deci_sec_counter;
 
+volatile char clock_mode;                                        //
+volatile char  TWI_flag;
+
+volatile char ms_counter;                                  //Increments every 10mS 
+volatile char old_clock_mode;                                   //Used to restore mode when display is re-activated
+char digits[8], charH, charL;                             //Holds characters to be displayed
+char Hours, Minutes, Seconds;
+  
+long sec_counter;                                         //Display time is based on sec_counter 
+long sec_counter_V;                                       //Volatile version of sec_counter (updated by TWI ISR)
+long clock_time_long;                                     //Saves time (sec + ms * 100); used to switch between clock * SW 
+char payload;                                             //No of characters to send over I2C (8 every sec & 2 otherwise)
+unsigned char sec_counter_save;                                   //Set to 1 every second (indicates that sec_counter is to be updated from sec_counter_V)
+unsigned char display_clear;                                        //Records status of display (blank or active)
 
 
 
@@ -42,37 +52,6 @@ Serial.begin(115200);\
 while (!Serial);\
 sei();\
 I2C_Tx_LED_dimmer();
-
-
-
-/*****************************************************************************/
-#define setup_HW_Arduino_IO_Extra \
-setup_HW_Arduino_IO;\
-\
-Timer_T0_10mS_delay_x_m(1);\
-I2C_TX_328_check();\
-waiting_for_I2C_master;\
-if (receive_byte_with_Nack()==1)\
-{TWCR = (1 << TWINT);\
-Serial.write("\r\nPress\r\n\
-1 for OS version\r\n\
-2 for system data\r\n\
-3 Message from the OS (x to escape)\r\n\
-4 Default project\r\n\
-0 to escape\r\n");\
-switch (waitforkeypress_A()){\
-case '0':break;\
-case '1':I2C_Rx_get_version_A('0');break;\
-case '2':I2C_Rx_get_version_A('1');break;\
-case '3':str_counter = 0; do\
-{Read_Hello_world_string_A();newline_A();\
-str_counter += 1;\
-waitforkeypress_A();}\
-while (str_counter < 3);\
-break;\
-case '4':wdt_enable(WDTO_30MS);\
-I2C_Tx_display(); break;}}\
-else TWCR = (1 << TWINT);
 
 
 
@@ -175,14 +154,14 @@ TWCR = (1 << TWINT);
 #define     clear_PCI_on_sw1_and_sw3      PCIFR |= (1<< PCIF2);
 #define     disable_PCI_on_sw2            PCMSK0 &= (~(1 << PCINT6));
 
+#define     disable_PCI_on_sw1            PCMSK2 &= (~((1 << PCINT18)))
+#define hold_PCI_on_sw1_and_sw3         PCICR &= (~(1 << PCIE2));
+#define restore_PCI_on_sw1_and_sw3      PCICR |= (1 << PCIE2);
 
 
 /**********************************************************************************************************************/
 #define shift_display_left   for (int p = 7;  (p); p--)\
 digits[p] = digits[p-1];
-
-#define clear_display       {for (int m = 0; m < 8; m++)digits[m] = 0; }
-#define save_to_eeprom      eeprom_write_byte((uint8_t*)(m+3),digits[0]);
 
 
 
