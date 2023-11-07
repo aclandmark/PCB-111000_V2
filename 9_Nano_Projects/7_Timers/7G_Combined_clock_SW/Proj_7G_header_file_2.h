@@ -57,21 +57,6 @@ WDTCSR = (1<< WDE) | (1 << WDIE) | (1 << WDP1);
 
 
 
-volatile char clock_mode;                                        //
-volatile char  TWI_flag;
-
-volatile char ms_counter;                                  //Increments every 10mS 
-volatile char old_clock_mode;                                   //Used to restore mode when display is re-activated
-char digits[8], charH, charL;                             //Holds characters to be displayed
-char Hours, Minutes, Seconds;
-  
-long sec_counter;                                         //Display time is based on sec_counter 
-long sec_counter_V;                                       //Volatile version of sec_counter (updated by TWI ISR)
-long clock_time_long;                                     //Saves time (sec + ms * 100); used to switch between clock * SW 
-char payload;                                             //No of characters to send over I2C (8 every sec & 2 otherwise)
-unsigned char sec_counter_save;                                   //Set to 1 every second (indicates that sec_counter is to be updated from sec_counter_V)
-unsigned char display_clear;                                        //Records status of display (blank or active)
-
 
 void set_time(void);                                      //If mode is 255:   Enables user to enter start; converts it to seconds and saves it in seconds in EEPROM 
                                                           //If mode is zero:  Reads time back out from EEPROM locations
@@ -99,8 +84,8 @@ void print_out_bkp(void);                                 //For test only: print
 #define MinsL digits[4]
 #define SecsH digits[3]
 #define SecsL digits[2]
-#define deci_SecsH digits[1]
-#define deci_SecsL digits[0]
+#define msecsH digits[1]
+#define msecsL digits[0]
 
 
 #define AT_clock_mode 'C'
@@ -120,3 +105,17 @@ void print_out_bkp(void);                                 //For test only: print
 #define store_time 'E', '2'
 #define one100ms_mode 'E', '1'
 #define ten_ms_mode 'E', '2'
+
+
+#define set_data_mode                   Char_to_EEPROM(0x02,0);
+#define clear_data_mode                 Char_to_EEPROM(0x02,0xFF); 
+#define data_mode_not_set               Char_from_EEPROM(0x02)
+
+
+#define Arduino_non_WDTout              Char_from_EEPROM(0x3EE)
+#define Arduino_WDTout                  !(Char_from_EEPROM(0x3EE))
+#define set_Arduino_WDTout              Char_to_EEPROM( 0x3EE, 0);
+#define clear_Arduino_WDT_flag          Char_to_EEPROM( 0x3EE, 0xFF);
+
+void Char_to_EEPROM(int location, char text){eeprom_write_byte((uint8_t*)(location), text);}
+char Char_from_EEPROM(int location){return eeprom_read_byte((uint8_t*) location);}
