@@ -108,6 +108,7 @@ else set_data_mode;
 if(data_mode_not_set)                               //Goes here following POR
 {User_prompt_A;
 //User_instructions;
+Serial.write(message_1);
 }
 
 for(int m = 0; m<=11; m++)
