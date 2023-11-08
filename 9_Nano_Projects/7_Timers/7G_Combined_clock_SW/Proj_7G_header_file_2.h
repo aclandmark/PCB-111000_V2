@@ -12,35 +12,35 @@ Serial.write(message_6);
 
 # define message_1 \
 "\r\nCOMBINED CLOCK/SW:\r\n\
-Conect to pc, press sw1 and enter time (or reset and repeat)\r\n\
-Power cycle to 5V supply if wanted and press sw1 then sw2 to start\r\n"
+Conect to pc, press sw3 and enter time (or reset and repeat)\r\n\
+Power cycle to 5V supply if wanted and press sw3 then sw1 to start\r\n"
 
 
 # define message_2 \
-"Toggle sw2 to switch between clock and new SW and press sw 3 to select old SW\r\n\
-Press sw1 to pause, blank or resume display\r\n"
+"Toggle sw1 to switch between clock and new SW and press sw2 to select old SW\r\n\
+Press sw3 to pause, blank or resume display\r\n"
 
 
 # define message_3 \
 "\r\n\
-Start by pressing sw3 in place of sw1 \
+Start by pressing sw2 in place of sw3 \
 to enable 2 stop watches and no clock\r\n\r\n\
-To adjust time: Press SW2 to restore clock time "
+To adjust time: Press SW1 to restore clock time "
 
 
 # define message_4 \
-"then immediately press SW1 to induce a WDTout\r\n\
-Release sw1 to increment time or sw2 to decrement it then both switches to restore normal operation.\r\n"
+"then immediately press SW3 to induce a WDTout\r\n\
+Release sw3 to increment time or sw1 to decrement it then both switches to restore normal operation.\r\n"
 
 
 # define message_5 \
 "\r\n\
-Bug: Having pressed SW3 when no timer is running \
-it is neccessary to press SW2 twice to restore normal operation\r\n"
+Bug: Having pressed SW2 when no timer is running \
+it is neccessary to press SW1 twice to restore normal operation\r\n"
 
 # define message_6 \
 "\r\n\
-To force reset avoiding user prompt press sw3 and then \
+To force reset avoiding user prompt press sw2 and then \
 press reset switch.\r\n"
 
 
