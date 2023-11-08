@@ -51,7 +51,7 @@ OSC_CAL;\
 Serial.begin(115200);\
 while (!Serial);\
 sei();\
-I2C_Tx_LED_dimmer();
+/*I2C_Tx_LED_dimmer();*/
 
 
 
