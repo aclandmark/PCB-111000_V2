@@ -27,12 +27,12 @@ char next_char, text,char_counter;
 int EEP_read_address=0,EEP_write_address = 0;
 
 newline_A();Serial.write ("BR 2k4 then AK");newline_A();              //Text_Baud_Rate_L;
-
+waitforkeypress_A();
 //USART_init(1,160);
 Serial.begin(4800);\
 while (!Serial);
 
-waitforkeypress_A();
+//waitforkeypress_A();
 Serial.write ("Text file?");newline_A();                            //Text_message_file;
 
 if ((text = waitforkeypress_A()) == '"');
@@ -99,15 +99,15 @@ Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');
 while(EEP_read_address < EEP_write_address);                      //Exit when read address equals write address
 
 //Text_Baud_Rate_H;
-Serial.write("Restore Baud rate of 57600");
+Serial.write("\r\nRestore Baud rate of 57600");
 
-
-Serial.begin(115200);\
-while (!Serial);
-
-//USART_init(0,16);
 waitforkeypress_A();
-wdt_enable(WDTO_60MS); while(1);}
+Serial.begin(115200);
+while (!Serial);
+waitforkeypress_A();
+Serial.write("\r\n Finnished");
+//wdt_enable(WDTO_60MS); 
+while(1);}
 
 
 
