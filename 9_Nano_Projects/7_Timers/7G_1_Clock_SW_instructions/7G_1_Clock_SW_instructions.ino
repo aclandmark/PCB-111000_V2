@@ -1,30 +1,65 @@
+
+
+
+
+
+
+
+
+
+
+#include "Proj_7G_1_header_file.h"
+char Num_as_String[12];
+
+
+int main (void){
+
+  
+  setup_HW_Arduino_IO;
+  Prog_on_chip_EEPROM();      
+}
+
+
+
+
 void Prog_on_chip_EEPROM(void){
 char next_char, text,char_counter;
 int EEP_read_address=0,EEP_write_address = 0;
 
-newline();sendString ("BR 2k4 then AK");newline();            //Text_Baud_Rate_L;
+newline_A();Serial.write ("BR 2k4 then AK");newline_A();              //Text_Baud_Rate_L;
 
-USART_init(1,160);
-waitforkeypress();
-sendString ("Text file?");newline();                  //Text_message_file;
+//USART_init(1,160);
+Serial.begin(4800);\
+while (!Serial);
 
-if ((text = waitforkeypress()) == '"');
+waitforkeypress_A();
+Serial.write ("Text file?");newline_A();                            //Text_message_file;
+
+if ((text = waitforkeypress_A()) == '"');
 else
-{while(1){if(isCharavailable(6))
-text = receiveChar(); 
+{while(1){if(isCharavailable_A(6))
+//text = receiveChar(); 
+while(!(Serial.available()))wdr();
+text = Serial.read(); 
+
+
+
 if (text == '"') break;}} 
 
 
 /***************Strings in the .txt file are saved to on-chip EEPROM**************************/
 
-while(1){next_char = waitforkeypress();                           //wait for first character from file
+while(1){next_char = waitforkeypress_A();                           //wait for first character from file
 if ((next_char != '\r') && (next_char != '\n'))                   //Ignore leading carriage returns
 break;}             
 Text_to_EEPROM(&EEP_write_address, next_char);                    //save first letter to EEPROM
 
 while(EEP_write_address < 0x1FA)                                  //Exits before cal bytes can be overwritten
-  {if(isCharavailable(6))                                         //returns 1 if a new letter is available (0 at the end of the file) 
-  {text = receiveChar();                                          //Temporary storage
+  {if(isCharavailable_A(6))                                         //returns 1 if a new letter is available (0 at the end of the file) 
+  {//text = receiveChar();                                          //Temporary storage
+while(!(Serial.available()))wdr();
+text = Serial.read(); 
+
 
   switch (text){                                                  //Test the new character  
     case '\r':                                                   //If it is '\r' and or '\n' 
@@ -46,19 +81,70 @@ binUnwantedChars_dot();}                                          //Send dots to
 
 /****************Echo text file to screen with the address of each string**********************/
 
-Num_to_PC(16, EEP_read_address); sendChar('\t');                  //Send address of first line of text
+//Num_to_PC(16, EEP_read_address); Serial.write('\t');                  //Send address of first line of text
+Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');
+
 
 do{char_counter = 0;                                              //Read back text one line at a time
 while(char_counter < 150)
 {text = Text_from_EEPROM(&EEP_read_address);                      //Increments the read address
 char_counter += 1;
-if(text)sendChar(text); else break;}                              //When '\0' is detected start next line
-newline();
-Num_to_PC(16,EEP_read_address);                                   //Send address of next line
-sendChar('\t');}
+if(text)Serial.write(text); else break;}                              //When '\0' is detected start next line
+newline_A();
+//Num_to_PC(16,EEP_read_address);                                   //Send address of next line
+Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');
+
+//Serial.write('\t');
+}
 while(EEP_read_address < EEP_write_address);                      //Exit when read address equals write address
 
-Text_Baud_Rate_H;
-USART_init(0,16);
-waitforkeypress();
+//Text_Baud_Rate_H;
+Serial.write("Restore Baud rate of 57600");
+
+
+Serial.begin(115200);\
+while (!Serial);
+
+//USART_init(0,16);
+waitforkeypress_A();
 wdt_enable(WDTO_60MS); while(1);}
+
+
+
+
+
+
+
+
+/****************************************************/
+void Text_to_EEPROM(int*w_a, char byte){                //on-chip EEPROM
+eeprom_write_byte((uint8_t*)(*w_a),byte);                 
+*w_a = *w_a + 1;}
+
+
+
+/****************************************************/
+char Text_from_EEPROM(int*r_a){
+return eeprom_read_byte((uint8_t*)((*r_a)++));}           
+
+
+
+/*********************************************************************/
+void binUnwantedChars_dot (void){char bin_char;
+while(1){if (isCharavailable_A(5)==1)
+{//bin_char = receiveChar();
+  while(!(Serial.available()))wdr();
+bin_char = Serial.read();
+
+Serial.write('.');}else break;}newline_A();}
+
+
+
+
+
+
+
+
+
+
+/********************************************************************************************************************/
