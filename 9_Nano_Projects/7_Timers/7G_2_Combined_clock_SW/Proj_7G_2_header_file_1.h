@@ -1,7 +1,7 @@
 
 
 char watch_dog_reset = 0;
-char MCUSR_copy;
+//char MCUSR_copy;
 char User_response;
 char num_as_string[12];
 
@@ -33,11 +33,7 @@ unsigned char display_clear;                                        //Records st
 
 /*****************************************************************************/
 #define setup_HW_for_clock_SW \
-MCUSR_copy = MCUSR;\
-if (MCUSR_copy & (1 << PORF))\
-{MCUSR_copy = (1 << PORF);\
-/*eeprom_write_byte((uint8_t*)0x3F5,0);Initialise random generator memory */\
-}\
+\
 setup_watchdog;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
