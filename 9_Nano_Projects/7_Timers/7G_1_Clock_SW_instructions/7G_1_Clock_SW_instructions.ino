@@ -25,25 +25,23 @@ int main (void){
 void Prog_on_chip_EEPROM(void){
 char next_char, text,char_counter;
 int EEP_read_address=0,EEP_write_address = 0;
+char text_counter = 0;
+
 
 newline_A();Serial.write ("BR 2k4 then AK");newline_A();              //Text_Baud_Rate_L;
-waitforkeypress_A();
-//USART_init(1,160);
-Serial.begin(4800);\
+_delay_ms(25);
+Serial.end();
+Serial.begin(4800);
 while (!Serial);
-
-//waitforkeypress_A();
+waitforkeypress_A();
 Serial.write ("Text file?");newline_A();                            //Text_message_file;
 
 if ((text = waitforkeypress_A()) == '"');
 else
 {while(1){if(isCharavailable_A(6))
 //text = receiveChar(); 
-while(!(Serial.available()))wdr();
+//while(!(Serial.available()))wdr();
 text = Serial.read(); 
-
-
-
 if (text == '"') break;}} 
 
 
@@ -57,9 +55,9 @@ Text_to_EEPROM(&EEP_write_address, next_char);                    //save first l
 while(EEP_write_address < 0x1FA)                                  //Exits before cal bytes can be overwritten
   {if(isCharavailable_A(6))                                         //returns 1 if a new letter is available (0 at the end of the file) 
   {//text = receiveChar();                                          //Temporary storage
-while(!(Serial.available()))wdr();
+//while(!(Serial.available()))wdr();
 text = Serial.read(); 
-
+if (!((++text_counter)%10)) Toggle_LED_1;
 
   switch (text){                                                  //Test the new character  
     case '\r':                                                   //If it is '\r' and or '\n' 
@@ -81,8 +79,8 @@ binUnwantedChars_dot();}                                          //Send dots to
 
 /****************Echo text file to screen with the address of each string**********************/
 
-//Num_to_PC(16, EEP_read_address); Serial.write('\t');                  //Send address of first line of text
-Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');
+
+Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');                 //Send address of first line of text
 
 
 do{char_counter = 0;                                              //Read back text one line at a time
@@ -91,22 +89,19 @@ while(char_counter < 150)
 char_counter += 1;
 if(text)Serial.write(text); else break;}                              //When '\0' is detected start next line
 newline_A();
-//Num_to_PC(16,EEP_read_address);                                   //Send address of next line
-Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');
+                                 
+Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');}                 //Send address of next line
 
-//Serial.write('\t');
-}
 while(EEP_read_address < EEP_write_address);                      //Exit when read address equals write address
 
-//Text_Baud_Rate_H;
-Serial.write("\r\nRestore Baud rate of 57600");
+Serial.write("\r\nRestore Baud rate of 57600");LED_2_on;
 
-waitforkeypress_A();
-Serial.begin(115200);
+_delay_ms(25);
+Serial.end();
+Serial.begin(115200);LED_1_on;
 while (!Serial);
-waitforkeypress_A();
-Serial.write("\r\n Finnished");
-//wdt_enable(WDTO_60MS); 
+waitforkeypress_A();LEDs_off
+Serial.write("\r\nFinnished");
 while(1);}
 
 
@@ -132,10 +127,8 @@ return eeprom_read_byte((uint8_t*)((*r_a)++));}
 /*********************************************************************/
 void binUnwantedChars_dot (void){char bin_char;
 while(1){if (isCharavailable_A(5)==1)
-{//bin_char = receiveChar();
-  while(!(Serial.available()))wdr();
-bin_char = Serial.read();
-
+{
+  bin_char = Serial.read();
 Serial.write('.');}else break;}newline_A();}
 
 
