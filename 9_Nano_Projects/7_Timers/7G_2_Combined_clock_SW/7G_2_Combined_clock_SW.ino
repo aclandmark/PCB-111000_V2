@@ -80,12 +80,12 @@ clock_mode is storred in EEPROM address 2: When  subroutine set_time() is called
 #include "Proj_7G_2_header_file_1.h"
 #include "Proj_7G_2_header_file_2.h"
 
-
-
 long clock_time_secs=0;                              //Value is seconds: Backed up in EEPROM when SW is selected
 
 
 int main (void){
+
+int line_no[6] = {0x14, 0x8B, 0xDE,  0x10F, 0x15F, 0x1C4};
 
 long SW_resume_time = 0;                              //Value in seconds: Used when switching from clock to SW
 long clock_resume_time=0;                            //Value is seconds: Used when switching from SW to clock time
@@ -107,8 +107,10 @@ else set_data_mode;
 
 if(data_mode_not_set)                               //Goes here following POR
 {User_prompt_A;
-//User_instructions;
-Serial.write(message_1);
+Serial.write("To retrieve these instructions press -r- at the p/r prompt or POR with sw2 pressed.\r\n\r\n\
+Press sw3 and enter time or sw2 to reset it to zero, then press sw1 to start the clock.\r\n");
+for(int m = 0; m<6; m++)
+Read_user_instructions(line_no[m]);//Serial.write(message_1);
 }
 
 for(int m = 0; m<=11; m++)
@@ -491,8 +493,16 @@ for(int m = 0; m<=3; m++)
 {eeprom_write_byte(((uint8_t*)(11+m)), (clock_time_secs >> (m*8)) );}}
 
 
+/***********************************************************************************************************************/
+void Read_user_instructions(int EEPROM_address){
+char temp_char;
 
-/********************************************************************************************************************/
+newline_A();
+while(1){
+temp_char =  eeprom_read_byte((uint8_t*)(EEPROM_address++));     
+if (temp_char != '\0') Serial.write(temp_char); 
+else {newline_A(); break;}}}
+
 
 
 
