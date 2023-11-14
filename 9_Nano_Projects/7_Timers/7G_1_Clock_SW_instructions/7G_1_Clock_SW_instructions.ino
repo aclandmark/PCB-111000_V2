@@ -16,7 +16,30 @@ int main (void){
 
   
   setup_HW_Arduino_IO;
-  Prog_on_chip_EEPROM();      
+
+newline_A();Serial.write ("Saving Ckock/SW user instructions to EEPROM.\r\nChange the BR to 2k4 then AK");newline_A();              //Text_Baud_Rate_L;
+_delay_ms(25);
+
+Serial.end();
+Serial.begin(4800);
+while (!Serial);
+waitforkeypress_A();
+  
+  do{Prog_on_chip_EEPROM();
+  Serial.write("\r\nPress x if OK or AOK to repeat\r\n");} while (waitforkeypress_A() != 'x');      
+
+Serial.write("\r\nRestore Baud rate of 57600 then press AK");LED_2_on;
+
+_delay_ms(25);
+Serial.end();
+Serial.begin(115200);LED_1_on;
+while (!Serial);
+waitforkeypress_A();LEDs_off
+Serial.write("\r\nFinnished.\r\n");
+waitforkeypress_A();
+SW_reset;
+
+
 }
 
 
@@ -24,16 +47,16 @@ int main (void){
 
 void Prog_on_chip_EEPROM(void){
 char next_char, text,char_counter;
-int EEP_read_address=0,EEP_write_address = 0;
+int EEP_read_address=20,EEP_write_address = 20;
 char text_counter = 0;
 
 
-newline_A();Serial.write ("BR 2k4 then AK");newline_A();              //Text_Baud_Rate_L;
-_delay_ms(25);
-Serial.end();
-Serial.begin(4800);
-while (!Serial);
-waitforkeypress_A();
+//newline_A();Serial.write ("BR 2k4 then AK");newline_A();              //Text_Baud_Rate_L;
+//_delay_ms(25);
+//Serial.end();
+//Serial.begin(4800);
+//while (!Serial);
+//waitforkeypress_A();
 Serial.write ("Text file?");newline_A();                            //Text_message_file;
 
 if ((text = waitforkeypress_A()) == '"');
@@ -94,6 +117,7 @@ Hex_to_PC_A(EEP_read_address, Num_as_String, '\t');}                 //Send addr
 
 while(EEP_read_address < EEP_write_address);                      //Exit when read address equals write address
 
+/*
 Serial.write("\r\nRestore Baud rate of 57600");LED_2_on;
 
 _delay_ms(25);
@@ -101,8 +125,10 @@ Serial.end();
 Serial.begin(115200);LED_1_on;
 while (!Serial);
 waitforkeypress_A();LEDs_off
-Serial.write("\r\nFinnished");
-while(1);}
+Serial.write("\r\nFinnished\r\nPress AK to repeat.\r\n");
+waitforkeypress_A();
+SW_reset;*/
+}
 
 
 
