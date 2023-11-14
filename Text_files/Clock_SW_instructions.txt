@@ -1,0 +1,8 @@
+
+
+"Having entered the time it is also possible to reconnct the pcb to a 5V supply.Then press sw3/sw1 to start the clock. 
+Toggle sw1 to switch between the clock and a new SW or press sw2 to select old SW.
+Press sw3 to pause, blank or resume the display.
+To adjust the time: Press sw1 to restore clock time then immediately press sw3.
+Release sw3 to increment time or sw1 to decrement it then both switches to restore normal operation.
+Press sw3 or 2 then sw1 to continue."
