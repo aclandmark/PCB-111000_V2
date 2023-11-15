@@ -107,9 +107,12 @@ int main (void) {
 
 
     if (data_mode_not_set)                              //Goes here following POR
-    { User_prompt_A;
-      Serial.write("To retrieve these instructions press -r- at the p/r prompt or POR with sw2 pressed.\r\n\r\n\
-Press sw3 and enter time or sw2 to reset it to zero, then press sw1 to start the clock.\r\n");
+    {if (power_on_reset == 1)
+    {power_on_reset = 0;User_prompt_A;}
+      Serial.write("\r\n\r\nTo retrieve these instructions press -r-\
+at the p/r prompt or POR with sw2 pressed.\r\n\r\n\
+Press sw3 and enter time or sw2 to reset it to zero,\
+then press sw1 to start the clock.\r\n");
       for (int m = 0; m < 6; m++)
         Read_user_instructions(line_no[m]);//Serial.write(message_1);
     }
