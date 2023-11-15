@@ -1,7 +1,7 @@
 
 
 char watch_dog_reset = 0;
-//char MCUSR_copy;
+char power_on_reset;
 char User_response;
 char num_as_string[12];
 
@@ -56,6 +56,10 @@ sei();\
 if (MCUSR & (1 << WDRF))watch_dog_reset = 1;\
 wdr();\
 MCUSR &= ~(1<<WDRF);\
+\
+if (MCUSR & (1 << PORF))power_on_reset = 1;\
+MCUSR &= ~(1<<PORF);\
+\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
 WDTCSR = 0;
 
