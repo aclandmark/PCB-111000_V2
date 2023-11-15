@@ -124,7 +124,6 @@ TWCR = (1 << TWINT);
 #include "Resources_nano_projects\PC_comms\Arduino_Rx_Tx_UNO_pcb.c"
 #include "Resources_nano_projects\Chip2chip_comms\I2C_slave_Rx_Tx.c"
 #include "Resources_nano_projects\Chip2chip_comms\I2C_subroutines_1.c"
-//#include "Resources_nano_projects\Chip2chip_comms\I2C_subroutines_2.c"
 #include "Resources_nano_projects\Subroutines\Random_and_prime_nos.c"
 
 /*****************************************************************************/
