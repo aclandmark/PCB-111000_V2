@@ -83,7 +83,7 @@ if (m < 7){shift_display_left;}}
 
 eeprom_write_byte((uint8_t*)(0x02),0);                         //Update mode and save in EEPROM location 2
 
-Serial.write("\r\nPress SW2 & Power cycle!:\
+Serial.write("\r\nPress SW1 & Power cycle!:\
 Can now use 5V USB charger if required");
 
 break;                                                       //Exit and send Start clock command
