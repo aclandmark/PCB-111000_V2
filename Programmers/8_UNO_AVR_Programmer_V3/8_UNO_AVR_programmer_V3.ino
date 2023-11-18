@@ -51,7 +51,7 @@ The Atmega 168 can now be soldered onto the PCB-111000_V2 pcb
 
 #include "UNO_AVR_programmer.h"
 #define Version "\r\nUNO_programmer_V3.0\r\n\
-Used to program the PCB-111000_V2 Atmega168.\r\n" 
+Used to initialise the PCB-111000_V2 Atmega168.\r\n" 
 
 int main (void){ 
 
