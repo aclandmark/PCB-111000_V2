@@ -8,8 +8,13 @@ char external_reset  = 0;
 char reset_status;
 char User_response;
 
-#define switch_1_down  ((PIND & 0x04)^0x04)
-#define switch_1_up  (PIND & 0x04)
+
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
+#define switch_2_down ((PINB & 0x40)^0x40)
+#define switch_2_up   (PINB & 0x40)
 
 /*****************************************************************************/
 #define setup_HW \
@@ -44,6 +49,10 @@ else TWCR = (1 << TWINT);
 if (MCUSR & (1 << WDRF))reset_status = 2;\
 if (MCUSR & (1 << PORF))reset_status = 1;\
 if (MCUSR & (1 << EXTRF))reset_status = 3;\
+if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FC))))reset_status = 4;\
+if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FC) == 0x01))reset_status = 5;\
+eeprom_write_byte((uint8_t*)0x1FC, 0xFF);\
+MCUSR = 0;\
 wdr();\
 MCUSR &= ~(1<<WDRF);\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
@@ -52,10 +61,10 @@ WDTCSR = 0;
 #define wdr()  __asm__ __volatile__("wdr")
 
 
-#define One_25ms_WDT_with_interrupt \
+#define sixty_four_ms_WDT_with_interrupt \
 wdr();\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
-WDTCSR = (1<< WDE) | (1 << WDIE) |  (1 << WDP0)  |  (1 << WDP1);
+WDTCSR = (1<< WDE) | (1 << WDIE) |  (1 << WDP1);
 
 #define SW_reset {wdt_enable(WDTO_30MS);while(1);}
 
