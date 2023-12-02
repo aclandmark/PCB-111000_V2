@@ -16,8 +16,16 @@ char User_response;
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
 
+
+
+#define set_up_PCI_on_sw3           PCICR |= (1 << PCIE2);
+#define enable_pci_on_sw3           PCMSK2 |= (1 << PCINT23);
+#define disable_pci_on_sw3          PCMSK2 &= (~(1 << PCINT23));
+
+
+
 /*****************************************************************************/
-#define setup_HW \
+#define setup_HW_Arduino_IO \
 setup_watchdog;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
@@ -28,7 +36,9 @@ eeprom_write_byte((uint8_t*)(0x1FD),OSCCAL);\
 while (!(PIND & (1 << PD1)));\
 Timer_T0_10mS_delay_x_m(5);\
 OSC_CAL;\
-setup_PC_comms_Basic(0,16);\
+Serial.begin(115200);\
+while (!Serial);\
+sei();\
 I2C_Tx_LED_dimmer();\
 \
 \
@@ -43,15 +53,18 @@ I2C_Tx_display();}\
 else TWCR = (1 << TWINT);
 
 
-
-/*****************************************************************************/
-#define setup_watchdog \
+#define reset_test \
 if (MCUSR & (1 << WDRF))reset_status = 2;\
 if (MCUSR & (1 << PORF))reset_status = 1;\
 if (MCUSR & (1 << EXTRF))reset_status = 3;\
 if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FC))))reset_status = 4;\
 if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FC) == 0x01))reset_status = 5;\
 eeprom_write_byte((uint8_t*)0x1FC, 0xFF);\
+
+
+/*****************************************************************************/
+#define setup_watchdog \
+\
 MCUSR = 0;\
 wdr();\
 MCUSR &= ~(1<<WDRF);\
@@ -112,11 +125,11 @@ if (PORTB & (1 << PB1)){LED_1_off;}\
 else {PORTB |= (1 << PB1);}
 
 
-#define User_prompt_Basic \
+#define User_prompt_A \
 while(1){\
-do{String_to_PC_Basic("R?    ");}  while((isCharavailable_Basic (50) == 0));\
-User_response = waitforkeypress_Basic();\
-if((User_response == 'R') || (User_response == 'r'))break;} String_to_PC_Basic("\r\n");
+do{Serial.write("R?    ");}  while((isCharavailable_A (50) == 0));\
+User_response = waitforkeypress_A();\
+if((User_response == 'R') || (User_response == 'r'))break;} Serial.write("\r\n");
 
 
 
@@ -143,7 +156,7 @@ TWDR;
 #define clear_I2C_interrupt \
 TWCR = (1 << TWINT);
 
-
+/*
 #define determine_reset_source \
  if(MCUSR_copy == (1 << PORF))reset_status = 1;\
  if((watch_dog_reset == 1) && (reset_ctl_reg_clear))reset_status = 2;\
@@ -154,16 +167,16 @@ TWCR = (1 << TWINT);
 clear_reset_ctl_reg;\
 clear_MCUSR_copy;
 
-
+*/
 
 
 
 /*****************************************************************************/
 #include "Resources_nano_projects/Subroutines/HW_timers.c"
-#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Basic.c"
+#include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
 #include "Resources_nano_projects/Chip2chip_comms/I2C_subroutines_1.c"
 #include "Resources_nano_projects/Chip2chip_comms/I2C_slave_Rx_Tx.c"
-//#include "Resources_nano_projects/I2C_Subroutines/I2C_diagnostic.c"
+#include "Resources_nano_projects/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
 #include "Resources_nano_projects/Subroutines/Random_and_prime_nos.c"
 
 
