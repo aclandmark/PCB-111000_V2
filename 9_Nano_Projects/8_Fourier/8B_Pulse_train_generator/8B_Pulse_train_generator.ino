@@ -21,7 +21,7 @@ See https://en.wikipedia.org/wiki/Pulse_wave for details of the pulse train
 #define T1_delay_250ms 5,0xF85F
 
 float Num_1, Num_2;
-char digits[12];                                                       //Array used to drive the display
+char digits[12], digits_12[12],   digits_8[8];                                                    //Array used to drive the display
 
 int main (void){
 
@@ -39,14 +39,11 @@ int num_time_slots;                                                    //45
 int num_harmonics;                                                     //30
 int counter;                                                           //Counts the number of periods printed out
 
-//setup_HW_with_reset_analysis;
+setup_HW_with_reset_analysis;
  
- reset_test;
- setup_HW_Arduino_IO;
  
 set_up_PCI_on_sw3;
-//set_up_PCI;
-/////////////////////////////////////////////////////////////////////////////////////////
+
 
 Serial.write(reset_status + '0');
 
@@ -54,7 +51,14 @@ switch (reset_status)                                                    //Check
 {case 1: User_prompt_A;                                                  //POR
 SW_reset;break;
 case 4: Timer_T1_sub_with_interrupt(T1_delay_250ms);                    //Flagged WDTout. Restart with new waveform
-for(int p = 0; p <10; p++)newline_A(); break;
+for(int p = 0; p <10; p++)newline_A(); 
+
+Num_1 = float_from_EEPROM(0x5);
+FPN_to_String(Num_1, 1, 3,'\0',digits_12);
+{int m = 0; while(digits_12[m]) {digits_8[7-m] = digits_12[m]; m += 1;}}
+I2C_Tx_8_byte_array(digits_8);
+
+break;
 
 case 5:Serial.write
 ("\r\n\r\nNumerical result out of bounds.\r\n");                          //WDTout with interrupt
@@ -74,10 +78,11 @@ setup_watchdog;
 Num_1 = Sc_Num_from_PC_A( num_as_string, Buff_Length );
 //One_25ms_WDT_with_interrupt;
 
-//FPN_to_String(Num_1, 1, 3, ' ', digits);
-//reverse(digits);
-//for(int m = 0; m < 11; m++)digits[m] = digits[m+1];
-//I2C_Tx_8_byte_array(digits);
+
+FPN_to_String(Num_1, 1, 3,'\0',digits_12);
+{int m = 0; while(digits_12[m]) {digits_8[7-m] = digits_12[m]; m += 1;}}
+I2C_Tx_8_byte_array(digits_8);
+
 
 float_to_EEPROM(Num_1, 0x5);
 
@@ -138,20 +143,22 @@ ISR(PCINT2_vect){
   sei();
   disable_pci_on_sw3;
 
-//if((switch_1_down) && (switch_2_down)){                                 //Do some arithmetic
-//Num_1 = float_from_EEPROM(0x5);
-//Num_2 = pow(Num_1, 1.2);
-//if(Num_2 == Num_1)while(1);                                             //Zero or infinity: Force timeout
+if((switch_1_down) && (switch_2_down)){                                 //Do some arithmetic
+Num_1 = float_from_EEPROM(0x5);
+Num_2 = pow(Num_1, 1.2);
+if(Num_2 == Num_1)while(1);                                             //Zero or infinity: Force timeout
 
-//FPN_to_String(Num_2, 1, 2, ' ', digits);
-//reverse(digits);
-//for(int m = 0; m < 11; m++)digits[m] = digits[m+1];
-//I2C_Tx_8_byte_array(digits);
+//Serial.write("TEST");
 
-//float_to_EEPROM (Num_2, 0x5);
+FPN_to_String(Num_2, 1, 3,'\0',digits_12);
+{int m = 0; while(digits_12[m]) {digits_8[7-m] = digits_12[m]; m += 1;}}
+I2C_Tx_8_byte_array(digits_8);
 
-//Timer_T1_sub_with_interrupt(T1_delay_250ms);
-//return;}
+float_to_EEPROM (Num_2, 0x5);
+
+Timer_T1_sub_with_interrupt(T1_delay_250ms);
+
+return;}
 
 data = PCI_triggers_data_from_PC(digits);
 //if((!(data - '0')) || (!(data))){Timer_T1_sub_with_interrupt(T1_delay_250ms);return;} 
@@ -181,8 +188,8 @@ ISR(TIMER1_OVF_vect) {TIMSK1 &= (~(1 << TOIE1)); enable_pci_on_sw3;}
 
 
 
-//ISR (WDT_vect){
-//  Signal_WDTout_with_interrupt;}
+ISR (WDT_vect){
+  eeprom_write_byte((uint8_t*)0x1FC, 0x01);}
 
 
 
