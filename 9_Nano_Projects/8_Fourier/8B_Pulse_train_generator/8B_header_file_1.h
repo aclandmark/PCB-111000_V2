@@ -25,7 +25,8 @@ char User_response;
 
 
 /*****************************************************************************/
-#define setup_HW_Arduino_IO \
+#define setup_HW_with_reset_analysis \
+determine_reset_source;\
 setup_watchdog;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
@@ -53,7 +54,7 @@ I2C_Tx_display();}\
 else TWCR = (1 << TWINT);
 
 
-#define reset_test \
+#define determine_reset_source \
 if (MCUSR & (1 << WDRF))reset_status = 2;\
 if (MCUSR & (1 << PORF))reset_status = 1;\
 if (MCUSR & (1 << EXTRF))reset_status = 3;\
@@ -173,8 +174,11 @@ clear_MCUSR_copy;
 
 /*****************************************************************************/
 #include "Resources_nano_projects/Subroutines/HW_timers.c"
+
 #include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
 #include "Resources_nano_projects/Chip2chip_comms/I2C_subroutines_1.c"
+#include "Resources_nano_projects/Chip2chip_comms/I2C_subroutines_2.c"
+#include "Resources_nano_projects/Subroutines/FPN_DIY_IO.c"
 #include "Resources_nano_projects/Chip2chip_comms/I2C_slave_Rx_Tx.c"
 #include "Resources_nano_projects/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
 #include "Resources_nano_projects/Subroutines/Random_and_prime_nos.c"
