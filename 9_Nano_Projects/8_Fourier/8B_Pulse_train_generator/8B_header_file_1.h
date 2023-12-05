@@ -27,7 +27,7 @@ char User_response;
 /*****************************************************************************/
 #define setup_HW_with_reset_analysis \
 determine_reset_source;\
-setup_watchdog;\
+One_25ms_WDT_with_interrupt;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
 set_up_switched_inputs;\
@@ -75,10 +75,10 @@ WDTCSR = 0;
 #define wdr()  __asm__ __volatile__("wdr")
 
 
-#define sixty_four_ms_WDT_with_interrupt \
+#define One_25ms_WDT_with_interrupt \
 wdr();\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
-WDTCSR = (1<< WDE) | (1 << WDIE) |  (1 << WDP1);
+WDTCSR = (1<< WDE) | (1 << WDIE) | (1 << WDP0) |  (1 << WDP1);
 
 #define SW_reset {wdt_enable(WDTO_30MS);while(1);}
 
