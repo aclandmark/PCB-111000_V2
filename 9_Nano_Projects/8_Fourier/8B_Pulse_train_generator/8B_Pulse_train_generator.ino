@@ -23,6 +23,8 @@ See https://en.wikipedia.org/wiki/Pulse_wave for details of the pulse train
 float Num_1, Num_2;
 char digits[12], digits_12[12],   digits_8[8];                                                    //Array used to drive the display
 
+
+
 int main (void){
 
 float FPN;
@@ -45,7 +47,7 @@ setup_HW_with_reset_analysis;
 set_up_PCI_on_sw3;
 
 
-Serial.write(reset_status + '0');
+//Serial.write(reset_status + '0');
 
 switch (reset_status)                                                    //Check each time a reset occurs
 {case 1: User_prompt_A;                                                  //POR
@@ -73,10 +75,10 @@ case 3:                                                                  //Post 
 Serial.write("\r\nEnter positive scientific number \
 & terminate with Return key.\r\n");
 
-setup_watchdog;
+setup_watchdog;                                                       //Reset and dissable watchdog
 
 Num_1 = Sc_Num_from_PC_A( num_as_string, Buff_Length );
-//One_25ms_WDT_with_interrupt;
+One_25ms_WDT_with_interrupt;
 
 
 FPN_to_String(Num_1, 1, 3,'\0',digits_12);
@@ -139,6 +141,7 @@ setup_watchdog; SW_reset;}
 /*******************************************************************************************************************/
 ISR(PCINT2_vect){
   int data;
+  
   if (switch_3_up)return;
   sei();
   disable_pci_on_sw3;
@@ -148,9 +151,7 @@ Num_1 = float_from_EEPROM(0x5);
 Num_2 = pow(Num_1, 1.2);
 if(Num_2 == Num_1)while(1);                                             //Zero or infinity: Force timeout
 
-//Serial.write("TEST");
-
-FPN_to_String(Num_2, 1, 3,'\0',digits_12);
+FPN_to_String(Num_2, 1, 2,'\0',digits_12);
 {int m = 0; while(digits_12[m]) {digits_8[7-m] = digits_12[m]; m += 1;}}
 I2C_Tx_8_byte_array(digits_8);
 
@@ -161,7 +162,7 @@ Timer_T1_sub_with_interrupt(T1_delay_250ms);
 return;}
 
 data = PCI_triggers_data_from_PC(digits);
-//if((!(data - '0')) || (!(data))){Timer_T1_sub_with_interrupt(T1_delay_250ms);return;} 
+if((!(data - '0')) || (!(data))){Timer_T1_sub_with_interrupt(T1_delay_250ms);return;} 
 
 if((switch_1_up) && (switch_2_up)){                                     //Set duty cycle
 if(data > 9)data = data%10 + 1;
@@ -176,8 +177,7 @@ if((switch_2_down) && (switch_1_up))                                    //Set nu
  eeprom_write_byte((uint8_t*)(0x4), (data >> 8));}
 
 eeprom_write_byte((uint8_t*)0x1FC, 0);
-//Signal_flagged_WDTout;                                                  //Return after requesting new waveform
-//Serial.write("TEST");
+
 setup_watchdog; SW_reset;}
   
 
