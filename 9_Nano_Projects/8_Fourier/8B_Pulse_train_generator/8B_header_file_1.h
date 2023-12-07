@@ -157,24 +157,9 @@ TWDR;
 #define clear_I2C_interrupt \
 TWCR = (1 << TWINT);
 
-/*
-#define determine_reset_source \
- if(MCUSR_copy == (1 << PORF))reset_status = 1;\
- if((watch_dog_reset == 1) && (reset_ctl_reg_clear))reset_status = 2;\
- if(MCUSR_copy == (1 << EXTRF ))reset_status = 3;\
- if (eeprom_read_byte((uint8_t*)reset_ctl_reg) == (byte) ~0x10)reset_status = 4;\
- if (eeprom_read_byte((uint8_t*)reset_ctl_reg) == (byte) ~0x20)reset_status = 5;\
- if(!(MCUSR_copy))reset_status = 6;\
-clear_reset_ctl_reg;\
-clear_MCUSR_copy;
-
-*/
-
-
 
 /*****************************************************************************/
 #include "Resources_nano_projects/Subroutines/HW_timers.c"
-
 #include "Resources_nano_projects/PC_comms/Basic_Rx_Tx_Arduino.c"
 #include "Resources_nano_projects/Chip2chip_comms/I2C_subroutines_1.c"
 #include "Resources_nano_projects/Chip2chip_comms/I2C_subroutines_2.c"
