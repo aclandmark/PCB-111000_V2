@@ -27,7 +27,7 @@ char User_response;
 /*****************************************************************************/
 #define setup_HW_with_reset_analysis \
 determine_reset_source;\
-One_25ms_WDT_with_interrupt;\
+setup_watchdog;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
 set_up_switched_inputs;\
