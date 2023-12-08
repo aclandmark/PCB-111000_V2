@@ -21,7 +21,7 @@ See https://en.wikipedia.org/wiki/Pulse_wave for details of the pulse train
 
 float Num_1, Num_2;
 char digits_12[12];                                                   //Array used to drive the display
-
+char Num_as_string[12];
 
 
 int main (void){
@@ -65,9 +65,7 @@ case 3:                                                                  //Post 
 Serial.write("\r\nEnter positive scientific number \
 & terminate with Return key.\r\n");
 
-setup_watchdog;                                                       //Reset and dissable watchdog
 Num_1 = Sc_Num_from_PC_A( num_as_string, Buff_Length );
-One_25ms_WDT_with_interrupt;
 display_FPN_short(Num_1, digits_12);
 float_to_EEPROM(Num_1, 0x5);
 Serial.write("Press SW1 or 2 to start\r\n");
@@ -76,7 +74,7 @@ while(1)
 {if((switch_1_down) || (switch_2_down))break; else wdr();}              //Press switch 2 or 3 to start
 enable_pci_on_sw3;break;}
 
-
+One_25ms_WDT_with_interrupt;
 
 
 duty_cycle = (float)(eeprom_read_byte((uint8_t*)(0x0)))/10.0;           //Read EEPROM for waveform parameters
@@ -131,19 +129,16 @@ ISR(PCINT2_vect){
 if((switch_1_down) && (switch_2_down)){                                 //Do some arithmetic
 Num_1 = float_from_EEPROM(0x5);
 Num_2 = pow(Num_1, 1.2);
-
 if(Num_2 == Num_1)while(1);                                             //Zero or infinity: Force timeout
 
 display_FPN_short(Num_2, digits_12);
-
 float_to_EEPROM (Num_2, 0x5);
-
 Timer_T1_sub_with_interrupt(T1_delay_250ms);
-
 return;}
 
 data = PCI_triggers_data_from_PC(digits_12);
-if((!(data - '0')) || (!(data))){Timer_T1_sub_with_interrupt(T1_delay_250ms);return;} 
+if((!(data - '0')) || (!(data)))
+{Timer_T1_sub_with_interrupt(T1_delay_250ms);return;} 
 
 if((switch_1_up) && (switch_2_up)){                                     //Set duty cycle
 if(data > 9)data = data%10 + 1;
@@ -158,21 +153,13 @@ if((switch_2_down) && (switch_1_up))                                    //Set nu
  eeprom_write_byte((uint8_t*)(0x4), (data >> 8));}
 
 eeprom_write_byte((uint8_t*)0x1FC, 0);
-
 setup_watchdog; SW_reset;}
-  
-
-
 
 /*******************************************************************************************************************/
 ISR(TIMER1_OVF_vect) {TIMSK1 &= (~(1 << TOIE1)); enable_pci_on_sw3;}
 
-
-
-ISR (WDT_vect){
-  eeprom_write_byte((uint8_t*)0x1FC, 0x01);}
-
-
+ISR (WDT_vect){sei();
+eeprom_write_byte((uint8_t*)0x1FC, 0x01);while(1);}
 
 /*******************************************************************************************************************/
 void float_to_EEPROM(float num, int address){
@@ -181,8 +168,6 @@ char * Char_ptr_local;
 Char_ptr_local = (char*)&num;
 for (int m = 0; m <= 3; m++){
 eeprom_write_byte((uint8_t*)(address++), *(Char_ptr_local++));}}
-
-
 
 /*******************************************************************************************************************/
 float float_from_EEPROM(int address){
@@ -197,8 +182,6 @@ for (int m = 0; m <= 3; m++){
 *(Char_ptr_local++) = eeprom_read_byte((uint8_t*)(address++));}
 num =  * Flt_ptr_local;
 return num;}
-
-
 
 /*******************************************************************************************************************/
 int PCI_triggers_data_from_PC(char * num_as_string)  
