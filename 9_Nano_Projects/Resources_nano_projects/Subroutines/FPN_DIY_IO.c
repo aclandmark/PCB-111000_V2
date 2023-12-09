@@ -308,20 +308,27 @@ print_string[p] = '\0';}}
 
 /*******************************************************************************************************************/
 void display_FPN_short(float FPN, char * digits_2){
-char digits[8],sign;
-for(int m = 0; m <=7; m++)digits[m] = 0;
+char digits[8],sign, range;
 
+for(int m = 0; m <=7; m++)digits[m] = 0;
 if (FPN < 0) {sign = '-'; FPN *= -1.0;} else sign = '+';
 
-if (sign == '-'){if (FPN >= 1.0)FPN_to_String((FPN * -1.0), 1, 2,'\0',digits_2);
-if ((FPN >= 0) && (FPN < 1))FPN_to_String((FPN * -1.0), 1, 1,'\0',digits_2);}
+if (FPN < 1.0e-9)range = 2;//////////
+if((FPN >= 1.0e-9 ) && (FPN < 1.0))range = 3;////
+if ((FPN >= 1.0) && (FPN < 10.0))range = 6;
+if ((FPN >= 10.0) && (FPN < 1.0e10))range = 4;
+if (FPN >= 1.0e10)range = 3;
 
-if (sign == '+'){if (FPN >= 1.0)FPN_to_String(FPN, 1, 3,'\0',digits_2);
-if ((FPN >= 0) && (FPN < 1))FPN_to_String(FPN, 1, 2,'\0',digits_2);}
+if (sign == '-') {range -= 1;FPN *= -1.0;FPN_to_String(FPN, 1, range,'\0',digits_2); }
+
+else FPN_to_String((FPN), 1, range,'\0',digits_2);
+
 
 {int m = 0; while(digits_2[m]) {digits[7-m] = digits_2[m]; m += 1;}} 
 
 I2C_Tx_8_byte_array(digits);}
+
+
 
 
 /********************************************************************************************************************/
