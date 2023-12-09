@@ -307,14 +307,14 @@ print_string[p] = '\0';}}
 
 
 /*******************************************************************************************************************/
-void display_FPN_short(float FPN, char * digits_2){
+void display_FPN_short(float FPN, char * digits_2){		//Problem with 1.0 and negative exponents
 char digits[8],sign, range;
 
 for(int m = 0; m <=7; m++)digits[m] = 0;
 if (FPN < 0) {sign = '-'; FPN *= -1.0;} else sign = '+';
 
-if (FPN < 1.0e-9)range = 2;//////////
-if((FPN >= 1.0e-9 ) && (FPN < 1.0))range = 3;////
+if (FPN < 1.0e-9)range = 2;
+if((FPN >= 1.0e-9 ) && (FPN < 1.0))range = 3;
 if ((FPN >= 1.0) && (FPN < 10.0))range = 6;
 if ((FPN >= 10.0) && (FPN < 1.0e10))range = 4;
 if (FPN >= 1.0e10)range = 3;
