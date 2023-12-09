@@ -20,7 +20,7 @@ See https://en.wikipedia.org/wiki/Pulse_wave for details of the pulse train
 #define T1_delay_250ms 5,0xF85F
 
 float Num_1, Num_2;
-char digits_12[12];                                                   //Array used to drive the display
+char digits_12[15];   ///////////////////////                                //Array used to drive the display
 char Num_as_string[12];
 
 
@@ -128,7 +128,8 @@ ISR(PCINT2_vect){
 
 if((switch_1_down) && (switch_2_down)){                                 //Do some arithmetic
 Num_1 = float_from_EEPROM(0x5);
-Num_2 = pow(Num_1, 1.2);
+//Num_2 = pow(Num_1, 1.2);
+Num_2 = Num_1 * 11.0;
 if(Num_2 == Num_1)while(1);                                             //Zero or infinity: Force timeout
 
 display_FPN_short(Num_2, digits_12);
