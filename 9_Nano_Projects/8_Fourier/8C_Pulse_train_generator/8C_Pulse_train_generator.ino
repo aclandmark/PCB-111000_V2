@@ -128,8 +128,8 @@ ISR(PCINT2_vect){
 
 if((switch_1_down) && (switch_2_down)){                                 //Do some arithmetic
 Num_1 = float_from_EEPROM(0x5);
-//Num_2 = pow(Num_1, 1.2);
-Num_2 = Num_1 * 11.0;
+Num_2 = pow(Num_1, 1.2);
+//Num_2 = Num_1 * 11.0;
 if(Num_2 == Num_1)while(1);                                             //Zero or infinity: Force timeout
 
 display_FPN_short(Num_2, digits_12);
