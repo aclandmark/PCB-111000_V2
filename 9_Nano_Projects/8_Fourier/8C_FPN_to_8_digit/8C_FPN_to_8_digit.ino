@@ -13,14 +13,14 @@ Use switch presses in place of the return key press
 See https://en.wikipedia.org/wiki/Pulse_wave for details of the pulse train
 */
 
-
-#include "8B_header_file_1.h"
+//Problem with 1.0 and negative exponents
+#include "8C_header_file_1.h"
 
 #define Buff_Length  20
 #define T1_delay_250ms 5,0xF85F
 
 float Num_1, Num_2;
-char digits_12[12];   ///////////////////////                                //Array used to drive the display
+char digits_12[12];                               //Array used to drive the display
 char Num_as_string[12];
 
 
@@ -29,16 +29,17 @@ int main (void){
 setup_HW_Arduino_IO;
 
 
-
-if (watch_dog_reset){Serial.write ("?\t");}else {User_prompt_A;Serial.write("Enter FPN then AK.");}
+if (!(watch_dog_reset)){User_prompt_A; Serial.write("Enter FPN then press AK\r\n\
+\tFPN\t\t Product\r\n?\t");}
+else Serial.write("?\t");
 
 Num_1 = Sc_Num_from_PC_A( Num_as_string, Buff_Length );
-if (watch_dog_reset)(watch_dog_reset) = 0; else Serial.write(" You entered");  Serial.print(Num_1,4);
+Serial.print(Num_1,4);
 display_FPN_short(Num_1, digits_12);
 waitforkeypress_A();
 Num_1 *= 11.0;
-Serial.write("Result post arithmetic (AK to repeat)\r\n");
+Serial.write("\t");Serial.print(Num_1,4);
 display_FPN_short(Num_1, digits_12);
 waitforkeypress_A();
-SW_reset;
-}
+newline_A();
+SW_reset;}
