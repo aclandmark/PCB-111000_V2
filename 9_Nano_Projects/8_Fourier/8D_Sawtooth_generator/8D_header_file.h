@@ -18,9 +18,9 @@ char User_response;
 
 
 
-#define set_up_PCI_on_sw3           PCICR |= (1 << PCIE2);
-#define enable_pci_on_sw3           PCMSK2 |= (1 << PCINT23);
-#define disable_pci_on_sw3          PCMSK2 &= (~(1 << PCINT23));
+#define set_up_PCI                 PCICR |= (1 << PCIE2);
+#define enable_pci_on_sw1           PCMSK2 |= (1 << PCINT18);
+#define disable_pci_on_sw1          PCMSK2 &= (~(1 << PCINT18));
 
 
 
