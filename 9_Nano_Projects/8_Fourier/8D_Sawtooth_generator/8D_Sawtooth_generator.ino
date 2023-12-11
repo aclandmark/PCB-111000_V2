@@ -16,6 +16,7 @@ See https://en.wikipedia.org/wiki/Pulse_wave for details of the pulse train
 
 #include "8D_header_file.h"
 //#include "8C_header_file_2.h"
+#define T1_delay_250ms 5,0xF85F
 
 int print_offset = 100;                                                 //Used to fill screen
 char digits[12];                                                       //Array used to collect keyboard string
@@ -43,10 +44,10 @@ num_time_slots = 45;
 num_harmonics = 45;
 
 
-newline_A;
+newline_A();
 for(int n = 0; n <= 100; n++){if (n<40)Serial.write (' ');              //Print plot axis
 else Serial.write('_');}
-newline_A;
+newline_A();
 
 while(1){
 
@@ -82,7 +83,7 @@ switch (eeprom_read_byte((uint8_t*)(0x0))){
   case 9: Display_2(amplitude, Harmon_2_offset + Harmon_4_offset + Harmon_6_offset + Harmon_8_offset + Harmon_10_offset );break;}
 
 _delay_ms(20);
-newline_A; wdr();}}
+newline_A(); wdr();}}
 
 setup_watchdog; SW_reset;}
 
