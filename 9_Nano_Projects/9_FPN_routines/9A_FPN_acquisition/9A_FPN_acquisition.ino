@@ -24,7 +24,7 @@ setup_HW_with_reset_analysis;
 if(reset_status == 2){Serial.write("?");reset_status = 0;}
 else 
 {Serial.write("\r\nEnter scientific number \
-& terminate with Return key.\r\n\r\n");
+& terminate with Return key.\r\nThen press AK to repeat.\r\n");
 Serial.write("Exponent and long number used for arithmetic\tResulting \
 floating point representation\t\tNumber restored\r\n?");}
 
@@ -44,7 +44,9 @@ Serial.write("  \t");
 FPN = Assemble_FPN(RHS_of_binary_point, twos_expnt, sign);
 
 Sc_Num_to_PC_A(FPN, 1, 6, '\r');
-I2C_FPN_to_display(FPN);
+display_FPN_short(FPN, digits);
+waitforkeypress_A();
+//I2C_FPN_to_display(FPN);
 //}
 SW_reset;}
 
