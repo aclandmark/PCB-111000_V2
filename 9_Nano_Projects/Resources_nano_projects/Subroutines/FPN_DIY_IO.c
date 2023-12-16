@@ -111,7 +111,7 @@ char sign;
 FPN_digits = unpack_FPN(FPN, &twos_expnt, &sign);						//Returns positive number with sign
 
 if (tens_expnt > 0 ){
-for(int m = 0; m < tens_expnt; m++){
+for(int m = 0; m < tens_expnt; m++){wdr();
 
 while (FPN_digits >= 0x66666666)										//Multiply by 10: (Divide by 0.1) Use denominator of 0x50000000 with a tws_exponent of 3
 {FPN_digits /= 2; twos_expnt += 1;}
@@ -125,7 +125,7 @@ else {twos_expnt = 129;FPN_digits = 0;}}}}
 
 
 if (tens_expnt < 0 ){
-for(int m = 0; m < tens_expnt * -1; m++){
+for(int m = 0; m < tens_expnt * -1; m++){wdr();
 
 while (FPN_digits >= 0x50000000)										//Divide by 10 Use denominator of 0x50000000 with a twos_exponent of 4
 {FPN_digits /= 2; twos_expnt += 1; }
