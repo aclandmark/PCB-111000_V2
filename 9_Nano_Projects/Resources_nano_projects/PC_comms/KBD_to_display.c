@@ -219,7 +219,8 @@ if((decimal_place_counter) && (!(keypress_E)))
 decimal_place_counter += 1;}
 
 I2C_Tx_any_segment_clear_all();                                           //Flash display
-_delay_ms(100);
+//_delay_ms(100);
+for(int m = 0; m <= 9; m++){_delay_ms(10);wdr();}
 I2C_Tx_8_byte_array(display_buffer);
 
 tens_expt = -(decimal_place_counter);
