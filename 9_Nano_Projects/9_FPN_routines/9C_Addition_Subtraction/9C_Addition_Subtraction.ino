@@ -13,10 +13,16 @@ char num_as_string[Buff_Length + 2];
 
 setup_HW_with_reset_analysis;
 
-Serial.write("\r\nEnter scientific numbers \
-& terminate with Return key.\r\n");
+wdt_enable(WDTO_30MS);
+while(switch_3_down)wdr();
 
-FPN_1 = Scientific_number_from_KBD(num_as_string, &sign, Buff_Length);
+if(reset_status == 2){Serial.write("\r\nAccumulator reset. Enter new numbers.\r\n");
+reset_status = 0;}
+else 
+Serial.write("\r\nAccumulator:  Enter positive or negative scientific numbers \
+& terminate with Return key.\r\nPress sw3 before sw1 to reset.\r\n");
+
+FPN_1 = Scientific_number_from_KBD(num_as_string, &sign, Buff_Length);//while(1)wdr();
 Sc_Num_to_PC_A(FPN_1, 1, 6, ' '); Serial.write(" + ");
 
 while(1){
@@ -27,10 +33,12 @@ Result = FPN_add_Local(FPN_1, FPN_2);
 FPN_to_String(Result, 1, 5, '\r', num_as_string);
 Serial.write(num_as_string);
 
-if ((*(long *)&Result))I2C_FPN_to_display(Result);
-else I2C_Tx_long(0);
-
-FPN_1 = Result;}
+if ((*(long *)&Result)){I2C_FPN_to_display(Result); Serial.write("? ");}
+else {I2C_Tx_long(0);while(switch_3_up)wdr(); while(switch_3_down);}
+//display_FPN_short(Result, num_as_string);
+while(switch_1_down)wdr();
+FPN_1 = Result;
+while(switch_3_down);}
 
 SW_reset;}
 
