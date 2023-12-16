@@ -151,7 +151,7 @@ if ((eeprom_read_byte((uint8_t*)0x1FE) > 0x0F)\
 /*****************************************************************************/
 #define waiting_for_I2C_master \
 TWCR = (1 << TWEA) | (1 << TWEN);\
-while (!(TWCR & (1 << TWINT)));\
+while (!(TWCR & (1 << TWINT)))wdr();\
 TWDR;
 
 #define clear_I2C_interrupt \
