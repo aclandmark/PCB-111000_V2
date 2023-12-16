@@ -13,17 +13,31 @@ char num_as_string[Buff_Length + 2];
 
 
 setup_HW_with_reset_analysis;
+wdt_enable(WDTO_30MS);
+while(switch_3_down)wdr();
 
-Serial.write("\r\nEnter scientific numbers \
-& terminate with Return key.\r\n");
+if(reset_status == 2)
+{reset_status = 0;
+Serial.write("\r\nAccumulator reset. Enter new numbers.\r\n");}
+
+else 
+
+Serial.write("\r\nAccumulator:  Enter positive or negative scientific numbers \
+& terminate with Return key.\r\nPress sw3 before sw1 to reset.\r\n");
+
+
+
 FPN_1 = Scientific_number_from_KBD(num_as_string, &sign, Buff_Length);
 FPN_to_String(FPN_1, 1, 6, '\t', num_as_string); 
-Serial.write(num_as_string);
+Serial.write(num_as_string);  
 
 while(1){Check_num_for_to_big_or_small(FPN_1);
 Serial.write(" (x/?)\t");
-keypress = waitforkeypress_A();
+
+while(1){keypress = waitforkeypress_A();if ((keypress == 'x') || (keypress == '/'))break; else Serial.write('?');}
 Serial.write(keypress);
+
+
 FPN_2 = Scientific_number_from_KBD(num_as_string, &sign, Buff_Length);
 FPN_to_String(FPN_2, 1, 6, ' ', num_as_string);
 Serial.write(num_as_string);
@@ -36,7 +50,11 @@ Serial.write('\t');
 FPN_to_String(Result, 2, 4, '\r', num_as_string);
 Serial.write(num_as_string);
 
-FPN_1 = Result;}
+I2C_FPN_to_display(Result);
+while(switch_1_down)wdr();
+
+FPN_1 = Result;
+while(switch_3_down);}
 SW_reset;}
 
 
@@ -62,7 +80,7 @@ FPN_digits_3 = Fraction_to_Binary_Signed(FPN_digits_1, FPN_digits_2);
 if (sign_1 == sign_2)sign_3 = '+'; else sign_3 = '-';
 twos_expnt_3 = twos_expnt_1 - twos_expnt_2;
 
-if(twos_expnt_3 >= 127){Serial.write("Infinity");SW_reset;}
+if(twos_expnt_3 >= 127){Serial.write("Result too large for 32bit numbers\r\n");SW_reset;}
 
 Result = Assemble_FPN((unsigned long) FPN_digits_3, twos_expnt_3,  sign_3);
 if((!(*(long*)&Result)) || (*(long*)&Result == 0x80000000)) { Serial.write("Zero"); SW_reset;}
