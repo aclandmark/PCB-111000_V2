@@ -168,6 +168,7 @@ TWCR = (1 << TWINT);
 #include "Resources_nano_projects/PC_comms/Arduino_Rx_Tx_UNO_pcb.c"
 #include "Resources_nano_projects/PC_comms/KBD_to_display.c"
 #include "Resources_nano_projects/Subroutines/Random_and_prime_nos.c"
+#include "Resources_nano_projects/Subroutines/FPN_arithmetic.c"
 
 
 
