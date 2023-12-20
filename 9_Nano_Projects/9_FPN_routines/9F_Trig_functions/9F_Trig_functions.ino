@@ -6,6 +6,8 @@ SC_num = Scientific_number_from_KBD(Num_string, &sign, Buff_Length);\
 FPN_to_String(SC_num, 1, 5, '\t', Num_string);\
 Serial.write(Num_string);
 
+#define PIE 3.14159
+
 
 int main (void) 
 {
@@ -25,18 +27,15 @@ float Angle, SC_num;
 setup_HW_with_reset_analysis;
 wdt_enable(WDTO_30MS);
 while(switch_1_down)wdr();
-Serial.write("Angle?");
+Serial.write("Angle in degrees?\t");
 Get_and_echo_Sc_num;
 Angle = SC_num/57.2958;
-
-
-//Angle = 25.0/57.2958;
-
+Serial.write("\r\nAngle in radians\t");
 FPN_to_String(Angle, 1, 5, '\r',Num_string);
 Serial.write (Num_string);
 
 Cosine = Cos(Angle);
-
+Serial.write ("Cosine:\t\t");
 FPN_to_String(Cosine, 1, 5, '\r',Num_string);
 Serial.write (Num_string);
 //while(1)wdr();
@@ -45,6 +44,19 @@ display_FPN_short(Cosine, Num_string);
 while(switch_1_down)wdr();
 reset_status = 0;
 //while(switch_3_down);
+Serial.write("Arcos:\t\t");
+Angle = Arc_cos(Cosine);
+FPN_to_String(Angle, 1, 5, '\r',Num_string);
+Serial.write (Num_string);
+newline_A();
+
+I2C_FPN_to_display(Angle);//}
+display_FPN_short(Angle, Num_string);
+while(switch_1_down)wdr();
+
+
+
+while(1);
 
 }
 
@@ -67,20 +79,44 @@ if ((++term_counter)%2)Result = FPN_sub(Result, term);
 else Result = FPN_add(Result, term); 
 
 difference = FPN_sub(difference, Result);
-if ((difference <= 1E-5) && (difference >= -1E-5))break;
-difference = Result;
+if ((difference <= 1E-7) && (difference >= -1E-7))break;
+difference = Result;}
 
-//if (m == 9)break;
-}
-
-FPN_to_String(difference, 1, 5, '\r',Num_string_2);
-Serial.write (Num_string_2);
-
-newline_A();Serial.print(term_counter);newline_A();
 return Result;}
 
 
+float Arc_cos(float Cos){
 
+float Angle;
+float term;
+float Q = 1.0;      //term counter
+float Cos_bkp;
+float difference;
+
+
+Cos_bkp = Cos;
+Angle = PIE/2.0 - Cos;
+Cos = Cos * Cos * Cos;
+
+term = 0.5/3.0;                 //term counter = 1
+
+Angle = Angle - (term * Cos);
+difference = Angle;
+
+while(1){wdr();
+Q += 1.0;
+term = term * ((2.0*Q) - 1.0)*((2.0*Q) - 1.0)/(2.0*Q)/((2.0*Q)+1.0);
+Cos = Cos * Cos_bkp * Cos_bkp;
+Angle = Angle - (term * Cos);
+
+difference = FPN_sub(difference, Angle);
+if ((difference <= 1E-7) && (difference >= -1E-7))break;
+difference = Angle;}
+
+
+return Angle * 57.2958 ;
+
+}
 
 
 
