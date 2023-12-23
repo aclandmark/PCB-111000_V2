@@ -60,7 +60,7 @@ switch(type){
 
 if (type == 't')Angle = Arc_Tan(Result);
 else 
-Angle = Arc_cos(Result, type, 1);
+Angle = Arc_sin_cos(Result, type, 1);
 display_FPN_short(Angle, Num_string);
 FPN_to_String(Angle, 2, 3, ' ',Num_string);
 Serial.write (Num_string);
@@ -68,23 +68,13 @@ Serial.write(" Degrees ");
 
 if (type == 't');
 else{Serial.write("(");
-
-//if ((type == 'c') && (Result > 0.75)){type_old= 'c';type = 's';}else type_old = 's';
-
-Angle = Arc_cos(Result, type, 2);
-
-//if ((type_old == 'c') && (Result > 0.75))Angle = 90.0 - Angle;
+Angle = Arc_sin_cos(Result, type, 2);
 
 FPN_to_String(Angle, 2, 3, ')',Num_string);
 Serial.write (Num_string);}
 
 newline_A();newline_A();
-
-
 while(switch_1_down)wdr();
-
-
-
 while(1);}
 
 /**************************************************************************************************************************/
@@ -131,7 +121,7 @@ return Sin_Cos (Angle, 's')/Sin_Cos(Angle, 'c');}
 
 
 /******************************************************************************************************************/
-float Arc_cos(float Cos, char type, char lib){
+float Arc_sin_cos(float Cos, char type, char lib){
 
 float Angle;
 float term;
