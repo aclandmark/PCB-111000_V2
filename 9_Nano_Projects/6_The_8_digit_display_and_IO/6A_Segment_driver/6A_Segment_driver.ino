@@ -26,8 +26,6 @@ setup_HW_Arduino;
 One_25ms_WDT_with_interrupt;
 
 I2C_Tx_any_segment_clear_all();
-while(switch_2_down)wdr();
-
 
 set_up_pci_on_sw1_and_sw3;
 enable_pci_on_sw1_and_sw3;
@@ -65,6 +63,7 @@ ISR(PCINT2_vect)
 { if ((switch_1_up) && (switch_3_up))return;
    if(switch_1_down);
    if(switch_3_down)eeprom_write_byte((uint8_t*)0x1FC, 0);
+   while((switch_1_down) || (switch_3_down))wdr();
    SW_reset;
 }
 
