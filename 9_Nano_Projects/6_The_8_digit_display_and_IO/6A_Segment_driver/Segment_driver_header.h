@@ -175,7 +175,7 @@ if((User_response == 'R') || (User_response == 'r'))break;} Serial.write("\r\n")
 /**********************************************************************************************************/
 #define waiting_for_I2C_master \
 TWCR = (1 << TWEA) | (1 << TWEN);\
-while (!(TWCR & (1 << TWINT)));\
+while (!(TWCR & (1 << TWINT)))wdr();\
 TWDR;
 
 #define clear_I2C_interrupt \
