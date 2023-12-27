@@ -5,33 +5,32 @@
 #define POR_reset                 1
 #define WDT_reset                 2
 #define External_reset            3
-#define WDT_reset_with flag       4
+#define WDT_reset_with_flag       4
 #define WDT_with_ISR_reset        5
 
 char reset_status;
 char User_response;
 char str_counter;
+unsigned char SREG_BKP;
 
-#define T0_delay_10ms 5,178
-#define T1_delay_100ms 3, 0x9E62
-#define T2_delay_10ms 7,178
 
-#define set_up_PCI_on_sw2           PCICR |= (1 << PCIE0);
-#define enable_pci_on_sw2           PCMSK0 |= (1 << PCINT6);
+#define set_up_pci_on_sw1_and_sw3           PCICR |= (1 << PCIE2);
+#define enable_pci_on_sw1_and_sw3           PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
 
-#define switch_3_down  ((PIND & 0x80)^0x80)
-#define switch_3_up   (PIND & 0x80)
+
 #define switch_1_down ((PIND & 0x04)^0x04)
 #define switch_1_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
 
-
+//Note Switch terminations are sw1:PD2  sw2:PB6 sw3:PD7 
 
 /**********************************************************************************************************/
 #define setup_HW_Arduino \
 determine_reset_source;\
-setup_watchdog;\
+setup_watchdog_A;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
 set_up_switched_inputs;\
@@ -88,20 +87,26 @@ MCUSR = 0;
 
 
 /**********************************************************************************************************/
-#define setup_watchdog \
+#define setup_watchdog_A \
 \
-MCUSR = 0;\
 wdr();\
-MCUSR &= ~(1<<WDRF);\
+SREG_BKP = SREG;\
+cli();\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
-WDTCSR = 0;
+WDTCSR = 0;\
+MCUSR = 0;\
+SREG = SREG_BKP;
 
 #define wdr()  __asm__ __volatile__("wdr")
 
 #define One_25ms_WDT_with_interrupt \
 wdr();\
+SREG_BKP = SREG;\
+cli();\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
-WDTCSR = (1<< WDE) | (1 << WDIE) | (1 << WDP0) |  (1 << WDP1);
+WDTCSR = (1<< WDE) | (1 << WDIE) | (1 << WDP0) |  (1 << WDP1);\
+MCUSR=0;\
+SREG = SREG_BKP;
 
 #define SW_reset {wdt_enable(WDTO_30MS);while(1);}
 
