@@ -64,7 +64,12 @@ ISR(PCINT2_vect)
    if(switch_1_down);
    if(switch_3_down)eeprom_write_byte((uint8_t*)0x1FC, 0);
    while((switch_1_down) || (switch_3_down))wdr();
-   SW_reset;
+   setup_watchdog_A; SW_reset;
 }
 
 ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
+
+
+
+
+/********************************************************************************************************************/
