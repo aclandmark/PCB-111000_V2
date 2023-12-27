@@ -32,10 +32,12 @@ int main (void){
 char   digit;
 int digit_num=0;                                                    //defines number of next digit on display           
 const char* string_ptr = 0;                                         //pointer: will be loaded with the address of a segment string 
-setup_HW_Arduino_IO_Extra;                                                //(i.e. the address of string "zero", "one", "two" etc....) 
+setup_HW_Arduino;                                                //(i.e. the address of string "zero", "one", "two" etc....) 
+One_25ms_WDT_with_interrupt;
 
 
-Serial.write("\r\nSend digits?");
+if(reset_status == 1)User_prompt_A;
+Serial.write("Send digits?");
 
 I2C_Tx_any_segment_clear_all();
 
