@@ -83,16 +83,16 @@ if(Geom_mean < 0.0)Geom_mean *= -1;
 Geom_mean =  pow (Geom_mean , 1/(float)counter);}
 
 if(switch_1_down)while(switch_1_down)wdr(); else continue;
-//_delay_ms(25);
 
-Serial.print(Arith_mean,3);
-//Arith_mean = 2.875;
+Serial.print(Arith_mean,3);Serial.write("\t");
 I2C_FPN_to_display(Arith_mean);//cli();while(1);
 while(switch_1_down)wdr();
 
+Serial.print(Geom_mean,3); 
 I2C_FPN_to_display(Geom_mean);
 while(switch_1_down)wdr();
-if (switch_3_down)break;}
+if (switch_3_down)break;
+Serial.write("\tMore data?\r\n");}
 
 SW_reset;}
 
