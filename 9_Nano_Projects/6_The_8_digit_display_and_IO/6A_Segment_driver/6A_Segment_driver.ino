@@ -3,11 +3,6 @@
  Enables users to drive the display manually
  This indicates that there is not necessarily any connection between 
  the display and an actual number.
-
-
- Note:  The PCB111000 bootloader enables user programs to distinguish between
- SW_resets and other resets (i.e POR and first time run following programming).
- This facility is exercised here.
  */
 
 
@@ -17,8 +12,8 @@
 
 
 #define message_1 "\r\nPress key a to g (x for next digit).\r\n\
-Press sw_2 to clear the display.\r\n"
-#define message_2 "?  "
+Press sw_1 or 2 to clear the display.\r\n"
+#define message_2 "?\r\n"
 #define message_3 "\r\nWDTout with interrupt occurred\r\n\
 A wdr() statement is probably needed some where.\r\n"
 
@@ -34,14 +29,15 @@ I2C_Tx_any_segment_clear_all();
 while(switch_2_down)wdr();
 
 
-set_up_PCI_on_sw2;
-enable_pci_on_sw2;
+set_up_pci_on_sw1_and_sw3;
+enable_pci_on_sw1_and_sw3;
 
 switch(reset_status){
   case POR_reset:             User_prompt_A;    Serial.write(message_1);break;
   case WDT_reset:             Serial.write(message_2);break;
+  case WDT_reset_with_flag:   Serial.write(message_1);break;
   case External_reset:        Serial.write(message_1);break;
-  case WDT_with_ISR_reset:    Serial.write(message_3);setup_watchdog;while(1);break;}
+  case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
 
 
 while(1){digit_num=0;
@@ -65,8 +61,10 @@ wdr();
 
 
 /***************************************************************************************************************/
-ISR(PCINT0_vect)
-{ if (switch_2_up)return;
+ISR(PCINT2_vect)
+{ if ((switch_1_up) && (switch_3_up))return;
+   if(switch_1_down);
+   if(switch_3_down)eeprom_write_byte((uint8_t*)0x1FC, 0);
    SW_reset;
 }
 
