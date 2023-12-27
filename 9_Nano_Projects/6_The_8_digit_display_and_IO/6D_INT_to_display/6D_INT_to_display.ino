@@ -20,6 +20,24 @@ This accepts decimal digits from the KBD and sends them to the display.
 #include "INT_KBD_to_displsay_header.h"
 
 
+#define message_1 \
+"\r\nRunning arithmetic & Geometric averages:\r\n\r\n\
+Enter positive numbers \r\n\
+& terminate with Return key.\r\n\r\n\
+To display interim reults press SW1 before -cr-.\r\n\
+Press SW1 twice to resume entering numbers.\r\n\r\n\
+Note: Zero entry is ignored.\r\n\
+Press SW2 to pause the display\r\n\
+Press SW3 before releasing SW1 to repeat.\r\n"
+
+#define message_2 "\r\nAgain?\r\n"
+
+#define message_3 "\r\nWDTout with interrupt occurred\r\n\
+A wdr() statement is probably needed some where.\r\n"
+
+
+
+
 int main (void){
 float Arith_mean;
 float Geom_mean;
@@ -29,27 +47,28 @@ int counter = 1;
 long num_from_KBD;
 
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino;
+One_25ms_WDT_with_interrupt;
 
-if(watch_dog_reset == 1)Serial.write("\r\nAgain?\r\n");
-else
-Serial.write("\r\nRunning arithmetic & Geometric averages:\r\n\
-Enter positive numbers \r\n\
-& terminate with Return key.\r\n\
-To display interim reults press SW1 before -cr-.\r\n\
-Press SW1 twice to resume entering numbers.\r\n\
-Note: Zero entry is ignored.\r\n\
-Press SW2 to pause the display\r\n\
-Press reset to repeat.\r\n");
+switch(reset_status){
+  case POR_reset:             User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:             Serial.write(message_2);break;
+  case WDT_reset_with_flag:   Serial.write(message_1);break;
+  case External_reset:        Serial.write(message_1);break;
+  case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
 
-num_from_KBD = Int_KBD_to_display_A(digits);
+//if(reset_status == 2)Serial.write("\r\nAgain?\r\n");
+//else
+//Serial.write(message_1);
+
+num_from_KBD = Int_KBD_to_display_A_Local(digits);
 Arith_mean = (float)num_from_KBD;
 Geom_mean = Arith_mean;
 
 while(1){
 
-while ((switch_1_down) || (switch_2_down) || (switch_3_down));
-if ((num_from_KBD = Int_KBD_to_display_A(digits)))
+while ((switch_1_down) || (switch_2_down) || (switch_3_down))wdr();
+if ((num_from_KBD = Int_KBD_to_display_A_Local(digits)))
 
 {Arith_mean = Arith_mean * (float)counter;
 Geom_mean = pow (Geom_mean, (float)counter);
@@ -63,13 +82,16 @@ Arith_mean = (Arith_mean) / (float)counter;
 if(Geom_mean < 0.0)Geom_mean *= -1;
 Geom_mean =  pow (Geom_mean , 1/(float)counter);}
 
-if(switch_1_down)while(switch_1_down); else continue;
+if(switch_1_down)while(switch_1_down)wdr(); else continue;
+//_delay_ms(25);
 
-I2C_FPN_to_display(Arith_mean);
-while(switch_1_down);
+Serial.print(Arith_mean,3);
+//Arith_mean = 2.875;
+I2C_FPN_to_display(Arith_mean);//cli();while(1);
+while(switch_1_down)wdr();
 
 I2C_FPN_to_display(Geom_mean);
-while(switch_1_down);
+while(switch_1_down)wdr();
 if (switch_3_down)break;}
 
 SW_reset;}
@@ -98,10 +120,6 @@ if ((keypress = wait_for_return_key_A())  =='\r')break;         //Detect return 
 if ((decimal_digit_A(keypress)) || (keypress == '\b')\
  || (keypress == '-'))
 
- /*{if (keypress == '\b'){                                 //Backspace key
-for (int n = 0; n <= 7; n++)
-display_buffer[n] = display_buffer[n + 1];}
-*/
 {if (keypress == '\b'){                                 //Backspace key
 for (int n = 0; n < 7; n++)
 display_buffer[n] = display_buffer[n + 1];
@@ -115,7 +133,7 @@ display_buffer[0] = keypress;  }                              //Add new keypress
 I2C_Tx_8_byte_array(display_buffer);}}                                     //Update display includes "cr_keypress"                                                 
 
 I2C_Tx_any_segment_clear_all();
-_delay_ms(100);
+wdr();_delay_ms(50);wdr();_delay_ms(50);
 I2C_Tx_8_byte_array(display_buffer);
 
 Long_Num_from_mini_OS = I2C_displayToNum();
@@ -124,6 +142,6 @@ return Long_Num_from_mini_OS;}
 
 
 
-
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
 
 /************************************************************************************************************************/
