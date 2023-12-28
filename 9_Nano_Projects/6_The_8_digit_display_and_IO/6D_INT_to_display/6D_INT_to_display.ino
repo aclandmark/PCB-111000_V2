@@ -30,7 +30,7 @@ Note: Zero entry is ignored.\r\n\
 Press SW2 to pause the display\r\n\
 Press SW3 before releasing SW1 to repeat.\r\n"
 
-#define message_2 "\r\nAgain?\r\n"
+#define message_2 "\r\nAccumulators reset. New data?\r\n"
 
 #define message_3 "\r\nWDTout with interrupt occurred\r\n\
 A wdr() statement is probably needed some where.\r\n"
@@ -90,7 +90,7 @@ while(switch_1_down)wdr();
 
 Serial.print(Geom_mean,3); 
 I2C_FPN_to_display(Geom_mean);
-while(switch_1_down)wdr();
+while(switch_1_down)//wdr();
 if (switch_3_down)break;
 Serial.write("\tMore data?\r\n");}
 
