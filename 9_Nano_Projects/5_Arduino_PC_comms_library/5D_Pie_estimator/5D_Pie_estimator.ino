@@ -12,6 +12,12 @@ The Code blocks C complier running on a PC using 64 bit and floating point doubl
 a radius of 370,000,000 in about 10 seconds
 ********************************************************************************/
 
+#define message_1 "\r\nEstimate value for PIE. Enter radius (50000 max)?\r\n\
+Push and hold SW1 to repeat. SW2 to pause display\r\n"
+
+#define message_2 "\t?\r\n"
+
+
 
 int main (void) 
 
@@ -23,15 +29,12 @@ char Num_string[15];
 float pie;
 
 
-setup_HW_Arduino_IO_Extra;
+setup_HW_Arduino;
 
-sei();
-
-if (watch_dog_reset == 1) 
-{watch_dog_reset = 0;Serial.write("?\t");}
-else Serial.write("\r\nEstimate value for PIE. Enter radius (50000 max)?\r\n\
-Push and hold SW1 to repeat. SW2 to pause display.\r\n\t");
-
+switch(reset_status){
+  case POR_reset:                 User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:                 Serial.write(message_2);break;
+  case External_reset:            Serial.write(message_1);break;}
 
 
 R = Unsigned_Int_from_PC_A(Num_string, 0);                              //DIY subroutine uses Arduino functions
@@ -52,9 +55,7 @@ if ((pie = (float)Area / (float)R / (float)R * 4) < 0.0)              //Convert 
 Serial.write ("Overflows\r\n");
 else {Serial.print (pie,6);                                           //Arduino converts FPN to string and sends this to the PC
 
-I2C_FPN_to_display(pie);
-
-Serial.write("\r\n");}
+I2C_FPN_to_display(pie);}
 
 SW_reset;
 return 1; }
