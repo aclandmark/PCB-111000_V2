@@ -40,10 +40,12 @@ float Log_result;
 float Result;
 
 
-setup_HW_Arduino_IO_Extra;
+setup_HW_Arduino;
 
-if(!(watch_dog_reset))Serial.write(message_1);
-if(watch_dog_reset){watch_dog_reset = 0; Serial.write(message_2);}
+switch(reset_status){
+  case POR_reset:                 User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:                 Serial.write(message_2);break;
+ case External_reset:            Serial.write(message_1);break;}
 
 while(1){
 Serial.write("?\r\n");
@@ -116,7 +118,7 @@ difference = ans - ans_old;
 if ((difference/ans > -0.0000001) && (difference/ans < 0.0000001))break;
 ans_old = ans;}
 
-setup_watchdog;
+setup_watchdog_A;
 
 if(!(sign))return ans;
 else return 1.0/ans;}
@@ -129,7 +131,6 @@ else return 1.0/ans;}
 /**************************************************************************************************************************/
 ISR (WDT_vect)
 {wdt_enable(WDTO_30MS);while(1);}
-
 
 
 
