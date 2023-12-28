@@ -61,14 +61,14 @@ switch(reset_status){
 //else
 //Serial.write(message_1);
 
-num_from_KBD = Int_KBD_to_display_A_Local(digits);
+num_from_KBD = Int_KBD_to_display_A(digits);
 Arith_mean = (float)num_from_KBD;
 Geom_mean = Arith_mean;
 
 while(1){
 
 while ((switch_1_down) || (switch_2_down) || (switch_3_down))wdr();
-if ((num_from_KBD = Int_KBD_to_display_A_Local(digits)))
+if ((num_from_KBD = Int_KBD_to_display_A(digits)))
 
 {Arith_mean = Arith_mean * (float)counter;
 Geom_mean = pow (Geom_mean, (float)counter);
@@ -90,7 +90,7 @@ while(switch_1_down)wdr();
 
 Serial.print(Geom_mean,3); 
 I2C_FPN_to_display(Geom_mean);
-while(switch_1_down)//wdr();
+while(switch_1_down)wdr();
 if (switch_3_down)break;
 Serial.write("\tMore data?\r\n");}
 
