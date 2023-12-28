@@ -8,6 +8,11 @@
 
 #include "Prime_factors_header.h"
 
+#define message_1 "\r\nEnter integer number:  PCB returns all prime factors of that number.(Press sw1 to cancel.)\r\n"
+#define message_2 "New number?\r\n"
+#define message_3 "\r\nCalculation cancelled. New number?\r\n"
+
+
 #define Search_array_length   125
 
 #define BL 30                     //Buffer length
@@ -20,18 +25,27 @@ int main (void)
     long factor;
     char factor_counter;
  
- setup_HW_Arduino_IO_Extra;
-   Serial.write("\r\nInteger number\t");
-   number = Int_Num_from_PC_A(num_string, BL);
+ setup_HW_Arduino;
+set_up_pci_on_sw1_and_sw3;
+ enable_pci_on_sw1_and_sw3
+
+switch(reset_status){
+  case POR_reset:                 User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:                 Serial.write(message_2);break;
+  case WDT_reset_with_flag:       Serial.write(message_3);break;
+  case External_reset:            Serial.write(message_1);break;}
+
+  
+   number = Int_Num_from_PC_A_Local(num_string, BL);
    newline_A();
-  Serial.print(number);//while(1);
+  Serial.print(number);  _delay_ms(5);
 
   Serial.write('\t');
   factor_counter = 0;
-  do{
+  do{_delay_ms(5);                                                  //Required by Serial.print
   factor = Product_search(number);                                 //Get lowest factor
   number = number/factor;                                          //Next number to factorise
-  Int_Num_to_PC_A(factor,num_string, '\t' );
+  Int_Num_to_PC_A(factor,num_string, '\t' ); //
   factor_counter += 1;} 
   while (number != 1);  
 
@@ -79,6 +93,23 @@ while(i*(i+m) <= n*(1+L))                      //2*101, 2*102, 2*103,... etc   3
 {reg[i*(i+m) -1 - n*L] = 0; m++;wdr(); }      //set appropriate registers to zero (Note the offset of 1 place) 
 i++;}}
 
+
+/************************************************************************************************************/
+ISR(PCINT2_vect){
+if(switch_3_down) return;
+if((switch_1_up) && (switch_3_up))return;
+ if(switch_1_down) eeprom_write_byte((uint8_t*)0x1FC, 0);
+ SW_reset;}
+
+
+
+/************************************************************************************************************/
+long Int_Num_from_PC_A_Local(char * num_as_string, char bufferlen)    //Project version implements the backspace key
+{char strln;
+Serial.flush();   
+strln = Serial.readBytesUntil('\r',num_as_string, bufferlen);
+num_as_string[strln] = 0;
+return atol(num_as_string);}
 
 
 
