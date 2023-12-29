@@ -1,29 +1,39 @@
 
 /*
  Sines and cosines are calculated using series that have the same terms as those used by e^x. 
+
+To recover the angles see
+      https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arccosine_Function
+      https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arcsine_Function
+and   https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arctangent_Function
+ 
 */
 
  
 #include "Trig_function_header.h"
 
 #define message_1 "\r\nTrig function: Enter angle in degrees\r\n"
+#define message_2 "\r\nAnother angle?\r\n"
 
 #define BL 30                                     //Buffer length
+
+float Pie = 3.1415926;
 
 
 int main (void) 
 
 {char Num_string[BL + 2];
 float Num;                               //Scientfic number pus its backup
-float Pie = 3.1415926;
-float Sine, Cos;                                       //The log of Num
 float Result;
 char  Fn;
 
-setup_HW_Arduino_IO;
+setup_HW_Arduino;
 
-if(!(watch_dog_reset))Serial.write(message_1);
-else {watch_dog_reset = 0; Serial.write ("?\r\n");}
+switch(reset_status){
+  case POR_reset:                 User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:                 Serial.write(message_2);break;
+  case External_reset:            Serial.write(message_1);break;}
+
 Num = Sc_Num_from_PC_A(Num_string, BL);           //User enters the scientific number
 if(!(Num))Num = 0.0001;
 else{
@@ -34,91 +44,129 @@ Serial.write("Keypress c, s or t?\r\n");
 Fn = waitforkeypress_A();
 
 switch (Fn){
-case 'c': Result = Cos_power_series(Num); Serial.write("Cos x =");break;
-case 's': Result = Sine_power_series(Num);Serial.write("Sin x =");break;
-case 't': Result = Sine_power_series(Num)/Cos_power_series(Num);Serial.write("Tan x =");break;}
+case 'c': Result = Sin_cos_power_series(Num, 'c'); Serial.write("Cos x =");break;
+case 's': Result = Sin_cos_power_series(Num, 's');Serial.write("Sin x =");break;
+case 't': Result = Sin_cos_power_series(Num, 's')/Sin_cos_power_series(Num, 'c');Serial.write("Tan x =");break;}
 
 Sc_Num_to_PC_A(Result,1,8,'\r');
-
 I2C_FPN_to_display(Result);
 
+switch (Fn){
+case 'c': Result = Arc_sin_cos(Result, 'c'); Serial.write("ArcCos x =");break;
+case 's': Result = Arc_sin_cos(Result, 's');Serial.write("ArcSin x =");break;
+case 't': Result = Arc_Tan(Result);Serial.write("ArcTan x =");break;}
+
+Sc_Num_to_PC_A(Result,1,8,'\r');
+while(switch_1_down);
+display_FPN_short(Result, Num_string);
+
+while(switch_1_up);
+
 SW_reset;
-return 1; 
-}
+return 1;}
 
 
 
+/************************************************************************************************************************/
+float Sin_cos_power_series(float Num, char type)
+{float term;                                                 //Power series terms
+float difference;                                            //difference berween consequtive terms
+float Result;       
+int m;                                                      //Use power series to calculate the natural logarithm
+int term_counter = 0;
 
-/**************************************************************************************************************************/
-float Sine_power_series(float Num)
 
-{float term;                                           //Power series terms
-float difference;
-float ans, ans_old;
-long term_counter;
-char sign = 0;
-
+if(type == 'c'){
 term = 1.0;
-term_counter = 0;
-ans = 0.0;
-ans_old = 0.0;
+Result = 1.0;
+difference = 1.0;
+m = 1;}
 
-while(term_counter <=100){
-term_counter += 1;
+if(type == 's'){
+term = Num;
+Result = term;  
+difference = Num;                                       //difference berween consequtive terms
+m = 2;}  
 
-term = (term * Num)/float(term_counter); 
-if(!(term_counter%2))continue; 
+while(1){wdr();
+term = term * Num/(float)m;
+term = term * Num/(float)(m+1);
 
-if (((term_counter + 1)/2)%2)
-ans += term;
-else ans -= term;
+m+=2;
+if ((++term_counter)%2)Result = Result - term; 
+else Result = Result + term; 
 
-if (term_counter -1){
-difference = ans - ans_old;
-if ((difference/ans > -0.0000001) && (difference/ans < 0.0000001))break;}
-ans_old = ans;
-}
-return ans;}
+difference = difference - Result;
+if ((difference <= 1E-5) && (difference >= -1E-5))break;
+difference = Result;}
 
-//Sin x = x - (x^3)/6 + (x^5)/120.....etc.    
-
-
-
+return Result;}
 
 
 
-/**************************************************************************************************************************/
-float Cos_power_series(float Num)
+/******************************************************************************************************************************/
+float Arc_sin_cos(float Num, char type){
 
-{float term;                                           //Power series terms
+float Angle;
+float term;
+float Q = 1.0;      //term counter
+float Num_bkp;
 float difference;
-float ans, ans_old;
-long term_counter;
-char sign = 0;
+int counter = 0;
 
-term = 1.0;
-term_counter = 0;
-ans = 1.0;
-ans_old = 1.0;
+Num_bkp = Num;
+Angle = Pie/2.0 - Num;
+Num = Num * Num * Num;
 
-while(term_counter <=100){
-term_counter += 1;
+term = 0.5/3.0;
+Angle = Angle - (term * Num);
+difference = Angle;
 
-term = (term * Num)/float(term_counter); 
-if(term_counter%2)continue; 
+while(1){wdr(); 
+Q += 1.0;
+term = term * ((2.0*Q) - 1.0)*((2.0*Q) - 1.0)/(2.0*Q)/((2.0*Q)+1.0);
+Num = Num * Num_bkp * Num_bkp;
 
-if (((term_counter + 1)/2)%2)
-ans -= term;
-else ans += term;
+ Angle = Angle - (term * Num);
+ difference = difference - Angle;
+ if((difference < 1.0e-6) && (difference > -1.0e-6))break;
+difference = Angle;}
 
-if (term_counter -1){
-difference = ans - ans_old;
-if ((difference/ans > -0.0000001) && (difference/ans < 0.0000001))break;}
-ans_old = ans;
-}
-return ans;}
+Angle = Angle * 57.2958;
+if (type == 'c');
+if (type == 's'){Angle = Angle - 90.0; Angle = Angle * -1.0;}
+
+return Angle;}
 
 
+
+/*******************************************************************************************************************/
+float Arc_Tan(float Num){
+float term;
+float Result;
+
+if ((Num > -1.0) && (Num < 1.0)){
+term = Num;
+Result = Num;
+  for (int m = 3; m <50; m+=2){
+term = term *Num*Num/(float)m;
+  
+ if ((m+1)%4)Result = Result + term;
+ else Result = Result - term; 
+ term = term*(float)m; }}
+else{
+ term = 1.0/Num; 
+Result = term;
+for (int m = 3; m <20; m+=2){
+term = term/Num/Num/(float)m;
+if ((m+1)%4)Result = Result + term;
+ else   Result = Result - term; 
+ term = term *(float)m;}
+
+Result = Pie/2.0 - Result;
+if(Num <= 1.0) Result -= Pie;}
+
+return Result * 57.2958;}
 
 
 
