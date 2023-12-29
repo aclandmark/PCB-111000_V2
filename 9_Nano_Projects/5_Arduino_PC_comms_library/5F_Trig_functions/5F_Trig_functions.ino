@@ -6,6 +6,8 @@ To recover the angles see
       https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arccosine_Function
       https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arcsine_Function
 and   https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arctangent_Function
+
+Note: Two project subroutines are borrowed from future work to drive the display
  
 */
 
