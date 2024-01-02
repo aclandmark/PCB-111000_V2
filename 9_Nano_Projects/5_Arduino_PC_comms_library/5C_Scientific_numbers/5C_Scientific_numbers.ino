@@ -26,11 +26,16 @@ UNO_proj_resources\PC_comms\Basic_Rx_Tx_Arduino.c
 */
 
 
+#define message_1 "\r\n\r\nUsing Arduino functions to receive and print scientific numbers.\r\n\
+\r\nEnter scientific number\r\nthen the number of digits before and after the decimal point.\r\n\
+Then press AK to generate series.\t"
+#define message_2 "\r\nEnter new data?\t"
+
 
 #include "Scientific_numbers_header.h"
 
 #define Buff_Length 30                     //Buffer length
-
+//#define clear_num_string    for(int m = 0; m < (Buff_Length + 2); m++)num_string[m] = 0;
 
 /************************************************************************************************************/
 
@@ -44,13 +49,17 @@ int main (void)
     char pre_dp;
     char post_dp;
  
- setup_HW_Arduino_IO_Extra;
-    
-   if (watch_dog_reset == 1) {watch_dog_reset = 0; User_prompt_A;}
-  else {Serial.write("\r\n\r\nUsing Arduino functions to receive and print scientific numbers.\r\n");}
-   Serial.write("\r\nEnter scientific number\r\nthen the number of digits before and after the decimal point.\r\n");
-   
-num_1 = Sc_Num_from_PC_A(num_string, Buff_Length);
+ setup_HW_Arduino;
+
+ switch(reset_status){
+  case POR_reset:                 User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:                 Serial.write("Series truncated\r\n");
+  case WDT_reset_with_flag:       Serial.write ("Press 'x' to continue"); 
+                                  while(waitforkeypress_A() != 'x'); Serial.write(message_2);break;
+ case External_reset:            Serial.write(message_1);break;}
+
+num_1 = Sc_Num_from_PC_A_Local(num_string, Buff_Length);
+ Sc_Num_to_PC_A_Local(num_1,1,6,'\r');
 
 while(1){pre_dp = waitforkeypress_A();
 if ((pre_dp < '0')||(pre_dp > '9'))Serial.write("!");
@@ -64,7 +73,7 @@ pre_dp -= '0';
 post_dp -= '0';
 
 newline_A;
-  Sc_Num_to_PC_A(num_1,pre_dp,post_dp,'\r');
+  Sc_Num_to_PC_A_Local(num_1,pre_dp,post_dp,'\r');
 
 if (num_1 < 0.0) index = 3;                                   //Raise negative numbers to the power of 3
 else {
@@ -80,8 +89,9 @@ Sc_Num_to_PC_A_Local(num_2, pre_dp, post_dp, '\r');
 if ((index < 0.0) || (index > 1.0));
 else 
 if (((num_2 > 1.0)&&(((num_1 - num_2) < 1.0))) ||
-((num_2 < 1.0)&&(((num_2 - num_1) > 1.0e-1))))break;
+((num_2 < 1.0)&&(((num_2 - num_1) > 1.0e-1))))break;      //escape sequrence for index of 0.75
 num_1 = num_2;}
+
 
  SW_reset;
   return 1;}
@@ -100,11 +110,6 @@ Check_num_for_to_big_or_small(num);                       //SW_reset required to
 
 if (num < 0){sign = '-'; num = num * (-1);}
 
-/*
-while(--pre_dp){A = A*10;} 
-while (num >= A){num = num/10.0; Exp += 1;}               //Repetitively divide large numbers by 10
-while (num <= A){num = num*10.0; Exp -= 1;}               //and multiply small ones by 10
-*/
 if(pre_dp){
 while(pre_dp--)A = A*10;}
 if (num >= 1.0)while (num >= A){num = num/10.0; Exp += 1;}
@@ -133,10 +138,8 @@ float Sc_Num_from_PC_A_Local(char * num_as_string, int BL)            //Library 
 Serial.flush();                                                       //Clear the Arduino serial buffer   
 strln = Serial.readBytesUntil('\r',num_as_string, BL);                //Read upto 20 characters or until a -cr- is received 
 num_as_string[strln] = 0;                                             //Terminate the string with the null character
-//Serial.write(num_as_string);                                          //Print out the numerical string
-//Serial.write(next_char);                                              //new-line, space, \t or other specified character
-return atof(num_as_string);}                                          //"askii to float" -C- library function
 
+return atof(num_as_string);}                                           //"askii to float" -C- library function                                       
 
 
 
