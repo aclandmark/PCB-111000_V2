@@ -66,10 +66,10 @@ default: return 0; break;}}
 void Check_num_for_to_big_or_small(float num)											//Exits if the result of floating point arithmetic exceeds permitted limits 
 {unsigned long * long_ptr;
 long_ptr = (unsigned long *)&num;														//Enables floating point number to be read as a 32 bit integer 
-if (*long_ptr == 0x7F800000){Serial.write("+ve Num too large\r\n");SW_reset;}
-if (*long_ptr == 0xFF800000){Serial.write("-ve Num too large\r\n");SW_reset;}
-if (*long_ptr == 0X0){Serial.write("+ve Num too small\r\n");SW_reset;}
-if (*long_ptr == 0X80000000){Serial.write("-ve Num too small\r\n");SW_reset;}}
+if (*long_ptr == 0x7F800000){Serial.write("+ve Num too large\r\n"); eeprom_write_byte((uint8_t*)0x1FC, 0);SW_reset;}
+if (*long_ptr == 0xFF800000){Serial.write("-ve Num too large\r\n"); eeprom_write_byte((uint8_t*)0x1FC, 0); SW_reset;}
+if (*long_ptr == 0X0){Serial.write("+ve Num too small\r\n"); eeprom_write_byte((uint8_t*)0x1FC, 0); SW_reset;}
+if (*long_ptr == 0X80000000){Serial.write("-ve Num too small\r\n"); eeprom_write_byte((uint8_t*)0x1FC, 0); SW_reset;}}
 
 
 
