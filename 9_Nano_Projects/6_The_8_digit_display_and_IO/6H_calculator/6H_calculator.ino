@@ -31,21 +31,36 @@ IT INTRODUCES
 
 #include "Calculator_header.h"
 
+#define message_1 "\r\nDATA FROM I/O\r\n\
+Press sw1 to populate digits[0]\r\nsw3 to shift display left\r\n\
+sw2 to enter the number\r\nsw1 to pause the program and restart the program.\r\n"
+
+#define message_2 "Enter new number\r\n"
+
+#define message_3 "\r\nWDTout with interrupt occurred\r\n\
+A wdr() statement is probably needed some where.\r\n"
+
 
 int main (void){
   char op;
   float x1, x2, result;
  
-  setup_HW_Arduino_IO_Extra;
+  setup_HW_Arduino;
 
+  switch(reset_status){
+  case POR_reset:             User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:             Serial.write(message_2);break;
+   case External_reset:        Serial.write(message_1);break;
+  case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
+
+/*
 if(!(watch_dog_reset))
-
 {Serial.write("\r\nPress: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
 sw_2 to enter the number and sw1 to select a function.\r\n\
 Note: display flashes to indicate number has been entered.\r\n\
 Press sw_3 then sw_1 to reset (release slowly).\r\n");}
 
-else {Serial.write("\r\nRestarted.\r\n\r\n"); watch_dog_reset = 0;}
+else {Serial.write("\r\nRestarted.\r\n\r\n"); watch_dog_reset = 0;}*/
   
  x1 = fpn_from_IO();
  Sc_Num_to_PC_A(x1,1,6 ,' ');
