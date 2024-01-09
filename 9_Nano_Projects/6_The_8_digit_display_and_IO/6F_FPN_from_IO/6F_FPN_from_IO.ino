@@ -31,23 +31,32 @@ IT INTRODUCES
 
 #include "FPN_IO_to_display_header.h"
 
+#define message_1 "\r\nFPN from IO\r\nPress: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
+sw_2 to enter the number and sw1 to do some arithmetic.\r\nNote: display flashes to indicate number has been entered.\r\n"
+
+#define message_2 "\r\nNew number?\r\n"
+
+#define message_3 "\r\nWDTout with interrupt occurred\r\n\
+A wdr() statement is probably needed some where.\r\n"
+
+
 
 int main (void){
   float x1;
   float power;
  
-  setup_HW_Arduino_IO_Extra;
+  setup_HW_Arduino;
 
-while(switch_3_down);
+while(switch_3_down)wdr();
 
-if(!(watch_dog_reset))
+One_25ms_WDT_with_interrupt;
 
-{Serial.write("\r\nFPN from IO\r\n\
-Press: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
-sw_2 to enter the number and sw1 to do some arithmetic.\r\n\
-Note: display flashes to indicate number has been entered.\r\n");}
-
-else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
+switch(reset_status){
+  case POR_reset:             User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:             Serial.write(message_2);break;
+  case WDT_reset_with_flag:   Serial.write(message_2);break;
+  case External_reset:        Serial.write(message_1);break;
+  case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
   
  x1 = fpn_from_IO();
  if(x1 > 0.0)power = 1.2; else power = 3.0;
@@ -58,14 +67,14 @@ while(1){
 Sc_Num_to_PC_A(x1,1,6 ,'\r');
 I2C_FPN_to_display(x1);
 
-while(switch_1_down);
+while(switch_1_down)wdr();
 if(switch_3_down)break;
 
 x1 = pow(x1, power); }                                //Do some arithmetic
 
 I2C_Tx_any_segment_clear_all;
 
-while(switch_1_down);
+while(switch_1_down)wdr();
 SW_reset;}
 
 
@@ -116,16 +125,13 @@ Data_Entry_complete = 0;
 digit_entry = 0;
   
 while(1){                                               //Data entry loop
-while (!(digit_entry));                                 //Wait here while each digit is entered
+while (!(digit_entry))wdr();                                 //Wait here while each digit is entered
 digit_entry = 0;
 if (Data_Entry_complete)break;                          //Leave loop when data entry is complete
 *(FPN_num_string++) = digits[1]; _delay_us(100);}         //Increment string adddress after saving digit was 1us
 
 *(FPN_num_string++) = digits[0];                        //Save final digit
 *FPN_num_string = '\r';   }                              //Terminate string with cr.
-
-
-
 
 
 
@@ -136,7 +142,7 @@ ISR(PCINT0_vect){
   Timer_T0_10mS_delay_x_m(25);                           //Flash display
   I2C_Tx_8_byte_array(digits);
 Data_Entry_complete=1;digit_entry = 1;
-while(switch_2_down);}                                  //Extra line
+sei();while(switch_2_down)wdr();}                        //Extra line
 
 
 
@@ -186,7 +192,6 @@ void scroll_display_zero(void){                       //display scrolls 0 to 9 t
       case 0b00000: digits[0] = '0'; break;           //RHS: Can only receive digits
     case 0b00100: digits[0] = '-'; break;} break;     //RHS: can receive a - or a digit
     
-
     case '-':
     switch(scroll_control){
       case 0b11110: digits[0] = '.'; break;           //Waiting for first character: digits[0] = '\0'
@@ -198,7 +203,6 @@ void scroll_display_zero(void){                       //display scrolls 0 to 9 t
       case 0b01010: digits[0] = '0'; break;           //Waiting for second character: negative number digits[0] = '-'
     case 0b01011: digits[0] = 'e'; break;} break;     //digits[0] = 0 to 9: can receive d.p. e or additional digit
     
-
     case 'e':
     switch(scroll_control){
       case 0b01011: digits[0] = '0'; break;           //digits[0] = 0 to 9: can receive d.p. e or additional digit
@@ -209,6 +213,9 @@ void scroll_display_zero(void){                       //display scrolls 0 to 9 t
 I2C_Tx_8_byte_array(digits);}
 
 
+
+/****************************************************************************************************************/
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
 
 
 
