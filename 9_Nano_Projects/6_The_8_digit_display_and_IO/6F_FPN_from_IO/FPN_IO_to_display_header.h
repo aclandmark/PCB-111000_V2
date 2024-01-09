@@ -2,20 +2,20 @@
 
 #include <avr/wdt.h>
 
-char watch_dog_reset = 0;
+#define POR_reset                 1
+#define WDT_reset                 2
+#define External_reset            3
+#define WDT_reset_with_flag       4
+#define WDT_with_ISR_reset        5
+
+char reset_status;
 char User_response;
 char str_counter;
+unsigned char SREG_BKP;
 
 volatile char Data_Entry_complete, digit_entry;
 volatile char scroll_control;
 char digits[8];
-
-
-
-#define T0_delay_10ms 5,178
-#define T1_delay_100ms 3, 0x9E62
-#define T2_delay_10ms 7,178
-
 
 #define set_up_PCI      PCICR |= ((1 << PCIE0) | (1 << PCIE2))
 #define enable_PCI      PCMSK0 |= (1 << PCINT6);    PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
@@ -27,27 +27,28 @@ char digits[8];
 #define enable_PCI_on_sw1  PCMSK2 |= (1 << PCINT18);
 #define enable_PCI_on_sw3  PCMSK2 |= (1 << PCINT23);
 
-#define switch_3_down  ((PIND & 0x80)^0x80)
-#define switch_3_up   (PIND & 0x80)
 #define switch_1_down ((PIND & 0x04)^0x04)
 #define switch_1_up   (PIND & 0x04)
 #define switch_2_down ((PINB & 0x40)^0x40)
 #define switch_2_up   (PINB & 0x40)
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+
+//Note Switch terminations are sw1:PD2  sw2:PB6 sw3:PD7 
 
 #define Init_display_for_pci_data_entry \
 clear_digits;\
 digits[0] = '0';\
 I2C_Tx_8_byte_array(digits);
 
-
-
 #define clear_digits {for(int m = 0; m<=7; m++)digits[m]=0;}
 #define shift_digits_left {for (int n = 0; n < 7; n++){digits[7-n] = digits[6-n];}}
 
 
 /*****************************************************************************/
-#define setup_HW_Arduino_IO \
-setup_watchdog;\
+#define setup_HW_Arduino \
+determine_reset_source;\
+setup_watchdog_A;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
 set_up_switched_inputs;\
@@ -60,13 +61,9 @@ OSC_CAL;\
 Serial.begin(115200);\
 while (!Serial);\
 sei();\
-I2C_Tx_LED_dimmer();
-
-
-
-/*****************************************************************************/
-#define setup_HW_Arduino_IO_Extra \
-setup_HW_Arduino_IO;\
+I2C_Tx_LED_dimmer();\
+\
+/*OPTIONAL Setup_HW code gives default ap*/\
 \
 Timer_T0_10mS_delay_x_m(1);\
 I2C_TX_328_check();\
@@ -95,15 +92,39 @@ else TWCR = (1 << TWINT);
 
 
 
+/**********************************************************************************************************/
+#define determine_reset_source \
+if (MCUSR & (1 << WDRF)){reset_status = 2;}\
+if (MCUSR & (1 << PORF))reset_status = 1;\
+if (MCUSR & (1 << EXTRF))reset_status = 3;\
+if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FC))))reset_status = 4;\
+if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FC) == 0x01))reset_status = 5;\
+eeprom_write_byte((uint8_t*)0x1FC, 0xFF);\
+MCUSR = 0;
+
+
+
 /*****************************************************************************/
-#define setup_watchdog \
-if (MCUSR & (1 << WDRF))watch_dog_reset = 1;\
+#define setup_watchdog_A \
+\
 wdr();\
-MCUSR &= ~(1<<WDRF);\
+SREG_BKP = SREG;\
+cli();\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
-WDTCSR = 0;
+WDTCSR = 0;\
+MCUSR = 0;\
+SREG = SREG_BKP;
 
 #define wdr()  __asm__ __volatile__("wdr")
+
+#define One_25ms_WDT_with_interrupt \
+wdr();\
+SREG_BKP = SREG;\
+cli();\
+WDTCSR |= (1 <<WDCE) | (1<< WDE);\
+WDTCSR = (1<< WDE) | (1 << WDIE) | (1 << WDP0) |  (1 << WDP1);\
+MCUSR=0;\
+SREG = SREG_BKP;
 
 #define SW_reset {wdt_enable(WDTO_30MS);while(1);}
 
@@ -174,7 +195,7 @@ if((User_response == 'R') || (User_response == 'r'))break;} Serial.write("\r\n")
 /*****************************************************************************/
 #define waiting_for_I2C_master \
 TWCR = (1 << TWEA) | (1 << TWEN);\
-while (!(TWCR & (1 << TWINT)));\
+while (!(TWCR & (1 << TWINT)))wdr();\
 TWDR;
 
 #define clear_I2C_interrupt \
