@@ -57,10 +57,6 @@ switch(reset_status){
   case External_reset:        Serial.write(message_1);break;
   case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
 
-//if(reset_status == 2)Serial.write("\r\nAgain?\r\n");
-//else
-//Serial.write(message_1);
-
 num_from_KBD = Int_KBD_to_display_A(digits);
 Arith_mean = (float)num_from_KBD;
 Geom_mean = Arith_mean;
@@ -143,5 +139,8 @@ return Long_Num_from_mini_OS;}
 
 
 ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
+
+
+
 
 /************************************************************************************************************************/
