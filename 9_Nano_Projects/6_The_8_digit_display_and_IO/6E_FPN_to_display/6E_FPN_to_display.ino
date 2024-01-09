@@ -19,22 +19,33 @@
 #include "FPN_KBD_to_display_header.h"
 #define Buff_Length  20
 
+#define message_1 "\r\nEnter scientific number & terminate with Return key.\r\n\
+Press SW2 to pause the display.  SW1 to scroll through the results.\r\n"
+
+#define message_2 "\r\nNew number?\r\n"
+
+#define message_3 "\r\nWDTout with interrupt occurred\r\n\
+A wdr() statement is probably needed some where.\r\n"
+
+
 int main (void){
 float Num_1;
 float power = 0.5;
 char digits[Buff_Length + 2];
-
 char counter = 0;
 
+setup_HW_Arduino;
 
-setup_HW_Arduino_IO;
+One_25ms_WDT_with_interrupt;
 
-Serial.write("\r\nEnter scientific number \
-& terminate with Return key.\r\n\
-Press SW2 to pause the display.\r\n\
-SW1 to scroll through the results.\r\n");
+switch(reset_status){
+  case POR_reset:             User_prompt_A;    Serial.write(message_1);break;
+  case WDT_reset:             Serial.write(message_2);break;
+  case WDT_reset_with_flag:   Serial.write(message_2);break;
+  case External_reset:        Serial.write(message_1);break;
+  case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
 
-Num_1 = FPN_KBD_to_display_A(digits, Buff_Length); 
+Num_1 = FPN_KBD_to_display_A_Local(digits, Buff_Length);
 
 if(Num_1 > 0.0)power = 0.5;
 else power = 3.0;
@@ -45,16 +56,14 @@ Sc_Num_to_PC_A(Num_1,1,6 ,'\r');
 
 if (power == 0.5)
 {if (!(counter%5)){I2C_FPN_to_display(Num_1);
-while(switch_1_down);}
+while(switch_1_down)wdr();}
 
 if ((Num_1 < (1 + 5.0e-3)) && (Num_1 > (1 - 5.0e-3)))break;}
-
-
 
 if (power == 3.0)
 {if ((Num_1 < -1.0E20) || (Num_1 > -1.0e-20)){counter = 15; Num_1 *= -1.0; break;}
   I2C_FPN_to_display(Num_1);
-while(switch_1_down);}
+while(switch_1_down)wdr();}
 
 Num_1 = pow(Num_1, power);  counter += 1;}                                //Do some arithmetic
 
@@ -64,14 +73,12 @@ Int_Num_to_PC_A(counter,digits, '\t');
 Sc_Num_to_PC_A(Num_1,1,6 ,'\r');                                            //Send number to PC
 
 if (!(counter%5)){I2C_FPN_to_display(Num_1);
-while(switch_1_down);}
+while(switch_1_down)wdr();}
 
 Num_1 = pow(Num_1, power);  counter -= 1; }                               //Do some arithmetic
 while(counter+1);
 
 SW_reset;}
-
-
 
 
 
@@ -89,7 +96,6 @@ num_1 = atof(digits);
 
 if (sign == '-') num_1 = num_1 * (-1);
 return num_1;}
-
 
 
 
@@ -117,17 +123,10 @@ if (!(decimal_digit_A(keypress)) && (keypress != '.')                 //Check fo
 && (keypress != 'e') &&  (keypress != '\b'))continue;
 
 switch (keypress){
-/*
-case '\b':  for (int n = 0; n < BL - 1; n++)                             //Backspace keypress
-display_buffer[n] = display_buffer[n + 1];
-I2C_Tx_8_byte_array(display_buffer); break;
-*/
 case '\b':  for (int n = 0; n < BL - 1; n++)                             //Backspace keypress
 display_buffer[n] = display_buffer[n + 1];
 display_buffer[BL - 1] = 0;
 I2C_Tx_8_byte_array(display_buffer); break;
-
-
 
 default:
 for(int n = BL - 1; n>=1; n--)                                            //Shift display for each new keypress except '.'
@@ -135,12 +134,17 @@ display_buffer[n] = display_buffer[n-1];
 display_buffer[0] = keypress;                                         //Add new keypress to display           
 I2C_Tx_8_byte_array(display_buffer); break;}}
 
-
 I2C_Tx_any_segment_clear_all();                     //Flash display
-_delay_ms(100);
+_delay_ms(25);wdr();_delay_ms(25);wdr();
+_delay_ms(25);wdr();_delay_ms(25);wdr();
 I2C_Tx_8_byte_array(display_buffer);
 
 reverse (display_buffer);}
+
+
+
+/****************************************************************************************************************/
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
 
 
 
