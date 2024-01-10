@@ -51,7 +51,7 @@ I2C_Tx_8_byte_array(digits);
 
 
 /*****************************************************************************/
-#define setup_HW_Arduino \
+#define setup_HW_Arduino_min \
 determine_reset_source;\
 setup_watchdog_A;\
 set_up_I2C;\
@@ -66,34 +66,8 @@ OSC_CAL;\
 Serial.begin(115200);\
 while (!Serial);\
 sei();\
-I2C_Tx_LED_dimmer();\
-\
-/*OPTIONAL Setup_HW code gives default ap*/\
-\
-Timer_T0_10mS_delay_x_m(1);\
-I2C_TX_328_check();\
-waiting_for_I2C_master;\
-if (receive_byte_with_Nack()==1)\
-{TWCR = (1 << TWINT);\
-Serial.write("\r\nPress\r\n\
-1 for OS version\r\n\
-2 for system data\r\n\
-3 Message from the OS (x to escape)\r\n\
-4 Default project\r\n\
-0 to escape\r\n");\
-switch (waitforkeypress_A()){\
-case '0':break;\
-case '1':I2C_Rx_get_version_A('0');break;\
-case '2':I2C_Rx_get_version_A('1');break;\
-case '3':str_counter = 0; do\
-{Read_Hello_world_string_A();newline_A();\
-str_counter += 1;\
-waitforkeypress_A();}\
-while (str_counter < 3);\
-break;\
-case '4':wdt_enable(WDTO_30MS);\
-I2C_Tx_display(); break;}}\
-else TWCR = (1 << TWINT);
+I2C_Tx_LED_dimmer();
+
 
 /**********************************************************************************************************/
 #define determine_reset_source \
