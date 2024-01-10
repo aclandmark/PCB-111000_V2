@@ -31,11 +31,12 @@ IT INTRODUCES
 
 #include "Calculator_header.h"
 
-#define message_1 "\r\nDATA FROM I/O\r\n\
-Press sw1 to populate digits[0]\r\nsw3 to shift display left\r\n\
-sw2 to enter the number\r\nsw1 to pause the program and restart the program.\r\n"
+#define message_1 "\r\nPress: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
+sw_2 to enter the number and sw1 to select a function.\r\n\
+Note: display flashes to indicate number has been entered.\r\n\
+To reset press sw_3 then sw_1 (release slowly).\r\n\r\n"
 
-#define message_2 "Enter new number\r\n"
+#define message_2 "\r\nRestarted.\r\n\r\n"
 
 #define message_3 "\r\nWDTout with interrupt occurred\r\n\
 A wdr() statement is probably needed some where.\r\n"
@@ -45,7 +46,8 @@ int main (void){
   char op;
   float x1, x2, result;
  
-  setup_HW_Arduino;
+  setup_HW_Arduino_min;
+  One_25ms_WDT_with_interrupt;
 
   switch(reset_status){
   case POR_reset:             User_prompt_A;    Serial.write(message_1);break;
@@ -53,15 +55,7 @@ int main (void){
    case External_reset:        Serial.write(message_1);break;
   case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
 
-/*
-if(!(watch_dog_reset))
-{Serial.write("\r\nPress: sw_1 to populate digit_0, sw3 to shift the display left\r\n\
-sw_2 to enter the number and sw1 to select a function.\r\n\
-Note: display flashes to indicate number has been entered.\r\n\
-Press sw_3 then sw_1 to reset (release slowly).\r\n");}
 
-else {Serial.write("\r\nRestarted.\r\n\r\n"); watch_dog_reset = 0;}*/
-  
  x1 = fpn_from_IO();
  Sc_Num_to_PC_A(x1,1,6 ,' ');
  I2C_FPN_to_display(x1);
@@ -101,10 +95,10 @@ Serial.write ("\r\n");
 I2C_FPN_to_display(result);
 x1 = result;
 
-while(switch_1_up);}
+while(switch_1_up)wdr();}
 
 cli();
-while((switch_1_down) || (switch_3_down));
+while((switch_1_down) || (switch_3_down))wdr();
 I2C_Tx_any_segment_clear_all();
 SW_reset;}
 
@@ -155,15 +149,13 @@ digit_entry = 0;
 non_zero_detect = 0;
   
 while(1){                                               //Data entry loop
-//sw_3_status = 0;
-while (!(digit_entry));                                 //Wait here while each digit is entered
+while (!(digit_entry))wdr();                            //Wait here while each digit is entered
 
 digit_entry = 0;
 if (Data_Entry_complete)break;}                          //Leave loop when data entry is complete
                                                          //Increment string adddress after saving digit 
 *(FPN_num_string) = '\r'; 
-{int m = 0; while (digits[m]){shift_FPN_num_string_left; *(FPN_num_string)=digits[m++] ;}}
-}     
+{int m = 0; while (digits[m]){shift_FPN_num_string_left; *(FPN_num_string)=digits[m++] ;}}}     
 
 
 
@@ -180,7 +172,7 @@ if(!(non_zero_detect))return;                                //Detects entries o
   Timer_T0_10mS_delay_x_m(25);                           //Flash display
   I2C_Tx_8_byte_array(digits);
 Data_Entry_complete=1;digit_entry = 1;
-while(switch_2_down);}
+while(switch_2_down)wdr();}
 
 
 
@@ -265,6 +257,9 @@ void scroll_display_zero(void){                       //display scrolls 0 to 9 t
 I2C_Tx_8_byte_array(digits);}
 
 
+
+/****************************************************************************************************************/
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
 
 
 
