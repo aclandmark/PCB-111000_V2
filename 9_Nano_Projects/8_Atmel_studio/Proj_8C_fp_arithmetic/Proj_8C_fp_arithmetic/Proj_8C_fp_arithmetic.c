@@ -34,7 +34,7 @@ int main(void)
 	float FPN_2;
 	char source_str[BL];											//Loaded with key presses
 	char display_string[BL];
-		
+			
     setup_HW;
 	
 	while(1){
