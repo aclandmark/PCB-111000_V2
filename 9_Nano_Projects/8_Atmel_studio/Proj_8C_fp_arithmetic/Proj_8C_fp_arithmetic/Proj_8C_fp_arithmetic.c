@@ -1,57 +1,39 @@
-/*
-https://startingelectronics.org/articles/atmel-AVR-8-bit/print-float-atmel-studio-7/
- */ 
 
 
 
 #include "FP_arithmetic_header.h"
 
-
-
 #define BL 15
-
 
 char fmt_1[8] = "%1.2g";
 char fmt_2[8] = "%1.3g";
 char fmt_3[8] = "%1.4g"	;
 char fmt_4[8] = "%1.5g"	;
-char fmt_5[8] = "%1.6g";
-char fmt_6[8] = "%1.7g";
-char fmt_7[8] = "%1.8g";
-char fmt_8[8] = "%g";
-
-
-char Num_String_to_PC(char s[]){								//Transmits a sequence (string) of characters and requires the address in program memory of the first one
-	int i = 0;																//"i" gives the relative address of the next character to be transmitted
-	while(i < 200){															//Transmits up to 200 characters using "Char_to_PC()" or untill the null (\0) character is detected
-		if(s[i] == '\0') break;
-	Char_to_PC_Basic(s[i++]);
-	}return i;}												//Transmit character and increment "i" so that it addresses (points to) the next one.
+char fmt_5[8] = "%g";
 
 
 int main(void)
 {
 	float FPN_2;
-	char source_str[BL];											//Loaded with key presses
-	char display_string[BL];
+	char FPN_as_string[BL];
 			
     setup_HW;
+	String_to_PC_Basic("Enter FPN\r\n");
 	
 	while(1){
-		FPN_string_KBD_to_display(source_str);
-		sscanf (source_str, "%g", &FPN_2);
-		display_8_digit_num_string(source_str, FPN_2);
-		
+		FPN_string_KBD_to_display(FPN_as_string);
+		sscanf (FPN_as_string, "%g", &FPN_2);
+		display_8_digit_num_string(FPN_as_string, FPN_2);
+				
 		waitforkeypress_Basic();
 		
 		FPN_2 /= 7.0;
 		
-		sprintf(display_string, "\t/7=\t%g", FPN_2);
-		Num_String_to_PC(display_string);
-		
-		String_to_PC_Basic("\tDisplay format?\r\n");
-		display_8_digit_num_string(display_string, FPN_2);
-	String_to_PC_Basic("New_FPN?\r\n");}}
+		sprintf(FPN_as_string, "\t/7=\t%g", FPN_2);
+		Num_String_to_PC(FPN_as_string);
+				
+		display_8_digit_num_string(FPN_as_string, FPN_2);
+	String_to_PC_Basic("\tNew_FPN?\r\n");}}
 	
 	
 	
@@ -69,11 +51,8 @@ void display_8_digit_num_string(char* display_string,  float FPN_2){
 		case '2':strcpy(format, fmt_2);break;
 		case '3':strcpy(format, fmt_3);break;
 		case '4':strcpy(format, fmt_4);break;
-		case '5':strcpy(format, fmt_5);break;
-		case '6':strcpy(format, fmt_6);break;
-		//case '7':strcpy(format, fmt_7);break;
-		case '8':strcpy(format, fmt_8);return;break;}
-	
+		case '5':strcpy(format, fmt_5);return;break;}
+			
 	for(int m = 0; m <=14; m++)display_string[m] = 0;
 	sprintf(display_string, format, FPN_2);
 	
@@ -87,8 +66,7 @@ void display_8_digit_num_string(char* display_string,  float FPN_2){
 				
 				if((display_string[p-1] == '-') && (display_string[p-2] == '0'))
 			for (int m = p-2; m < 14; m++)display_string[m]=display_string[m+1];}
-		//waitforkeypress_Basic();	
-		I2C_Tx_8_byte_array(display_string);num_format += 1;
+			I2C_Tx_8_byte_array(display_string);num_format += 1;
 		}while(!(display_string[7]));}
 		
 
@@ -148,16 +126,6 @@ void Increment_display(char*display_buffer, char keypress, char* Str_lngth){
 	*Str_lngth=Num_String_to_PC(display_buffer);
 	reverse (display_buffer);
 I2C_Tx_8_byte_array(display_buffer);}
-
-
-
-/***********************************************************************************************************************/
-void reverse (char s[]){											//See Joe Pardue's book p 83
-	int c,i,j;
-	for (i=0, j = strlen(s) - 1; i < j; i++, j--){
-		c = s[i];
-		s[i] = s[j];
-	s[j] = c;}}
 
 
 
