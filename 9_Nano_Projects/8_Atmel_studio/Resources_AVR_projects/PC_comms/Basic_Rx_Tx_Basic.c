@@ -67,6 +67,16 @@ Char_to_PC_Basic(s[i++]);}}												//Transmit character and increment "i" so
 
 
 /**********************************************************************************************************************************************************************************/
+char Num_String_to_PC(char s[]){								//Transmits a sequence (string) of characters and requires the address in program memory of the first one
+	int i = 0;																//"i" gives the relative address of the next character to be transmitted
+	while(i < 200){															//Transmits up to 200 characters using "Char_to_PC()" or untill the null (\0) character is detected
+		if(s[i] == '\0') break;
+	Char_to_PC_Basic(s[i++]);
+	}return i;}												
+
+
+
+/**********************************************************************************************************************************************************************************/
 char decimal_digit_Basic (char data){											//Returns 1 if data is a character of 0 to 9 inclusive
 if (((data > '9') || (data < '0')) )return 0;							//Otherwise return zero
 else return 1;}
@@ -138,6 +148,15 @@ while(receive_byte);									//Detect '\0' character used to terminate a string
 receive_byte_with_Nack();								//Receve a second null char at the end of the string
 clear_I2C_interrupt;}									//Complete transaction
 
+
+
+/***********************************************************************************************************************/
+void reverse (char s[]){											//See Joe Pardue's book p 83
+	int c,i,j;
+	for (i=0, j = strlen(s) - 1; i < j; i++, j--){
+		c = s[i];
+		s[i] = s[j];
+	s[j] = c;}}
 
 
 
