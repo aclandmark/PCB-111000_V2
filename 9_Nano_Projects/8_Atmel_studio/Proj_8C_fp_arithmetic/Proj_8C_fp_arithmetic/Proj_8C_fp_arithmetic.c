@@ -28,23 +28,18 @@ int main(void)
 		sscanf (FPN_as_string, "%g", &FPN_2);
 		display_8_digit_num_string(FPN_as_string, FPN_2);
 				
-		//while (waitforkeypress_Basic()!='x'){
 		while(1){
 		keypress = waitforkeypress_Basic();
 		if (keypress == 'd'){FPN_2 /= 7.0; sprintf(FPN_as_string, "\t/7=\t%g", FPN_2);}
 		else if (keypress == 'm'){FPN_2 *= 7.0; sprintf(FPN_as_string, "\t*7=\t%g", FPN_2);}
 		else break;
 		
-		//sprintf(FPN_as_string, "\t/7=\t%g", FPN_2);
 		Num_String_to_PC(FPN_as_string);
 		sprintf(FPN_as_string, "\r\n%g", FPN_2);
 		Num_String_to_PC(FPN_as_string);
-		
-		
 				
 		display_8_digit_num_string(FPN_as_string, FPN_2);}
-	String_to_PC_Basic("\r\nNew_FPN?\r\n");
-	}}
+		String_to_PC_Basic("\r\nNew_FPN?\r\n");}}
 	
 	
 	
@@ -65,8 +60,7 @@ void display_8_digit_num_string(char* display_string,  float FPN_2){
 		case '5':strcpy(format, fmt_5);break;
 		case '6':strcpy(format, fmt_6);break;
 		case '7':strcpy(format, fmt_7);break;}
-		
-			
+	
 	for(int m = 0; m <=14; m++)display_string[m] = 0;
 	sprintf(display_string, format, FPN_2);
 	
@@ -80,8 +74,8 @@ void display_8_digit_num_string(char* display_string,  float FPN_2){
 			{for (int m = p-1; m < 14; m++)display_string[m]=display_string[m+1];}								//Remove leading zero from positive exponent
 				
 			if((display_string[p-1] == '-') && (display_string[p-2] == '0'))
-			for (int m = p-2; m < 14; m++)display_string[m]=display_string[m+1];								//Remove leading zero from negative exponent
-			}
+			for (int m = p-2; m < 14; m++)display_string[m]=display_string[m+1];}								//Remove leading zero from negative exponent
+			
 			if ((display_string[0]== '0') && ((display_string[1]== 'e')||(display_string[1]== 'E')))			//Remove the redundant "E0" string 
 			for (int q = 0; q < 2; q++)
 			for (int m = 0; m < 14; m++)display_string[m]=display_string[m+1];
@@ -118,37 +112,37 @@ void FPN_string_KBD_to_display(char display_buffer[]){
 
 	for(int n = 0; n < BL; n++) display_buffer[n] = 0;
 
-	while(1){                                                          	//Remain in loop until a valid character is received
+	while(1){                                                          			//Remain in loop until a valid character is received
 		keypress = waitforkeypress_Basic();
 		if ((!(decimal_digit_Basic(keypress)))
 		&& (keypress != '-')
-		&& (keypress != '.'))continue;                                     	//Ignore keypress if it is not OK
+		&& (keypress != '.'))continue;                                     		//Ignore keypress if it is not OK
 		display_buffer[0] = keypress;
 	break;}
 	
 	Increment_display(display_buffer, keypress, &Str_lngth);
 	
 	while(1){
-		if ((keypress = wait_for_return_key_Basic())  =='\r')break;               //Stay in loop until return key press is detected
+		if ((keypress = wait_for_return_key_Basic())  =='\r')break;						//Stay in loop until return key press is detected
 
-		if (!(decimal_digit_Basic(keypress)) && (keypress != '.')                 //Check for valid keypresses
+		if (!(decimal_digit_Basic(keypress)) && (keypress != '.')						//Check for valid keypresses
 		&& (keypress != '-') && (keypress != 'E')
 		&& (keypress != 'e') &&  (keypress != '\b'))continue;
 
 		switch (keypress){
 
-			case '\b':  for (int n = 0; n < BL - 1; n++)                             //Backspace keypress
+			case '\b':  for (int n = 0; n < BL - 1; n++)								//Backspace keypress
 			display_buffer[n] = display_buffer[n + 1];
 			display_buffer[BL - 1] = 0;
 			Increment_display(display_buffer, keypress, &Str_lngth);break;
 
 			default:
-			for(int n = BL - 1; n>=1; n--)                                            //Shift display for each new keypress except '.'
+			for(int n = BL - 1; n>=1; n--)												//Shift display for each new keypress except '.'
 			display_buffer[n] = display_buffer[n-1];
-			display_buffer[0] = keypress;                                         //Add new keypress to display
+			display_buffer[0] = keypress;												//Add new keypress to display
 		Increment_display( display_buffer, keypress, &Str_lngth);break;}}
 		
-		I2C_Tx_any_segment_clear_all();											//Flash display
+		I2C_Tx_any_segment_clear_all();													//Flash display
 		Timer_T0_10mS_delay_x_m(10);
 		I2C_Tx_8_byte_array(display_buffer);
 	reverse (display_buffer);}
