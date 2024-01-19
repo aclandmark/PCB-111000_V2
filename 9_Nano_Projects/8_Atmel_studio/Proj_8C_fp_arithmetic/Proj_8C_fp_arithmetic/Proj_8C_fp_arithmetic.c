@@ -1,4 +1,10 @@
 
+/*
+Uses DIY data entry into string with sscanf to decode the string and sprintf to replenish it
+DIY coding required to match the string to 8 digit display but not the PC
+
+*/
+
 
 
 #include "FP_arithmetic_header.h"
