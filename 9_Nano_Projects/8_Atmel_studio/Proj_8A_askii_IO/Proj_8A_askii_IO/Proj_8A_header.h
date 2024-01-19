@@ -1,34 +1,32 @@
 
 
 
-
-
-#include <avr/wdt.h>
 #include <avr/io.h>
+#include <avr/wdt.h>
+#include <avr/interrupt.h>
+#include <avr/eeprom.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <avr/interrupt.h>
-#include <avr/eeprom.h>
+
+
+int uart_putchar(char c, FILE *mystr_output);
+int uart_getchar(FILE *mystr_input);				//accepts any char
+int uart_getHex(FILE *mystr_input);					//Ignores non-Hex chars
+int uart_getDecimal(FILE *mystr_input);				//Ignores non-Decimal chars
+int uart_getDouble(FILE *mystr_input);				//Ignores non-double chars
+void NumericString_to_display_R(char *);
+
+
+
+
 
 
 
 /****************************************************************************************************************************/
-//void FPN_string_KBD_to_display(char*, char*);
 
-void FPN_string_KBD_to_display(char*);
-float FPN_KBD_to_display(char*, int);
-char decimal_digit_Basic (char);
-void I2C_Tx_8_byte_array(char*);
-char waitforkeypress_Basic (void);
-void reverse (char*);
-int strLength (char*);
-char wait_for_return_key_Basic(void);
-void I2C_Tx_any_segment_clear_all(void);
-void Increment_display(char*, char, char*);
-void I2C_FPN_to_display(float);
-void display_8_digit_num_string(char*, float);
 
 char watch_dog_reset = 0;
 
@@ -147,7 +145,7 @@ TWCR = (1 << TWINT);
 #include "../../Resources_AVR_projects/PC_comms/Basic_Rx_Tx_Basic.c"
 #include "../../Resources_AVR_projects/Chip2chip_comms/I2C_subroutines_1.c"
 #include "../../Resources_AVR_projects/Chip2chip_comms/I2C_slave_Rx_Tx.c"
-
+#include "../../Resources_AVR_projects/PC_comms/scanf_and_printf_projects.c"
 
 
 
