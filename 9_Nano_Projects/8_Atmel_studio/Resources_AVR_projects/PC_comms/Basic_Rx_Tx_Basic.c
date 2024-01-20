@@ -45,6 +45,12 @@ char Char_from_PC_Basic(void)											//Return character detected by "isCharav
 
 
 
+/*********************************************************************/
+void binUnwantedChars (void){//char bin_char;
+while(1){if (isCharavailable_Basic(5)==1)Char_from_PC_Basic();else break;}}
+
+
+
 /**********************************************************************************************************************************************************************************/
 void Char_to_PC_Basic(char data){														
 while (!(UCSR0A & (1 << UDRE0)));										//Wait for transmit buffer to be ready to accept new data
