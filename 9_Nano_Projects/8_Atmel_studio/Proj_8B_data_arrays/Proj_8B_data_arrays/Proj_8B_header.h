@@ -13,12 +13,8 @@
 
 
 int uart_putchar(char c, FILE *mystr_output);
-int uart_getchar(FILE *mystr_input);				//accepts any char
-int uart_getHex(FILE *mystr_input);					//Ignores non-Hex chars
-int uart_getDecimal(FILE *mystr_input);				//Ignores non-Decimal chars
-int uart_getDouble(FILE *mystr_input);				//Ignores non-double chars
-void NumericString_to_display_R(char *);
-
+//int uart_getchar(FILE *mystr_input);				//accepts any char
+int uart_getchar_Local(FILE *mystr_input);				//accepts any char
 
 
 
