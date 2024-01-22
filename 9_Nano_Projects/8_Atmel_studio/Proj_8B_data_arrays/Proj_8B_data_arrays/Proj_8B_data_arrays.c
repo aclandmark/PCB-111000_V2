@@ -18,65 +18,59 @@ Note: we slow the data rate down a bit because flow control has not been impleme
 #include <math.h>
 
 /*******Define input streams*****************/
-FILE  uart_output = FDEV_SETUP_STREAM (uart_putchar, NULL, _FDEV_SETUP_WRITE);
 int uart_getDouble_from_csv(FILE *mystr_input);
-FILE uart_input_any_char = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
 
+FILE  uart_output = FDEV_SETUP_STREAM (uart_putchar, NULL, _FDEV_SETUP_WRITE);
+FILE uart_input_any_char = FDEV_SETUP_STREAM(NULL, uart_getchar_Local, _FDEV_SETUP_READ);
 
 FILE uart_input_Double_from_csv = FDEV_SETUP_STREAM(NULL, uart_getDouble_from_csv, _FDEV_SETUP_READ);
 
 
 
-
-volatile int interrupt_detected = 0 ;
-
 int num_counter;
 
 int main(void)
-{	char input;
-	int ch;
-	float Floating_point_num, accumulator_A, accumulator_G;
+{	
+	double Floating_point_num, accumulator_A, accumulator_G;
 
 	setup_HW;
 	
 	
-	/*************Display Table headings following POR or programming and then reset************/
-
-	//if ((MCUSR & (1 << PORF)) || MCUSR & (1 << EXTRF))
-	{MCUSR = 0;
-		sei();
-		//UCSR0B |= (1 << RXCIE0);
+		if(!(watch_dog_reset))
+		{MCUSR = 0;
 		stdout = &uart_output;
 		stdin  = &uart_input_any_char;
-		printf("Select 9.6k baud rate, then AK to continue\r\n");
-		setup_PC_comms_Basic(0,103);Timer_T0_10mS_delay_x_m(1);
-		do{Timer_T0_10mS_delay_x_m(50);printf("%c", ch = getchar());} while ((ch = getchar()) != EOF) ;
-		input = getchar();
-		printf("\rSend data file\rArithmetic mean\tGeometric mean\t data items");getchar();
+		printf("Select 9.6k baud rate, then AK to continue\r\n");Timer_T0_10mS_delay_x_m(1);
+		setup_PC_comms_Basic(0,103);
+		while(!(getchar()));
+		
+		
+		printf("\rSend data file\rArithmetic mean\tGeometric mean\t data items");
 	SW_reset;}
 
 
 
 	/***********Jump immediately to this point in the program following a SW_reset************/
-/*
-	setup_PC_comms_Basic(0,103);
-	Timer_T0_10mS_delay_x_m(100);
-	printf("\rSend data file\rArithmetic mean\tGeometric mean\t data items");
-	num_counter = 0;
-	stdout = &uart_output;
-	stdin  = &uart_input_Double_from_csv;
-	accumulator_G = 0;
-	accumulator_A = 0;
-	while(1){scanf("%f", &Floating_point_num);		//"%lf"
-		if(!(Floating_point_num))break;
-		accumulator_A += Floating_point_num;
-	accumulator_G += log10(Floating_point_num);}
-	binUnwantedChars();
-	printf("\n%g  ", (accumulator_A/(num_counter-1)));
-	printf("\t\t%g  ", pow(10,(accumulator_G/(num_counter-1))));
-	printf("\t\t%d  ", (num_counter-1));
 	
-	SW_reset;*/
+setup_PC_comms_Basic(0,103);
+
+num_counter = 0;
+stdout = &uart_output;
+stdin  = &uart_input_Double_from_csv;
+
+
+accumulator_G = 0;
+accumulator_A = 0;
+while(1){scanf("%lf", &Floating_point_num);
+	if(!(Floating_point_num))break;
+	accumulator_A += Floating_point_num;
+accumulator_G += log10(Floating_point_num);}
+binUnwantedChars();
+printf("\n%g  ", (accumulator_A/(num_counter-1)));
+printf("\t\t%g  ", pow(10,(accumulator_G/(num_counter-1))));
+printf("\t\t%d  ", (num_counter-1));
+
+SW_reset;
 return 0;}
 
 
@@ -94,9 +88,12 @@ int uart_getDouble_from_csv(FILE *mystr_input)						//Included here because of u
 	return keypress;}}
 	
 	
-	ISR(USART_RX_vect) {
-		//UCSR0B &= (~(1 << RXCIE0));
-		{
-			interrupt_detected = 1; printf("TEST");
-		}
-	}
+	
+	
+	
+	int uart_getchar_Local(FILE *mystr_input)
+	{int n = 0, m = 5;
+		while (!(UCSR0A & (1 << RXC0)))
+		{n++;																	//No character yet: Increment counter
+			if (n>8000){m--;n = 0;}if (m == 0)return 0;}
+		return UDR0;}
