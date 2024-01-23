@@ -12,13 +12,6 @@
 #include <stdlib.h>
 
 
-int uart_putchar(char c, FILE *mystr_output);
-//int uart_getchar(FILE *mystr_input);				//accepts any char
-int uart_getchar_Local(FILE *mystr_input);				//accepts any char
-
-
-
-
 
 
 /****************************************************************************************************************************/
