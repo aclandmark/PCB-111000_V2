@@ -12,15 +12,15 @@
 #include <stdlib.h>
 
 
-int uart_putchar(char c, FILE *mystr_output);
-int uart_getchar(FILE *mystr_input);				//accepts any char
+int uart_putchar_local(char c, FILE *mystr_output);
+int uart_getchar_local(FILE *mystr_input);				//accepts any char
 int uart_getHex(FILE *mystr_input);					//Ignores non-Hex chars
-int uart_getDecimal(FILE *mystr_input);				//Ignores non-Decimal chars
+int uart_getDecimal_local(FILE *mystr_input);				//Ignores non-Decimal chars
 int uart_getDouble(FILE *mystr_input);				//Ignores non-double chars
 void NumericString_to_display_R(char *);
 
-
-
+int strLen(char*);
+void del_key_press_remover(char * );
 
 
 
