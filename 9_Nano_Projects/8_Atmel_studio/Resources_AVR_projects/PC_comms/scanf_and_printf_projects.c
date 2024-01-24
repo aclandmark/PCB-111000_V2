@@ -59,8 +59,13 @@ if((keypress == '\r') || (keypress == '\n'))
 
 while(!(decimal_digit_Basic (keypress)) && (keypress != '\r')
 && (keypress != '\n')&& (keypress != '-')&& (keypress != '.')
-&& (keypress != 'e') && (keypress != 'E'))
+&& (keypress != 'e') && (keypress != 'E')
+&&(keypress != '\b'))
 {while((isCharavailable_Basic(100) == 0));keypress = UDR0;}
+
+if ((keypress !='\r') && (keypress !='\n'))putchar(keypress);		
+if (keypress == '\b')return'#';		
+
 return keypress;}}
 
 
