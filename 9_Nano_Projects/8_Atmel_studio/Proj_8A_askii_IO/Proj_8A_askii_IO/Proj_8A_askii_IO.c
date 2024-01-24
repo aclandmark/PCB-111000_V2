@@ -57,11 +57,11 @@ https://appelsiini.net/2011/simple-usart-with-avr-lib*/
 
 
 /*******Define data streams*****************/
-FILE  uart_output = FDEV_SETUP_STREAM (uart_putchar, NULL, _FDEV_SETUP_WRITE);
+FILE  uart_output = FDEV_SETUP_STREAM (uart_putchar_local, NULL, _FDEV_SETUP_WRITE);
 
-FILE uart_input_any_char = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
+FILE uart_input_any_char = FDEV_SETUP_STREAM(NULL, uart_getchar_local, _FDEV_SETUP_READ);
 FILE uart_input_Hex = FDEV_SETUP_STREAM(NULL, uart_getHex, _FDEV_SETUP_READ);
-FILE uart_input_Integer = FDEV_SETUP_STREAM(NULL, uart_getDecimal, _FDEV_SETUP_READ);
+FILE uart_input_Integer = FDEV_SETUP_STREAM(NULL, uart_getDecimal_local, _FDEV_SETUP_READ);
 FILE uart_input_Long = FDEV_SETUP_STREAM(NULL, uart_getDecimal, _FDEV_SETUP_READ);
 FILE uart_input_Double = FDEV_SETUP_STREAM(NULL, uart_getDouble, _FDEV_SETUP_READ);
 
@@ -69,12 +69,15 @@ int uart_getchar_local(FILE *mystr_input);					//accepts any char
 int uart_getDecimal_local(FILE *mystr_input);				//Ignores non-Decimal chars
 int uart_putchar_local(char c, FILE *mystr_output);
 
+#define BL 20
 
 int main(void)
-{	char input;
+{	char input, input_string[20];
 	int integer_number;
 	long long_number;
 	double Floating_point_num;
+	char FPN_as_string[BL+2];
+	int error_code;
 
 	setup_HW;
 	stdout = &uart_output;
@@ -82,29 +85,30 @@ int main(void)
 
 	if ((MCUSR & (1 << PORF)) || MCUSR & (1 << EXTRF)){MCUSR = 0;
 
-	puts("Type c, s, h, d, l, e\n");SW_reset;}				//char, string, hex, decimal, long floating (note: Long float is not supported)
+	puts("Type c, s, h, d, l, e");SW_reset;}				//char, string, hex, decimal, long floating (note: Long float is not supported)
 
 	do{printf("?    ");}while((isCharavailable_Basic(100) == 0));
 	input = getchar();
 	
-	printf("\n");
+	printf("\t");
 	
 	switch (input){
 		case 'c':
-		{printf("Enter chars. Return to escape\nEcho:\n"); }
+		{printf("\nEnter chars. Return to escape\nEcho:\t"); }
 		while(1){input = getchar();
 			printf("%c  ", input);
 		if((input == '\r') || (input == '\n'))break;}break;
 		
 		case 's':
-		printf("Enter string (space to escape)\nEcho:\n");
-		scanf("%s", &input);
-		printf("%s  ", &input);
+		printf("\rEnter string:\t");
+		//scanf(" %s", &input);
+		scanf("%[^\r]", input_string);
+		printf("\t%s  ", input_string);
 		break;
 		
 		case 'h':
 		stdin  = &uart_input_Hex;
-		printf("Enter hex number (zero to escape)\nEcho:");
+		printf("\r\rEnter hex number (zero to escape)");
 		while(1){scanf("%x", &integer_number);
 			if(!(integer_number))break;
 			printf("\n%x  ", integer_number);
@@ -113,19 +117,21 @@ int main(void)
 		printf("%u  ", integer_number);}
 		break;
 		
-		case 'd':
+		case 'd':															//Allows use of the Delete key
 		stdin  = &uart_input_Integer;
-		printf("Enter decimal number <0 or >0 (zero to escape)\nEcho:");
-		while(1){scanf("\n%d", &integer_number);
-			if(!(integer_number))break;
-			printf("\n%d  ", integer_number);
-		printf("%x  ", integer_number);}
+		printf("\r\rEnter decimal number (zero to escape, backspace supported)\n");
+		while(1){scanf("%s", input_string);
+		del_key_press_remover(input_string);
+		integer_number = atoi(input_string);
+		if(!(integer_number))break;
+		printf("\t%d  ", integer_number);
+		printf("\t%x\r", integer_number);}
 		break;
-		
+				
 		
 		case 'l':
 		stdin  = &uart_input_Long;
-		printf("Enter long number <0 or >0 (zero to escape)\nEcho:");
+		printf("\r\rEnter long number (zero to escape)\n");
 		while(1){scanf("\n%ld", &long_number);
 			if(!(long_number))break;
 			printf("\n%ld  ", long_number);
@@ -135,10 +141,13 @@ int main(void)
 		
 		case 'e':																//4.5E3 for example
 		stdin  = &uart_input_Double;
-		printf("Enter scientific number <0 or >0 (zero to escape)\nEcho:");
-		while(1){scanf("%lf", &Floating_point_num);
+		printf("\r\rEnter scientific number (zero to escape, backspace supported)\n");
+		while(1){scanf("%s", input_string);
+			del_key_press_remover(input_string);
+			Floating_point_num =  atof(input_string);
 			if(!(Floating_point_num))break;
-		printf("\n%g  ", Floating_point_num);}
+		printf("\t%g  ", Floating_point_num);
+		printf("\t%1.5e\r", Floating_point_num);}
 		break;
 		
 	default: break;}
@@ -160,8 +169,12 @@ return 0;}
 
 /*************************************************************************************/
 int uart_getchar_local(FILE *mystr_input)
-{while (!(UCSR0A & (1 << RXC0)));
-return UDR0;}
+{char x;
+while (!(UCSR0A & (1 << RXC0)));
+	x = UDR0;
+	if ((x!='\r') && (x!='\n'))putchar(x);
+	if (x == '\b')return'#';
+	return x;}
 
 
 /*************************************************************************************/
@@ -169,8 +182,43 @@ int uart_getDecimal_local(FILE *mystr_input)
 {char keypress;
 	{while (!(UCSR0A & (1 << RXC0)));
 		keypress = UDR0;
-		while(!(decimal_digit_Basic (keypress)) && (keypress != '\r') && (keypress != '\n')&& (keypress != '-'))
+		while(!(decimal_digit_Basic (keypress)) && (keypress != '\r') && (keypress != '\n')&& (keypress != '-')&&(keypress != '\b'))
 		{while((isCharavailable_Basic(100) == 0));keypress = UDR0;}
+			
+	if ((keypress !='\r') && (keypress !='\n'))putchar(keypress);		
+	if (keypress == '\b')return'#';		
 	return keypress;}}
 
 	/*************************************************************************************/
+
+
+void del_key_press_remover(char * num_as_string)
+{int strln;
+	int trailing_bs_counter = 0;
+
+	Timer_T0_10mS_delay_x_m(1);	
+	strln = strLen(num_as_string);
+		
+
+	//Remove trailing delete chars******************************************************************************************
+	for(int m = strln; m; m--){if(num_as_string[m-1] == '#')trailing_bs_counter += 1;else break;}
+	for(int m = 0; m < (trailing_bs_counter * 2); m++){if(strln == m)break; else num_as_string[strln - m-1] = '\0'; }
+
+	//Remove leading delete chars******************************************************************************************
+	for(int m = 0; m < strln; m++){
+		while(num_as_string[0] == '#')
+		{for(int p = 0; p < strln-1; p++){num_as_string[p] = num_as_string[p+1];num_as_string[p+1] = 0;m = 0;}}
+		
+		//Remove remaining del chars*********************************************************************************************
+		if(num_as_string[m] != '#');
+		else for(int p = m; p < strln-1; p++){num_as_string[p-1] = num_as_string[p+1]; num_as_string[p+1] = 0;num_as_string[p] = 0;m = 0;}}
+
+		num_as_string[strln] = 0;}
+
+
+
+int strLen(char s[]){
+	int i;
+	i=0;
+	while(s[i] != '\0') ++i;
+	return i;}
