@@ -17,8 +17,7 @@
 /****************************************************************************************************************************/
 //void FPN_string_KBD_to_display(char*, char*);
 
-void FPN_string_KBD_to_display(char*);
-float FPN_KBD_to_display(char*, int);
+
 char decimal_digit_Basic (char);
 void I2C_Tx_8_byte_array(char*);
 char waitforkeypress_Basic (void);
@@ -26,9 +25,10 @@ void reverse (char*);
 int strLength (char*);
 char wait_for_return_key_Basic(void);
 void I2C_Tx_any_segment_clear_all(void);
-void Increment_display(char*, char, char*);
-void I2C_FPN_to_display(float);
-void display_8_digit_num_string(char*, float);
+
+void FPN_string_KBD_to_display_local(char*);
+void Increment_display_local(char*, char, char*);
+void display_8_digit_num_string_local(char*, float);
 
 char watch_dog_reset = 0;
 
