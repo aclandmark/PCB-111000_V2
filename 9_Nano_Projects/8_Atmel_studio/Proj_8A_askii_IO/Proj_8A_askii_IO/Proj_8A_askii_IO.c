@@ -72,12 +72,12 @@ int uart_putchar_local(char c, FILE *mystr_output);
 #define BL 20
 
 int main(void)
-{	char input, input_string[20];
+{	char input, input_string[BL+2];
 	int integer_number;
 	long long_number;
-	double Floating_point_num;
-	char FPN_as_string[BL+2];
-	int error_code;
+	double Floating_point_num;						//double is not supported. Compiler substitutes float for double
+	
+	
 
 	setup_HW;
 	stdout = &uart_output;
@@ -101,7 +101,6 @@ int main(void)
 		
 		case 's':
 		printf("\rEnter string:\t");
-		//scanf(" %s", &input);
 		scanf("%[^\r]", input_string);
 		printf("\t%s  ", input_string);
 		break;
@@ -120,7 +119,7 @@ int main(void)
 		case 'd':															//Allows use of the Delete key
 		stdin  = &uart_input_Integer;
 		printf("\r\rEnter decimal number (zero to escape, backspace supported)\n");
-		while(1){scanf("%s", input_string);
+		while(1){putchar(' '); scanf("%s", input_string);
 		del_key_press_remover(input_string);
 		integer_number = atoi(input_string);
 		if(!(integer_number))break;
@@ -128,7 +127,6 @@ int main(void)
 		printf("\t%x\r", integer_number);}
 		break;
 				
-		
 		case 'l':
 		stdin  = &uart_input_Long;
 		printf("\r\rEnter long number (zero to escape)\n");
@@ -137,16 +135,15 @@ int main(void)
 			printf("\n%ld  ", long_number);
 		printf("%lx  ", long_number);}
 		break;
-		
-		
-		case 'e':																//4.5E3 for example
+				
+		case 'e':							
 		stdin  = &uart_input_Double;
 		printf("\r\rEnter scientific number (zero to escape, backspace supported)\n");
-		while(1){scanf("%s", input_string);
+		while(1){putchar(' ');scanf("%s", input_string);
 			del_key_press_remover(input_string);
 			Floating_point_num =  atof(input_string);
 			if(!(Floating_point_num))break;
-		printf("\t%g  ", Floating_point_num);
+		printf("\t\t%g  ", Floating_point_num);
 		printf("\t%1.5e\r", Floating_point_num);}
 		break;
 		
@@ -154,7 +151,6 @@ int main(void)
 	
 	SW_reset;
 return 0;}
-
 
 
 
@@ -167,6 +163,7 @@ int uart_putchar_local(char c, FILE *mystr_output)
 return 0;}
 
 
+
 /*************************************************************************************/
 int uart_getchar_local(FILE *mystr_input)
 {char x;
@@ -175,6 +172,7 @@ while (!(UCSR0A & (1 << RXC0)));
 	if ((x!='\r') && (x!='\n'))putchar(x);
 	if (x == '\b')return'#';
 	return x;}
+
 
 
 /*************************************************************************************/
@@ -189,9 +187,9 @@ int uart_getDecimal_local(FILE *mystr_input)
 	if (keypress == '\b')return'#';		
 	return keypress;}}
 
+
+
 	/*************************************************************************************/
-
-
 void del_key_press_remover(char * num_as_string)
 {int strln;
 	int trailing_bs_counter = 0;
@@ -199,7 +197,6 @@ void del_key_press_remover(char * num_as_string)
 	Timer_T0_10mS_delay_x_m(1);	
 	strln = strLen(num_as_string);
 		
-
 	//Remove trailing delete chars******************************************************************************************
 	for(int m = strln; m; m--){if(num_as_string[m-1] == '#')trailing_bs_counter += 1;else break;}
 	for(int m = 0; m < (trailing_bs_counter * 2); m++){if(strln == m)break; else num_as_string[strln - m-1] = '\0'; }
@@ -217,6 +214,7 @@ void del_key_press_remover(char * num_as_string)
 
 
 
+/*************************************************************************************/
 int strLen(char s[]){
 	int i;
 	i=0;
