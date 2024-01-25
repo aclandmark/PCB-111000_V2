@@ -30,9 +30,9 @@ int main(void)
 	String_to_PC_Basic("Enter FPN\r\n");
 	
 	while(1){
-		FPN_string_KBD_to_display(FPN_as_string);
+		FPN_string_KBD_to_display_local(FPN_as_string);
 		sscanf (FPN_as_string, "%g", &FPN_2);
-		display_8_digit_num_string(FPN_as_string, FPN_2);
+		display_8_digit_num_string_local(FPN_as_string, FPN_2);
 		
 		while(1){
 			keypress = waitforkeypress_Basic();
@@ -44,13 +44,13 @@ int main(void)
 			sprintf(FPN_as_string, "\r\n%g", FPN_2);
 			Num_String_to_PC(FPN_as_string);
 			
-		display_8_digit_num_string(FPN_as_string, FPN_2);}
+		display_8_digit_num_string_local(FPN_as_string, FPN_2);}
 	String_to_PC_Basic("\r\nNew_FPN?\r\n");}}
 	
 	
 	
 	/********************************************************************************************************************************************/
-	void display_8_digit_num_string(char* display_string,  float FPN_2){
+	void display_8_digit_num_string_local(char* display_string,  float FPN_2){
 		
 		int p;
 		char format[8];
@@ -111,7 +111,7 @@ int main(void)
 
 
 			/********************************************************************************************************************************************/
-			void FPN_string_KBD_to_display(char display_buffer[]){
+			void FPN_string_KBD_to_display_local(char display_buffer[]){
 				char keypress;
 				
 				char Str_lngth=0;
@@ -126,7 +126,7 @@ int main(void)
 					display_buffer[0] = keypress;
 				break;}
 				
-				Increment_display(display_buffer, keypress, &Str_lngth);
+				Increment_display_local(display_buffer, keypress, &Str_lngth);
 				
 				while(1){
 					if ((keypress = wait_for_return_key_Basic())  =='\r')break;						//Stay in loop until return key press is detected
@@ -140,13 +140,13 @@ int main(void)
 						case '\b':  for (int n = 0; n < BL - 1; n++)								//Backspace keypress
 						display_buffer[n] = display_buffer[n + 1];
 						display_buffer[BL - 1] = 0;
-						Increment_display(display_buffer, keypress, &Str_lngth);break;
+						Increment_display_local(display_buffer, keypress, &Str_lngth);break;
 
 						default:
 						for(int n = BL - 1; n>=1; n--)												//Shift display for each new keypress except '.'
 						display_buffer[n] = display_buffer[n-1];
 						display_buffer[0] = keypress;												//Add new keypress to display
-					Increment_display( display_buffer, keypress, &Str_lngth);break;}}
+					Increment_display_local( display_buffer, keypress, &Str_lngth);break;}}
 					
 					I2C_Tx_any_segment_clear_all();													//Flash display
 					Timer_T0_10mS_delay_x_m(10);
@@ -156,7 +156,7 @@ int main(void)
 
 
 				/**********************************************************************************************************/
-				void Increment_display(char*display_buffer, char keypress, char* Str_lngth){
+				void Increment_display_local(char*display_buffer, char keypress, char* Str_lngth){
 					
 					reverse (display_buffer);
 
