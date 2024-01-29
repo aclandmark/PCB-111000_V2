@@ -24,6 +24,7 @@ char wait_for_return_key_Basic(void);
 void I2C_Tx_any_segment_clear_all(void);
 void FPN_string_KBD_to_display(char*);
 void display_8_digit_num_string(char*, float);
+char arithmetic_op(char);
 
 char watch_dog_reset = 0;
 
