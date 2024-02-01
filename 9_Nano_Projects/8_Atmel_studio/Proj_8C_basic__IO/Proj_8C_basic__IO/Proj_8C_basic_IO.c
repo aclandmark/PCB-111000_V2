@@ -96,15 +96,14 @@ int main(void)
 		if (p !=8)																								//E/e present
 		{p += 1; while(display_string[p] == '0')
 			{for(int m = p; m < 14; m++ )display_string[m] =display_string[m+1];}									//Remove redundant trailing zeros
-			if(display_string[p] == '.'){for(int m = 0; m < 14; m++ )
-			display_string[14-m] =display_string[13-m];display_string[0]='0';}}										//Re-insert zero following a decimal point
-			
+			if(display_string[p] == '.'){for(int m = 14; m > p; m-- )
+			display_string[m] = display_string[m-1];display_string[p]='0';}}										//Re-insert zero following a decimal point
 			
 			if (p==8){																								//No exponent term
 				while (display_string[0] == '0')
-				{for(int m = 0; m < 14; m++ )display_string[m] =display_string[m+1];}									//Remove redundant trailing zeros
+				{for(int m = 0; m < 14; m++ )display_string[m] =display_string[m+1];}								//Remove redundant trailing zeros
 				if(display_string[0]=='.') {for(int m = 0; m < 14; m++ )
-				display_string[14-m] =display_string[13-m];display_string[0]='0';}}										//Re-insert zero following a decimal point
+				display_string[14-m] =display_string[13-m];display_string[0]='0';}}									//Re-insert zero following a decimal point
 				
 			I2C_Tx_8_byte_array(display_string);}
 			
