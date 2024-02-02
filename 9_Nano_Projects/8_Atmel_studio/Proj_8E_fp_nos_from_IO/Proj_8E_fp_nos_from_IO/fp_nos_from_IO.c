@@ -1,27 +1,4 @@
 
-/*Proj_8E_fp_nos_from_IO
-**************************************************************/
-
-/*A look at getting floating point numbers from the user switches.
-
-
-IT INTRODUCES
-
-
-1.	Project subroutine "scroll_display_zero()".
-	This is used to acquire the next digit (i.e. 0-9, d.p. - or E)
-
-2.	Project subroutine "shift_display_left()".
-	This is used to enter the latest digit and note any subsequent digits which may now be 
-	illegal (i.e. only one decimal point is allowed). 
-	
-3.	Project subroutine "Double_from_IO()".
-	This is where program execution pauses while the user is entering data at the keyboard. 
-	A return key press causes program execution to 	leave this subroutine.
-	
-4.	Project subroutine "acquire_fpn()" the subroutine used to initiate the acquisition of a fpn.
-
-*/
 
 #define BL 20 
 
@@ -55,7 +32,6 @@ sprintf(float_as_string, " %g  / 2  =  ",x1);
 Num_String_to_PC(float_as_string);
 sprintf(float_as_string, "%g (AK to repeat)\r\n?", x1/2.0);
 Num_String_to_PC(float_as_string);
-//waitforkeypress_Basic();
 while(switch_2_down);
 display_8_digit_num_string(float_as_string,  x1/2.0);
 waitforkeypress_Basic();
