@@ -1,10 +1,15 @@
 
 /*
+Several subroutines have been developed to display floating point numbers on the 8 digit display
+This one limits the number of characters to 8 so that the result always fits on the display
 
-
+See Resources_nano_projects\Subroutines\FPN_DIY_IO\ for the subroutine  "FPN_to_String"
 */
 
+
+
 //Problem with 1.0 and negative exponents
+
 
 #include "6I_header_file.h"
 
@@ -60,7 +65,7 @@ if (FPN < 0) {sign = '-'; FPN *= -1.0;} else sign = '+';
 
 if (FPN < 1.0e-9)range = 2;
 if((FPN >= 1.0e-9 ) && (FPN < 1.0))range = 3;
-if ((FPN >= 1.0) && (FPN < 10.0))range = 6; //4
+if ((FPN >= 1.0) && (FPN < 10.0))range = 6;
 if ((FPN >= 10.0) && (FPN < 1.0e10))range = 4;
 if (FPN >= 1.0e10)range = 3;
 
