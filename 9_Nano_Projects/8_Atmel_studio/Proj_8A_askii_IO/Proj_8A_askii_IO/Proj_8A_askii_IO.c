@@ -4,19 +4,31 @@
 /*Proj_8A_askii_IO
 ********************************************/
 
+/*
 
-/*Previous projects have used project (i.e. D.I.Y.) subroutines to transfer data to and from the PC.   
-In some instances this is considered a sensible approach by many programmers.  These subroutines are 
-not necessarily particularly complex and the d.i.y. approach can offer greater flexibility.  
-However there are C libraries which provide a comprehensive range of input output subroutines.  
-They also provide many other functions which programmers should be aware of.
-In particular they provide a “maths” library which should normally be used as a first preference.  
+For the PCB111000 project Atmel studio was chosen to develope the mini_OS SW
+It allows more complex applications to be split into several smaller ones and subsequently combined
+It also allows use of assembly language programing
+and gives easy access to the status register for reset analysis
+
+It also supports a subsection of the standard C library for IO of floating point numbers.
+
+It is possible that all these advantages are also availsable with Arduino however I believe that both
+applications have their own special advantages.  I would not want to be without either and stronly recommend
+that programmers become familiar with both.
+
+The one trouble with Atmel studio is getting it to support the floating point library.
+
+To do this click on the Project tab and then select properties
+click on "miscelleneous" under "AVR/GNU linker"
+Paste the following strings into the "Other Linker Flags" box
+
+-Wl,-u,vfscanf -lscanf_flt -lm -Wl,-u,vfprintf,-lprintf_flt,-lm
 
 
 
-IT INTRODUCES
 
-
+This project introduces
 
 1.	Use of the standard C-libraries to format input/output to and from the PC.
 
@@ -37,11 +49,6 @@ IT INTRODUCES
 
 7.	Input & output of strings, hex numbers, decimal numbers, long numbers and floating point numbers.
 
-8.	A new version of "makefile" designed to cater for floating point numbers which must be set up as follows:	
-	Click on or press the windows icon and scroll down the program listing to "WinAVR-20100110\MFILE[WinAVR]" 
-	Click on it then select the Makefile command. 
-	For both "printf()" and "scanf" options select "floating point".
-
 
 Note: 
 This program is based completely on the results of internet searches.
@@ -49,7 +56,9 @@ This program is based completely on the results of internet searches.
 See for example:
 https://www.tutorialspoint.com/c_standard_library/c_function_scanf.htm
  and
-https://appelsiini.net/2011/simple-usart-with-avr-lib*/
+https://appelsiini.net/2011/simple-usart-with-avr-lib
+A good text is probally essential to make head and tail of any of it 
+*/
 
  
 
