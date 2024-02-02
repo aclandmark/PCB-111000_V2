@@ -1,6 +1,7 @@
 
 /*
- AS 5A but Accepts an integer number and converts it to its prime factors
+ As 5A but accepts an integer number and converts it to its prime factors
+ See project "3F_Prime_numbers" for an intruction to prime numbers
  */
 
 
