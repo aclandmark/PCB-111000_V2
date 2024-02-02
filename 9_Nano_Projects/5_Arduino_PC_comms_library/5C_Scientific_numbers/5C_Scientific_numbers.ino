@@ -11,13 +11,12 @@ Project subroutine Sc_Num_from_PC_A() uses the Arduino library to accept the ful
 numbers in string format. It also uses the -C- library function "atof" (askii to float) 
 to generate the required floating point number.
 
-
 Here when printing a scientific number greater than about 10^7 we must first repetitively divide it by 10 
 while at the same time incrementing the exponent.  We can then use "Serial.print" to print the resulting 
 real number followed by the exponent.  
 
 In project 5C we enter numbers at the KBD. These are raised to a power and the result is 
-returned to the PC. A SW_reset is generated if a result exceeds the limits allowed 
+returned to the PC. A flagged SW_reset is generated if a result exceeds the limits allowed 
 for by 32 bit FP numbers.
 
 
@@ -28,7 +27,7 @@ UNO_proj_resources\PC_comms\Basic_Rx_Tx_Arduino.c
 
 #define message_1 "\r\n\r\nUsing Arduino functions to receive and print scientific numbers.\r\n\
 \r\nEnter scientific number\r\nthen the number of digits before and after the decimal point.\r\n\
-Then press AK to generate series.\t"
+Then press AK to generate a series of numbers.\t"
 #define message_2 "\r\nEnter new data?\t"
 
 
