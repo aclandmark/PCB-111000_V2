@@ -1,14 +1,5 @@
 
-/*Proj_8F_calculator
-***********************************************************/
 
-
-
-/*Combines "Proj_8D_fp_display_driver" and "Proj_8E_fp_nos_from_IO" to built a simple
-calculator that operates independently of the PC from a 5V source.
-
-
-Note: The C maths library offers much more than just multiply, divide, add and subtract.*/
 
 #define BL 20
 
