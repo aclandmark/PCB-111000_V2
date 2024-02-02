@@ -1,4 +1,16 @@
 
+/*
+For numbers greater than or equal to 4 the square root can be found iteratively starting with a guess of 2.
+We then refine the guess to include a first decimal place, then a second decimal place etc. 
+For large numbers we initially divide them by 100 until they are in a suitable range then multiply the result by 10,
+once for each division.  
+
+This process can be refined for numbers below 4 and for any integer root.  For users waiting for a response at the PC
+the delay is remarkably short.  
+*/
+
+
+
 
 #include "Integer_roots_header.h"
 
