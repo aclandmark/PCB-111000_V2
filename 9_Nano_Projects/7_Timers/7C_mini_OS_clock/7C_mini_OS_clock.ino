@@ -7,7 +7,7 @@
 
 
 Mini-OS clock command "I2C_Tx_OS_timer(AT_clock_mode, start_time)".
-An AT clock mode"  of 7 starts the clok running.
+An AT clock mode of 7 starts the clok running.
 The various modes (i.e. pause, hode etc.) are saved in the "clock_stop_watch .h" file.
 
 
