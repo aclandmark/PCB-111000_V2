@@ -1,33 +1,14 @@
 
 
-/*Proj_6F_fp_nos_from_IO
+/*Proj_6F_calculator
 **************************************************************/
 
-/*A look at getting floating point numbers from the user switches.
-
-Repeat of 6E but uses IO data entry
-Calculates power until FPN limit is reached
-
-IT INTRODUCES
-
-
-1.     Subroutine "scroll_display_zero()".
-              This is used to acquire the next digit (i.e. 0-9, d.p. - or E)
-
-2.     Subroutine "shift_display_left()".
-              This is used to enter the latest digit and block any subsequent digits which may now be 
-              illegal (i.e. only one decimal point is allowed). 
-  
-3.     Subroutine FPN_as_string()
-              Acquires a string such as 1234.567e8 
-
-4.     Subroutine fpn_from_IO()
-              Converts the string to a real number and then multiplies it by the exponent
-              to obtain a floating point number (FPN).
-               
+/*
+Development of project 6F to build a simple calculator
 */
 
-//CHANGE DIGITS ARRAY SIZE TO 15
+
+
 
 #include "Calculator_header.h"
 
