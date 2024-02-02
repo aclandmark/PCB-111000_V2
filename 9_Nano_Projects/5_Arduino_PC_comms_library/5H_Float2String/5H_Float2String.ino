@@ -1,5 +1,17 @@
 
-/*************Explores the operation of the Serial.print function********************/
+/*************Explores the operation of the Serial.print function********************
+
+In the past difficuly could be had converting foating point numbers to strings unless space 
+was available for a particular floating point library.
+Arduino has done away with this problem.
+
+For me a life line was provided by the following link
+https://www.geeksforgeeks.org/convert-floating-point-number-string/
+
+This project looks at what is going on underneath the various subroutins calls.  Floating point
+implementation is introduced, this will be covered in more detail latrer on.
+
+************************************************************************************************/
 
 
 
