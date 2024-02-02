@@ -2,8 +2,7 @@
 /**************Proj_6D_Acquire_and process_Integer_Data_from_the KBD********************/
 
 /*
- * 
- * RUNNING AVERAGES
+RUNNING AVERAGES
 Here we leave the mini_OS (pcb_A) to deal with all the details of displaying a number.
 We can use I2C comms to send it as string or binary number.
 If we send it a string then it will return the number in binary form.
@@ -12,7 +11,6 @@ Obviously Arduino do not supply library functions to drive the display and there
 bit of DIY programming is required.
 The result is the subroutine "long Int_KBD_to_display(char *)"
 This accepts decimal digits from the KBD and sends them to the display.
-
 */
 
 
