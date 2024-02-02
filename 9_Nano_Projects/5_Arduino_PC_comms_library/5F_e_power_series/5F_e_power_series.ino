@@ -1,6 +1,6 @@
 
 /*
-  Raises number Num to a power Pow
+ Raises number Num to a power Pow
  Num must be reduced to the form 1.A * 2^B 
  where 1.A is between 1 and 2 and 1.A * 2^B = Num
 
@@ -172,6 +172,3 @@ return logE;}
 
 
 
-
-
-/************************************************************************************************************************/
