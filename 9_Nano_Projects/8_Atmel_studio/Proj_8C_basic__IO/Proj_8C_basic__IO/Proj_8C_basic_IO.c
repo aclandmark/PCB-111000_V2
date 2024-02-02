@@ -1,8 +1,9 @@
 
 /*
-Uses DIY data entry into string with sscanf to decode the string and sprintf to replenish it
+Uses DIY data entry into a string with sscanf to decode the string and sprintf to replenish it
 DIY coding required to match the string to 8 digit display but not the PC
 
+Probably more intuitive than use of printf and scanf functions
 */
 
 
