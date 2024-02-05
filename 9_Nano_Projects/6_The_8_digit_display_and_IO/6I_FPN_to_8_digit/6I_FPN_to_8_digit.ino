@@ -46,8 +46,8 @@ I2C_FPN_to_display(Num_1);
 while(switch_1_up)wdr();
 while(switch_1_down)wdr();
 Serial.print(Num_1,4);Serial.write("\t");
-do{display_FPN_short_Local(Num_1, digits_12);}
-while (waitforkeypress_A() != 'x');
+display_FPN_short_Local(Num_1, digits_12);
+waitforkeypress_A();
 
 
 Num_1 *= 11.0;
@@ -62,11 +62,6 @@ SW_reset;}
 void display_FPN_short_Local(float FPN, char * digits_2){    //Problem with 1.0 and negative exponents
 char digits[8],sign, range;
 
-char pre_dp, post_dp;
-Serial.write("  pre/post_dp\r\n");
-pre_dp = waitforkeypress_A()- '0';
-post_dp = waitforkeypress_A()- '0';
-
 for(int m = 0; m <=7; m++)digits[m] = 0;
 if (FPN < 0) {sign = '-'; FPN *= -1.0;} else sign = '+';
 
@@ -78,9 +73,7 @@ if (FPN >= 1.0e10)range = 3;
 
 if (sign == '-') {range -= 1;FPN *= -1.0;FPN_to_String(FPN, 1, range,'\0',digits_2); }
 
-//else FPN_to_String((FPN), 1, range,'\0',digits_2);
-else FPN_to_String((FPN), pre_dp, post_dp,'\0',digits_2);
-
+else FPN_to_String((FPN), 1, range,'\0',digits_2);
 {int m = 0; while(digits_2[m]) {digits[7-m] = digits_2[m]; m += 1;}} 
 
 I2C_Tx_8_byte_array(digits);}
