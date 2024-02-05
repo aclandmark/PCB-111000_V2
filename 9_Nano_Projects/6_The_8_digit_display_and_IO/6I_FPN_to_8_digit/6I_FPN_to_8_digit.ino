@@ -45,14 +45,14 @@ Num_1 = Scientific_number_from_KBD(digits, &sign, BL);
 I2C_FPN_to_display(Num_1);
 while(switch_1_up)wdr();
 while(switch_1_down)wdr();
-Serial.print(Num_1,4);Serial.write("\t");
-display_FPN_short_Local(Num_1, digits_12);
+Sc_Num_to_PC_A(Num_1, 1, 4, '\t');
+
+display_FPN_short(Num_1, digits_12);
 waitforkeypress_A();
-
-
 Num_1 *= 11.0;
-Serial.write("\t\t");Serial.print(Num_1,4);
-display_FPN_short_Local(Num_1, digits_12);
+Serial.write("\t\t");//Serial.print(Num_1,4);
+Sc_Num_to_PC_A(Num_1, 1, 4, ' ');
+display_FPN_short(Num_1, digits_12);
 waitforkeypress_A();
 newline_A();
 SW_reset;}
