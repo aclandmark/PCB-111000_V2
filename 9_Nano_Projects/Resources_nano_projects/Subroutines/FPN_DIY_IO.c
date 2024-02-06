@@ -6,7 +6,6 @@ long unpack_FPN(float, int *, char*);
 void Print_long_as_binary(long);
 float Scientifc_num_to_FPN(float, char);
 
-//long Get_fpn_from_KBD(char *, int *, char *, long * , char *);
 long Get_fpn_from_KBD(char *, int *, char *, long * , char *, int);   
 void Check_num_for_to_big_or_small(float);
 
@@ -42,7 +41,7 @@ if(float_display_mode == '2')break;}\
 PCMSK0 = PCMSK0_backup;\
 PCMSK2 = PCMSK2_backup;}
 
-//if((switch_1_down)||(switch_3_down))float_display_mode = '2';
+
 
 float Scientific_number_from_KBD(char * digits, char *sign, int BL){
 
@@ -56,7 +55,7 @@ char sign_local;
 
 
 Significand = Get_fpn_from_KBD(digits, &twos_expnt, &tens_expnt, &twos_denominator, &sign_local, BL);              //Can be positive or negative
-FPN_digits = Fraction_to_Binary_Signed(Significand, twos_denominator);                            //0.1011000011.... for example
+FPN_digits = Fraction_to_Binary_Signed(Significand, twos_denominator);                            					//0.1011000011.... for example
 if (!(FPN_digits)) return 0;
 else
 {FPN = Assemble_FPN(FPN_digits, twos_expnt, sign_local);
@@ -166,32 +165,31 @@ I2C_Tx_float_display_control;}
 
 
 /************************************************************************/
-float Assemble_FPN(unsigned long FPN_digits, int twos_expnt, char sign)			//Requires positive number plus sign
-{int shift = 0;
+float Assemble_FPN(unsigned long FPN_digits, int twos_expnt, char sign)			//The FPN to be assembled is provided as a long numer (FPN_digits) which has been shifted left until 
+{int shift = 0;																	//bit 30 is a 1 and a twos_expnt which can be multiplied with the long number to give twice the original FPN.    
 int twos_expnt_BKP;
 
 twos_expnt_BKP = twos_expnt;
 
-if(twos_expnt_BKP >= -125)
-{FPN_digits = FPN_digits >> 6;													//(Sign bit (bit 31) is zero. MSB (bit 30) is 1 for all but very small numbers. FPN has 31-6 = 25 bits.
-FPN_digits += 1;																//Round LSB. 						
-FPN_digits = FPN_digits >> 1;													//Remove rounded bit. FPN now has 25-1 = 24 bits
-twos_expnt += 126;										
+if(twos_expnt_BKP >= -125)														//FNP > ~1.18E-38 (Shift FPN_digits 7 places to the right and clear the 1 at the MSB (bit 23)
+{FPN_digits = FPN_digits >> 6;													//Step 1:  Shift FPN_digits 6 places to the right
+FPN_digits += 1;																//Step 2:  Round the LSB. 						
+FPN_digits = FPN_digits >> 1;													//Step 3:  Shift the number one more place so that the MSB is located at bit 23 (ie the FPN has 24 bits)
+twos_expnt += 126;									
 FPN_digits = FPN_digits  &  (~((unsigned long)0x80000000 >> 8));				//Clear bit 23 (which is always 1)
-FPN_digits = FPN_digits | ((long)twos_expnt << 23);}							//Exponent occupies bits 23 to 30 (bit 31 reserved for sign)
+FPN_digits = FPN_digits | ((long)twos_expnt << 23);}							//Exponent can now occupy bits 23 to 30 (bit 31 reserved for sign)
 
-if(twos_expnt_BKP <= -126){
+if(twos_expnt_BKP <= -126){														//For 2's exponent of -126 Shift FPN_digits 8 places to the right (i.e. 2's exponent -118) 						
 shift = -(118 + twos_expnt);
-
-if (twos_expnt_BKP >= -146)
-{FPN_digits = FPN_digits >> (shift -1);											//(Sign bit (bit 31) is zero. MSB (bit 30) is 1 for all but very small numbers. FPN has 31-6 = 25 bits.
-FPN_digits += 1;																//Round LSB. 						
-FPN_digits = FPN_digits >> 1;}													//Remove rounded bit. FPN now has 25-1 = 24 bits
-else FPN_digits = FPN_digits >> shift;
-twos_expnt = 0;}
+if (twos_expnt_BKP >= -146)														//Provided 2's exponent >= 146 the LSB can be rounded 
+{FPN_digits = FPN_digits >> (shift -1);											//First shift
+FPN_digits += 1;																//Rounding						
+FPN_digits = FPN_digits >> 1;}													//Shift rounded bit out
+else FPN_digits = FPN_digits >> shift;											//Rounding not implemented. The FPN appraoches 1.4E-45
+twos_expnt = 0;}																//Bits 23 to 30 left as zero (line probably not needed)
 
 if (sign == '-')FPN_digits = FPN_digits | (unsigned long)0x80000000;			//Rienstate sign bit
-return *(float*)&FPN_digits;}
+return *(float*)&FPN_digits;}													//Return FPN_digits using a float pointer
 
 
 
@@ -200,23 +198,23 @@ long unpack_FPN(float FPN, int *twos_expnt, char * sign)
 {long FPN_digits;
 int shift;
 
-FPN_digits = (*(long*)&FPN);
+FPN_digits = (*(long*)&FPN);													//Read the FPN using a long pointer
 if( FPN_digits & (((unsigned long)0x80000000)))
-{ FPN_digits = FPN_digits & (~((unsigned long)0x80000000));					//If negative remove sign bit
+{ FPN_digits = FPN_digits & (~((unsigned long)0x80000000));						//If negative remove sign bit
 *sign = '-';}else *sign = '+';
 
-*twos_expnt = (FPN_digits >> 23) - 127;												//Expponent occupies bits 0 to 15
+*twos_expnt = (FPN_digits >> 23) - 127;											//Expponent occupies bits 0 to 7
 
-if(*twos_expnt >=-126){
-FPN_digits = (FPN_digits & 0x7FFFFF);											//Isolate the binary points 23 bits (bits zero to 22)
-FPN_digits |= ((unsigned long)0x80000000 >> 8);	
+if(*twos_expnt >=-126){				
+FPN_digits = (FPN_digits & 0x7FFFFF);											//Isolate bits zero to 22
+FPN_digits |= ((unsigned long)0x80000000 >> 8);									//Add the unsaved 1 to bit 23
 *twos_expnt += 1;
-FPN_digits = FPN_digits << 7;
+FPN_digits = FPN_digits << 7;													//Shift left 7 places until bit 30 is a 1
 return FPN_digits;}
 
-if(*twos_expnt == -127){
-if(!(FPN_digits))return 0;
-else
+if(*twos_expnt == -127){														//Bit 23 will not be set to 1, 2's exponent is unknown
+if(!(FPN_digits))return 0;														//If exponent is -127 shift is 9 MSB is bit 21
+else																			//If exponent is -128 shift is 10 MSB is bit 20
 {shift = 0;
 while (!(FPN_digits & 0x40000000)){FPN_digits <<= 1; shift += 1;}
 *twos_expnt = -(118 + shift);
@@ -240,28 +238,30 @@ float round_denom;
 float FPN_bkp;
 
 
+
 if ((*(long*)(&FPN) == 0x80000000) || (*(long*)(&FPN) == 0))
 {print_string[0] = '0'; print_string[1] = '.';print_string[2] = '0';
-print_string[3] ='\r'; print_string[4] ='\n';print_string[5] = '\0';return;}
+print_string[3] ='\r'; print_string[4] ='\n';print_string[5] = '\0';return;}					//+/- zero case
 
 Num_digits = pre_dp + post_dp; 
 
-if (*(long*)&FPN & (unsigned long) 0x80000000){(*(long*)&FPN &= 0x7FFFFFFF);sign = '-';} else sign = '+';
+if (*(long*)&FPN & (unsigned long) 0x80000000)
+{(*(long*)&FPN &= 0x7FFFFFFF);sign = '-';} else sign = '+';										//determine sign and convert -ve numbers to +ve
 tens_expnt = 0;
 int_part_max = 1;
-for(int m = 0; m < pre_dp; m++) int_part_max *= 10.0;
+for(int m = 0; m < pre_dp; m++) int_part_max *= 10.0;											//for 3 digits before the dp the max integer part is set to 1000
 
 FPN_bkp = FPN;
 
-if(FPN_bkp >= (float)int_part_max){
-while  (FPN >= (float)int_part_max){FPN /= 10.0; tens_expnt += 1;}
-print_expnt = tens_expnt;}
+if(FPN_bkp >= (float)int_part_max){																//For numbers above the max integer value
+while  (FPN >= (float)int_part_max){FPN /= 10.0; tens_expnt += 1;}								//Divide FPN by 10 until its integer part is below the max allowed value
+print_expnt = tens_expnt;}																		//Increment the tens exponent accordinglly and save the result for printing
 
-if(FPN_bkp < (float)int_part_max){
+if(FPN_bkp < (float)int_part_max){																//Repeat for numbers below the max integer valur
 while  (FPN < (float)int_part_max){FPN *= 10.0; tens_expnt -= 1;}
 print_expnt = tens_expnt+1;}
 
-while (FPN >= 1.0){FPN /= 10.0; tens_expnt += 1;}
+while (FPN >= 1.0){FPN /= 10.0; tens_expnt += 1;}												//Convert to the form 0.123456789  (>= 0.1 to < 1)
 
 
 
@@ -270,46 +270,53 @@ round_denom = 1.0;
 for(int m = 0; m <= Num_digits; m++)round_denom *= 10.0; 
 FPN = FPN + (5.0/round_denom);
 
-//if(FPN >= 1.0){FPN /= 10.0;tens_expnt += 1; print_expnt = tens_expnt;}				\\Original version FAILS
-if(FPN >= 1.0){FPN /= 10.0;tens_expnt += 1; print_expnt = tens_expnt-pre_dp;}			//New version OK
+if(FPN >= 1.0){FPN /= 10.0;tens_expnt += 1; print_expnt = tens_expnt-pre_dp;}				//Only runs if rounding increases FPN to 1
+
+//newline_A();Serial.print(FPN);Serial.write("  ");
+
 
 
 /*****************************************Obtain the number 12345678 in binary form***************************************/
 if (sign == '-')  *(long*)& FPN |= (unsigned long) 0x80000000;
-FPN_as_long = unpack_FPN(FPN, &twos_expnt, &sign);
-FPN_as_long = FPN_as_long >> 4 ; 
-Denominator = 0x8000000 << (-twos_expnt);
+FPN_as_long = unpack_FPN(FPN, &twos_expnt, &sign);											//for FPN = 0.1 2's exponent is -3 and for 0.999 it is 0
+FPN_as_long = FPN_as_long >> 4 ; 															//Occupies bits 0 to 27
+Denominator = 0x8000000 << (-twos_expnt);													//2^(27 - 2's exponent) 
+
+//Serial.print(-twos_expnt); Serial.write("  ");
+//Serial.print(FPN_as_long,HEX); Serial.write("  ");Serial.print(Denominator,HEX); newline_A();
+
+
 
 /****************************************Convert 12345678 to string form***************************************************/
 {int p = 0;
 Denominator /= 10.0; 
 
-if(sign == '-')
+if(sign == '-')																				//Start building string for -ve numbers and those with 0.
 {print_string[0] = '-'; p += 1;}
 if (!(pre_dp))print_string[p++] = '0'; 
 for (int m = 0; m < Num_digits; m++){
-FPN_as_long_bkp = FPN_as_long/Denominator;
+FPN_as_long_bkp = FPN_as_long/Denominator;													//Dividing FPN_as_long by the denominator isolates the most significant digit
 
-if(m == pre_dp)print_string[p++] = '.'; 
-if(FPN_as_long_bkp){print_string[p] = (FPN_as_long_bkp + '0'); 
-FPN_as_long = FPN_as_long%Denominator;} 
+if(m == pre_dp)print_string[p++] = '.'; 													//Add a dp is encountered add it to the string
+if(FPN_as_long_bkp){print_string[p] = (FPN_as_long_bkp + '0');								//Save digit as a char 
+FPN_as_long = FPN_as_long%Denominator;} 													//Remainder of dividing FPN_as_long by the denominator
 else print_string[p] = '0'; 
 p += 1;
-FPN_as_long *= 10;}
+FPN_as_long *= 10;}																			//Prepare to isolate the next most significant digit
 
-if(print_expnt) {print_string[p++] = 'E'; 
-itoa(print_expnt, print_string+p, 10);}
+if(print_expnt) {print_string[p++] = 'E'; 													//If there is an exponent add 'E' to the string
+itoa(print_expnt, print_string+p, 10);}														//Convert print_exponent to askii and add them to the string 
 else print_string[p++] = '\0';
 
-p = 0;
+p = 0;																						//Locate the null char and replace it with next_char
 while (print_string[p++]); p -= 1;
-print_string[p++] = next_char;
+print_string[p++] = next_char;																//Reinstate the null char
 print_string[p] = '\0';}}
 
 
 
 /*******************************************************************************************************************/
-void display_FPN_short(float FPN, char * digits_2){		//Problem with 1.0 and negative exponents
+void display_FPN_short(float FPN, char * digits_2){	
 char digits[8],sign, range;
 
 for(int m = 0; m <=7; m++)digits[m] = 0;
