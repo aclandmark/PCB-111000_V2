@@ -76,9 +76,27 @@ if (sign == '-') {range -= 1;FPN *= -1.0;FPN_to_String(FPN, 1, range,'\0',digits
 else FPN_to_String((FPN), 1, range,'\0',digits_2);
 {int m = 0; while(digits_2[m]) {digits[7-m] = digits_2[m]; m += 1;}} 
 
+
+
+/*********************Remove unwanted trailing zeros**************************************************/
+{int p = 0;
+while(p < 8){if (digits[p] == 'E') 
+{p+=1;
+if (digits[p] == '0'){for(int m = p; m < 7; m++)digits[m] = digits[m+1];digits[7]=0;}
+p+=1;if (digits[p] == '0'){for(int m = p; m < 7; m++)digits[m] = digits[m+1];}
+I2C_Tx_8_byte_array(digits);return;}
+
+else p+=1;}
+
+p=0;
+while(p < 8){if (digits[p] == '.')break; else p+=1;}
+if (p==8){I2C_Tx_8_byte_array(digits);return;} 
+
+p=0;
+while (digits[0] == '0'){for(int m = 0; m < 7; m++)digits[m] = digits[m+1];digits[7] = 0;} 
+if(digits[0] == '.'){for(int m = 0; m < 7; m++)digits[7-m] = digits[6-m]; digits[0] = '0';}}
+
 I2C_Tx_8_byte_array(digits);}
-
-
 
 
 /****************************************************************************************************************/
