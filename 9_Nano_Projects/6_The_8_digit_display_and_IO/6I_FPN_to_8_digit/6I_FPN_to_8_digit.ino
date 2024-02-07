@@ -13,7 +13,7 @@ See Resources_nano_projects\Subroutines\FPN_DIY_IO\ for the subroutine  "FPN_to_
 
 #include "6I_header_file.h"
 
-#define message_1 "Enter FPN then press sw1 then AK twice\r\n//\tFPN and Product\r\n?\t"
+#define message_1 "Enter FPN then press sw1 then AK repetitively\r\n//\tFPN and Product\r\n?\t"
 
 #define message_2 "?\t"
 
@@ -23,9 +23,9 @@ A wdr() statement is probably needed some where.\r\n"
 #define BL  20                                      //Buffer length
 
 
-float Num_1, Num_2;
-char digits_12[BL + 2];                               //Array used to drive the display
-char Num_as_string[12];
+float Num_1;
+float Num_2;
+char Num_as_string[BL + 2];
 char sign = '+';
 
 int main (void){
@@ -40,26 +40,33 @@ switch(reset_status){
   case WDT_reset_with_flag:   Serial.write(message_1);break;
   case External_reset:        Serial.write(message_1);break;
   case WDT_with_ISR_reset:    Serial.write(message_3);_delay_ms(25);cli();setup_watchdog_A;while(1);break;}
- 
+
+
+Serial.write("Multiplier?");
+Num_2 = Scientific_number_from_KBD(digits, &sign, BL);
 Num_1 = Scientific_number_from_KBD(digits, &sign, BL);
 I2C_FPN_to_display(Num_1);
 while(switch_1_up)wdr();
 while(switch_1_down)wdr();
 Sc_Num_to_PC_A(Num_1, 1, 4, '\t');
 
-display_FPN_short_Local(Num_1, digits_12);
-waitforkeypress_A();
-Num_1 *= 11.0;
-Serial.write("\t\t");//Serial.print(Num_1,4);
+display_FPN_short_Local(Num_1, Num_as_string);
+
+
+while((waitforkeypress_A() != 'x'))
+
+{Num_1 = Num_1 * Num_2;
+newline_A();//Serial.write("\t\t");
 Sc_Num_to_PC_A(Num_1, 1, 4, ' ');
-display_FPN_short_Local(Num_1, digits_12);
-waitforkeypress_A();
-newline_A();
+display_FPN_short_Local(Num_1, Num_as_string);
+//waitforkeypress_A();
+}
 SW_reset;}
 
 
+
 /*****************************************************************************************************************/
-void display_FPN_short_Local(float FPN, char * digits_2){    //Problem with 1.0 and negative exponents
+void display_FPN_short_Local(float FPN, char * num_string){ 
 char digits[8],sign, range;
 
 for(int m = 0; m <=7; m++)digits[m] = 0;
@@ -71,10 +78,10 @@ if ((FPN >= 1.0) && (FPN < 10.0))range = 6;
 if ((FPN >= 10.0) && (FPN < 1.0e10))range = 4;
 if (FPN >= 1.0e10)range = 3;
 
-if (sign == '-') {range -= 1;FPN *= -1.0;FPN_to_String(FPN, 1, range,'\0',digits_2); }
+if (sign == '-') {range -= 1;FPN *= -1.0;FPN_to_String(FPN, 1, range,'\0',num_string); }
 
-else FPN_to_String((FPN), 1, range,'\0',digits_2);
-{int m = 0; while(digits_2[m]) {digits[7-m] = digits_2[m]; m += 1;}} 
+else FPN_to_String((FPN), 1, range,'\0',num_string);
+{int m = 0; while(num_string[m]) {digits[7-m] = num_string[m]; m += 1;}} 
 
 
 
