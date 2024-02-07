@@ -166,10 +166,10 @@ I2C_Tx_float_display_control;}
 
 /************************************************************************/
 float Assemble_FPN(unsigned long FPN_digits, int twos_expnt, char sign)			//The FPN to be assembled is provided as a long numer (FPN_digits) which has been shifted left until 
-{int shift = 0;																	//bit 30 is a 1 and a twos_expnt which can be multiplied with the long number to give twice the original FPN.    
-int twos_expnt_BKP;
+{int shift = 0;																	//bit 30 is a 1.  There is also a twos_expnt which can be multiplied with the long number to give     
+int twos_expnt_BKP;																//the required FPN assuming that a binary point is placed immediately to the left of the digits. 
 
-twos_expnt_BKP = twos_expnt;
+twos_expnt_BKP = twos_expnt;													//The 2's exponent is equal to the numner of bits to the left of the binary point
 
 if(twos_expnt_BKP >= -125)														//FNP > ~1.18E-38 (Shift FPN_digits 7 places to the right and clear the 1 at the MSB (bit 23)
 {FPN_digits = FPN_digits >> 6;													//Step 1:  Shift FPN_digits 6 places to the right
