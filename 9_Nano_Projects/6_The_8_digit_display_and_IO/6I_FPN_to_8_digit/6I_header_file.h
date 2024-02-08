@@ -14,7 +14,6 @@ unsigned char SREG_BKP;
 
 volatile char Data_Entry_complete, digit_entry;
 volatile char scroll_control;
-char digits[8];
 
 #define set_up_PCI      PCICR |= ((1 << PCIE0) | (1 << PCIE2))
 #define enable_PCI      PCMSK0 |= (1 << PCINT6);    PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
