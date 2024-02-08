@@ -316,7 +316,59 @@ print_string[p] = '\0';}}
 
 
 /*******************************************************************************************************************/
-void display_FPN_short(float FPN, char * digits_2){	
+void display_FPN_short(float FPN, char * num_string){ 
+char digits[8],sign, range;
+
+for(int m = 0; m <=7; m++)digits[m] = 0;
+if (FPN < 0) {sign = '-'; FPN *= -1.0;} else sign = '+';
+
+if (FPN < 1.0e-9)range = 2;
+if((FPN >= 1.0e-9 ) && (FPN < 1.0))range = 3;
+if ((FPN >= 1.0) && (FPN < 10.0))range = 6;
+if ((FPN >= 10.0) && (FPN < 1.0e10))range = 4;
+if (FPN >= 1.0e10)range = 3;
+
+if (sign == '-') {range -= 1;FPN *= -1.0;FPN_to_String(FPN, 1, range,'\0',num_string); }
+
+else FPN_to_String((FPN), 1, range,'\0',num_string);
+{int m = 0; while(num_string[m]) {digits[7-m] = num_string[m]; m += 1;}} 
+
+
+/*********************Remove unwanted trailing zeros**************************************************/
+{int p = 0;
+while (!(digits[0])){for(int m = 0; m < 7; m++)                                       //short string: remove trailing null terms 
+digits[m] = digits[m+1];digits[7]=0;}
+   
+while(p < 8){if (digits[p] == 'E') 
+{p+=1;
+if (digits[p] == '0'){for(int m = p; m < 7; m++)digits[m] = digits[m+1];digits[7]=0;   //Remove up to two zeros proceeding 'E'
+p+=1;if (digits[p] == '0'){for(int m = p; m < 7; m++)digits[m] = digits[m+1];}
+p-=1;if (digits[p] == '.')
+{for(int m = 7; m > p; m--)digits[m] = digits[m-1];digits[p] = '0';}}                    //Display .0E rather than .E
+
+I2C_Tx_8_byte_array(digits);return;}
+
+else p+=1;}
+
+p=0;
+while(p < 8){if (digits[p] == '.')break; else p+=1;}                                    //No E and no decimal point. Display the full array
+if (p==8){I2C_Tx_8_byte_array(digits);return;} 
+
+p=0;                                                                                    //No E but decimal point
+while (digits[0] == '0'){for(int m = 0; m < 7; m++)
+digits[m] = digits[m+1];digits[7] = 0;}                                                 //Remove trailing zeros 
+if(digits[0] == '.'){for(int m = 0; m < 7; m++)
+digits[7-m] = digits[6-m]; digits[0] = '0';}}                                           //Display .0E rather than .E
+
+I2C_Tx_8_byte_array(digits);}
+
+
+
+
+
+
+
+/*void display_FPN_short(float FPN, char * digits_2){OLD VERSION	
 char digits[8],sign, range;
 
 for(int m = 0; m <=7; m++)digits[m] = 0;
@@ -331,11 +383,9 @@ if (FPN >= 1.0e10)range = 3;
 if (sign == '-') {range -= 1;FPN *= -1.0;FPN_to_String(FPN, 1, range,'\0',digits_2); }
 
 else FPN_to_String((FPN), 1, range,'\0',digits_2);
-
-
 {int m = 0; while(digits_2[m]) {digits[7-m] = digits_2[m]; m += 1;}} 
 
-I2C_Tx_8_byte_array(digits);}
+I2C_Tx_8_byte_array(digits);}*/
 
 
 
