@@ -51,7 +51,7 @@ I2C_FPN_to_display(Num_1);
 while(switch_1_up)wdr();
 while(switch_1_down)wdr();
 Sc_Num_to_PC_A(Num_1, 1, 4, '\t');
-display_FPN_short(Num_1, Num_as_string);
+display_FPN_short_Local(Num_1, Num_as_string);
 
 while((keypress = waitforkeypress_A()) != 'x')
 {if(keypress == 'm')Num_1 = Num_1 * Num_2;
@@ -59,7 +59,7 @@ else if(keypress == 'd')Num_1 = Num_1 / Num_2;
 else {Serial.write('?');continue;}
 newline_A();
 Sc_Num_to_PC_A(Num_1, 1, 4, ' ');
-display_FPN_short(Num_1, Num_as_string);}
+display_FPN_short_Local(Num_1, Num_as_string);}
 SW_reset;}
 
 
