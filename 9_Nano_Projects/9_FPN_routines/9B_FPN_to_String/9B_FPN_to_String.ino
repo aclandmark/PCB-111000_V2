@@ -23,6 +23,8 @@ Then key in num digits before/after the decimal point.\r\nThen press AK to repea
 
 FPN = Scientific_number_from_KBD(print_string, &sign,Buff_Length );
 Sc_Num_to_PC_A(FPN, 1, 6, '\t');
+display_FPN_short(FPN, print_string);
+
 Print_long_as_binary(*(long*)&FPN);
 Serial.write(" \t ");
 
