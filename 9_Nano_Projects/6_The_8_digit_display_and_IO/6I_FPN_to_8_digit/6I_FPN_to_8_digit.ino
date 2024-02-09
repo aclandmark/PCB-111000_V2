@@ -3,7 +3,7 @@
 Several subroutines have been developed to display floating point numbers on the 8 digit display
 This one limits the number of characters to 8 so that the result always fits on the display
 
-See Resources_nano_projects\Subroutines\FPN_DIY_IO\ for the subroutine  "FPN_to_String"
+Subroutine "FPN_to_String" is introduced in Project "9B_FPN_to_String" 
 */
 
 
