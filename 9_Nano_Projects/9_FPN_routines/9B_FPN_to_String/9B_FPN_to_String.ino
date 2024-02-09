@@ -51,67 +51,74 @@ int Num_digits;
 float round_denom;
 float FPN_bkp;
 
-
 if ((*(long*)(&FPN) == 0x80000000) || (*(long*)(&FPN) == 0))
 {print_string[0] = '0'; print_string[1] = '.';print_string[2] = '0';
-print_string[3] ='\r'; print_string[4] ='\n';print_string[5] = '\0';return;}
+print_string[3] ='\r'; print_string[4] ='\n';print_string[5] = '\0';return;}          //+/- zero case
 
 Num_digits = pre_dp + post_dp; 
 
-if (*(long*)&FPN & (unsigned long) 0x80000000){(*(long*)&FPN &= 0x7FFFFFFF);sign = '-';} else sign = '+';
+if (*(long*)&FPN & (unsigned long) 0x80000000)
+{(*(long*)&FPN &= 0x7FFFFFFF);sign = '-';} else sign = '+';       //determine sign and convert -ve numbers to +ve
 tens_expnt = 0;
 int_part_max = 1;
-for(int m = 0; m < pre_dp; m++) int_part_max *= 10.0;
+for(int m = 0; m < pre_dp; m++) int_part_max *= 10.0;             //for 3 digits before the dp the max integer part is set to 1000
 
 FPN_bkp = FPN;
 
-if(FPN_bkp >= (float)int_part_max){
-while  (FPN >= (float)int_part_max){FPN /= 10.0; tens_expnt += 1;}
-print_expnt = tens_expnt;}
+if(FPN_bkp >= (float)int_part_max){                               //For numbers above the max integer value
+while  (FPN >= (float)int_part_max)
+{FPN /= 10.0; tens_expnt += 1;}                                   //Divide FPN by 10 until its integer part is below the max allowed value
+print_expnt = tens_expnt;}                                        //Increment the tens exponent accordinglly and save the result for printing
 
-if(FPN_bkp < (float)int_part_max){
-while  (FPN < (float)int_part_max){FPN *= 10.0; tens_expnt -= 1;}
+if(FPN_bkp < (float)int_part_max){                                //Repeat for numbers below the max integer valur
+while  (FPN < (float)int_part_max)
+{FPN *= 10.0; tens_expnt -= 1;}
 print_expnt = tens_expnt+1;}
 
-while (FPN >= 1.0){FPN /= 10.0; tens_expnt += 1;}
+while (FPN >= 1.0){FPN /= 10.0; tens_expnt += 1;}                  //Convert to the form 0.123456789  (>= 0.1 to < 1)
+
+
 
 /*****************************************Build the number 0.000000005 used for rounding*********************************/  
 round_denom = 1.0;
 for(int m = 0; m <= Num_digits; m++)round_denom *= 10.0; 
 FPN = FPN + (5.0/round_denom);
 
-if(FPN >= 1.0){FPN /= 10.0;tens_expnt += 1; print_expnt = tens_expnt;}
+if(FPN >= 1.0){FPN /= 10.0;tens_expnt += 1; 
+print_expnt = tens_expnt-pre_dp;}                                   //Only runs if rounding increases FPN to 1
+
 
 /*****************************************Obtain the number 12345678 in binary form***************************************/
 if (sign == '-')  *(long*)& FPN |= (unsigned long) 0x80000000;
-FPN_as_long = unpack_FPN(FPN, &twos_expnt, &sign);
-FPN_as_long = FPN_as_long >> 4 ; 
-Denominator = 0x8000000 << (-twos_expnt);
+FPN_as_long = unpack_FPN(FPN, &twos_expnt, &sign);                  //for FPN = 0.1 2's exponent is -3 and for 0.999 it is 0
+FPN_as_long = FPN_as_long >> 4 ;                                    //Occupies bits 0 to 27
+Denominator = 0x8000000 << (-twos_expnt);                           //2^(27 - 2's exponent) 
+
 
 /****************************************Convert 12345678 to string form***************************************************/
 {int p = 0;
 Denominator /= 10.0; 
 
-if(sign == '-')
+if(sign == '-')                                                     //Start building string for -ve numbers and those with 0.
 {print_string[0] = '-'; p += 1;}
 if (!(pre_dp))print_string[p++] = '0'; 
 for (int m = 0; m < Num_digits; m++){
-FPN_as_long_bkp = FPN_as_long/Denominator;
+FPN_as_long_bkp = FPN_as_long/Denominator;                          //Dividing FPN_as_long by the denominator isolates the most significant digit
 
-if(m == pre_dp)print_string[p++] = '.'; 
-if(FPN_as_long_bkp){print_string[p] = (FPN_as_long_bkp + '0'); 
-FPN_as_long = FPN_as_long%Denominator;} 
+if(m == pre_dp)print_string[p++] = '.';                             //Add a dp is encountered add it to the string
+if(FPN_as_long_bkp){print_string[p] = (FPN_as_long_bkp + '0');      //Save digit as a char 
+FPN_as_long = FPN_as_long%Denominator;}                             //Remainder of dividing FPN_as_long by the denominator
 else print_string[p] = '0'; 
 p += 1;
-FPN_as_long *= 10;}
+FPN_as_long *= 10;}                                                 //Prepare to isolate the next most significant digit
 
-if(print_expnt) {print_string[p++] = 'E'; 
-itoa(print_expnt, print_string+p, 10);}
+if(print_expnt) {print_string[p++] = 'E';                           //If there is an exponent add 'E' to the string
+itoa(print_expnt, print_string+p, 10);}                             //Convert print_exponent to askii and add them to the string 
 else print_string[p++] = '\0';
 
-p = 0;
+p = 0;                                                              //Locate the null char and replace it with next_char
 while (print_string[p++]); p -= 1;
-print_string[p++] = next_char;
+print_string[p++] = next_char;                                      //Reinstate the null char
 print_string[p] = '\0';}}
 
 
