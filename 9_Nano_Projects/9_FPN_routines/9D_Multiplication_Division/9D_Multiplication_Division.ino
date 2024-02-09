@@ -1,4 +1,10 @@
-/*******************************************/
+/*******************************************
+Multiplication and division
+Exponents are simple added or subtracted
+
+
+ 
+ */
 
 #include "9D_header.h"
 
