@@ -7,6 +7,16 @@ Subroutine "Scientific_number_from_KBD_Local()" is specific to this project and 
 Subroutines "unpack_FPN()" and "Assemble_FPN()" are stored in "Resources_nano_projects\Subroutines\FPN_DIY_IO.c"
 They illustrate a method that could be used to process FPN's.  But the C library functions work much faster than those presented 
 with these projects. Library functions will have been honed to make them as efficient as possible. These are just for fun.
+
+
+This project takes a scientific number. Unpacks it giving a long number and a twos exponent
+It then reassembles it and prints the FPN and original decimal number.
+Note the small discrepancy due to rounding
+See 
+https://www.h-schmidt.net/FloatConverter/IEEE754.html
+to chreck the results
+
+
 */
 
 
