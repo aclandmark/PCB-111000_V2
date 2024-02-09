@@ -36,7 +36,7 @@ Digits_after_dp = waitforkeypress_A() - '0' ;
 
 FPN_to_String_Local(FPN, Digits_before_dp, Digits_after_dp, '\r', print_string);
 
-Serial.write (print_string);//}
+Serial.write (print_string);
 display_FPN_short(FPN, print_string);
 waitforkeypress_A();
 SW_reset;}
