@@ -4,7 +4,7 @@
  * 
  * 0.99^0.05 and 0.99^-0.05 OK but very slow
  * Results are not as accurate as those obtained using the c library
- * May want to reduce the range (no. of decimal places) in subroutine display_FPN_short
+ * May want to reduce the range (no. of decimal places) in subroutine "display_FPN_short()"
  * 
   */
 
