@@ -1,8 +1,11 @@
 
 /*
- * 0.99^0.05 and 0.99^-0.05 OK
- * Reducing the exponent causes a failure
- * Do notinput data thatexceed FPN bounds
+ * Repeat of "5F_e_power_series" using DIY FPN functions
+ * 
+ * 0.99^0.05 and 0.99^-0.05 OK but very slow
+ * Results are not as accurate as those obtained using the c library
+ * May want to reduce the range (no. of decimal places) in subroutine display_FPN_short
+ * 
   */
 
  
@@ -21,7 +24,6 @@ Serial.write(Num_string);
 
 int main (void) 
 {
-
 char Num_string[Buff_Length + 2];
 float Num, Num_bkp;                               //Scientfic number pus its backup
 float Pow;                                        //Power to which the number is to be raised
@@ -60,14 +62,10 @@ logN = logE_power_series(Num);
 if(twos_exp) logN 
 += FPN_mult((float)twos_exp, 0.6931472);                     //Log to base e of the scientific number
 
-
-
 if(reset_status == 3){
 FPN_to_String(Num, 1, 6, '\t',Num_string);
 Serial.write (Num_string);
 Int_Num_to_PC_A(twos_exp, Num_string, '\r');                  //Echo data to screen
-
-
 
 Serial.write("Natural log is\t"); 
 FPN_to_String(logN, 1, 5, '\r',Num_string);
@@ -76,8 +74,6 @@ Serial.write (Num_string);
 Serial.write("Enter power\t");}
 Get_and_echo_Sc_num;
 Pow = SC_num;
-
-//while(switch_3_down);
 
 Serial.write("\r\nLocal result\t");
 Log_result = FPN_mult (logN, Pow);                          //The Log of the result
@@ -94,8 +90,7 @@ Serial.write("Library result\t");
 FPN_to_String((pow(Num_bkp,Pow)), 1, 5, '\r', Num_string);
 Serial.write(Num_string);
 
-
-I2C_FPN_to_display(Result);//}
+I2C_FPN_to_display(Result);
 display_FPN_short(Result, Num_string);
 while(switch_1_down)wdr();
 reset_status = 0;
@@ -103,11 +98,7 @@ while(switch_3_down);
 
 Num = Result;
 
-Serial.write("New power?\t");
-
-
-
-}
+Serial.write("New power?\t");}
 
 SW_reset;
 return 1;}
@@ -146,8 +137,6 @@ if((FPN_GT(FPN_div(difference, ans), -1e-5))
 
 ans_old = ans;}
 
-//setup_watchdog;
-
 if(!(sign))return ans;
 else return FPN_div(1.0, ans);}
 
@@ -166,8 +155,7 @@ if (FPN_GT(Num, 1.99))return 0.693;
 Num = FPN_sub (Num, 1.0);
 if (Num < 0.00001){logE = 1E-5;}
 else                                                    //Use power series to calculate the natural logarithm
-{
-int m = 1;
+{int m = 1;
 term = 1.0;
 while(1){wdr();
 term = FPN_mult(term, FPN_div(Num, (float)m));
@@ -176,8 +164,7 @@ if (m == 1){logE = term; difference= logE;}
 else{
   if (m%2)logE = FPN_add (logE, term);
   else logE = FPN_sub(logE, term); 
-  difference = FPN_sub(logE, logE_old);
-  }
+  difference = FPN_sub(logE, logE_old); }
 
 if((FPN_GT(FPN_div(difference, logE), -1e-5)) 
 && (FPN_LT(FPN_div(difference, logE), 1e-5)))break;
@@ -190,12 +177,6 @@ return logE;}
 
 //ln(1 + x) = x - (x^2)/2 + (x^3)/3....etc provided x is between 1 and 2.
 
-
-
-float Int_to_float(long FPN_digits, int twos_expnt, char sign){
-
-  
-}
 
 
 
