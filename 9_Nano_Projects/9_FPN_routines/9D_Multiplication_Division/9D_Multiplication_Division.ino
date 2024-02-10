@@ -1,8 +1,17 @@
 /*******************************************
-Multiplication and division
-Exponents are simple added or subtracted
+Division of floating point numbers
 
+First off all unpack the FPNs generating the appropriate long numbers and exponents
+Shift the numerator untill it is just less than the demoninator (probably 1 place at the most)
+Subtract the exponents
+Use subroutine "Fraction_to_Binary_Signed(A/B)" to generate a result of the 
+form 0.1xxxxxxx where x will either be zero or 1.
+Assemble the result and exponent into a new FPN
 
+Multiplication of floating point numbers
+Use the division subrouting twice, once to find the reciprocal of one of the numbers
+and again to divide the other one by the reciprocal of the first.  
+This method avoids the need to deal with overglows
  
  */
 
@@ -40,7 +49,8 @@ Serial.write(num_as_string);
 while(1){Check_num_for_to_big_or_small(FPN_1);
 Serial.write(" (x/?)\t");
 
-while(1){keypress = waitforkeypress_A();if ((keypress == 'x') || (keypress == '/'))break; else Serial.write('?');}
+while(1){keypress = waitforkeypress_A();
+if ((keypress == 'x') || (keypress == '/'))break; else Serial.write('?');}
 Serial.write(keypress);
 
 
@@ -80,16 +90,21 @@ sign_2 = '+';
 FPN_digits_1 = unpack_FPN(FPN_1 , &twos_expnt_1, &sign_1);
 FPN_digits_2 = unpack_FPN(FPN_2 , &twos_expnt_2, &sign_2);
 
-while (FPN_digits_1 >= FPN_digits_2){FPN_digits_1 >>= 1; twos_expnt_1 += 1;}
+while (FPN_digits_1 >= FPN_digits_2)
+{FPN_digits_1 >>= 1; twos_expnt_1 += 1;}
 FPN_digits_3 = Fraction_to_Binary_Signed(FPN_digits_1, FPN_digits_2);
 
 if (sign_1 == sign_2)sign_3 = '+'; else sign_3 = '-';
 twos_expnt_3 = twos_expnt_1 - twos_expnt_2;
 
-if(twos_expnt_3 >= 127){Serial.write("Result too large for 32bit numbers\r\n");SW_reset;}
+if(twos_expnt_3 >= 127)
+{Serial.write("Result too large for 32bit numbers\r\n");
+SW_reset;}
 
-Result = Assemble_FPN((unsigned long) FPN_digits_3, twos_expnt_3,  sign_3);
-if((!(*(long*)&Result)) || (*(long*)&Result == 0x80000000)) { Serial.write("Zero"); SW_reset;}
+Result = Assemble_FPN((unsigned long) 
+FPN_digits_3, twos_expnt_3,  sign_3);
+if((!(*(long*)&Result)) || (*(long*)&Result == 0x80000000)) 
+{ Serial.write("Zero"); SW_reset;}
 
 return Result;}
 
@@ -102,10 +117,6 @@ float Result;
   Reciprocal = FPN_div_Local(1.0, FPN_2);
  Result = FPN_div_Local(FPN_1, Reciprocal);
 return Result;}
-
-
-/***********************************************************************************************************************************/
-
 
 
 
