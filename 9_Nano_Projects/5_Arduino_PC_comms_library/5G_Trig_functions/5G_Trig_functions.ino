@@ -40,8 +40,9 @@ Num = Sc_Num_from_PC_A(Num_string, BL);           //User enters the scientific n
 if(!(Num))Num = 0.0001;
 else{
 Num = Num *2.0 * Pie /360.0;}
-Sc_Num_to_PC_A(Num, 1,5,'\r');
 
+Serial.write("Angle in radians = ");
+Sc_Num_to_PC_A(Num, 1,5,'\r'); 
 Serial.write("Keypress c, s or t?\r\n");
 Fn = waitforkeypress_A();
 
