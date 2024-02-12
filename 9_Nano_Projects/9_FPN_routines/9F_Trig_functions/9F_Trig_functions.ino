@@ -66,12 +66,12 @@ FPN_to_String(Angle, 2, 3, ' ',Num_string);
 Serial.write (Num_string);
 Serial.write(" Degrees ");
 
-if (type == 't');
+/*if (type == 't');
 else{Serial.write("(");
 Angle = Arc_sin_cos(Result, type, 2);
 
 FPN_to_String(Angle, 2, 3, ')',Num_string);
-Serial.write (Num_string);}
+Serial.write (Num_string);}*/
 
 newline_A();newline_A();
 while(switch_1_down)wdr();
@@ -120,8 +120,35 @@ return Sin_Cos (Angle, 's')/Sin_Cos(Angle, 'c');}
 
 
 
+
+/*********************************************************************************************************************************/
+float Arc_sin_cos(float Num, char type, char lib){
+float tan_x;
+float angle;
+char sign = '+';
+if (Num < 0){sign = '-'; }
+
+if(type =='c'){
+/*tan_x = pow(1.0-(Num*Num), 0.5)/Num;
+angle = Arc_Tan(tan_x); 
+return angle;}
+*/
+
+if (sign == '+')
+return Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num);
+else return (180.0 + Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num));
+}
+
+if(type =='s'){return Arc_Tan(Num/pow(1.0-(Num*Num), 0.5));}
+
+
+}
+
+
+
+
 /******************************************************************************************************************/
-float Arc_sin_cos(float Cos, char type, char lib){
+/*float Arc_sin_cos_power_series(float Cos, char type, char lib){
 
 float Angle;
 float term;
@@ -164,7 +191,7 @@ Angle = FPN_mult(Angle, 57.2958);
 if (type == 'c');
 if (type == 's'){Angle = Angle - 90.0; Angle = Angle * -1.0;}
 
-return Angle;}
+return Angle;}*/
 
 
 
