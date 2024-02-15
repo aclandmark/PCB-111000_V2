@@ -1,7 +1,6 @@
 
-/*See
-https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arccosine_Function
-https://proofwiki.org/wiki/Power_Series_Expansion_for_Real_Arcsine_Function
+/*
+
 */
 
 #include  "9F_header.h" 
@@ -26,9 +25,17 @@ float Cosine;
 float Angle, SC_num;
 
 setup_HW_with_reset_analysis;
+
+while(switch_1_up);
+while(switch_1_down);
+
+float test = 0.8725;
+Serial.print(root(test),5);
+
+
 wdt_enable(WDTO_30MS);
 while(switch_1_down)wdr();
-Serial.write("Angle in degrees? = ");
+Serial.write("Angle in degrees(Not Zero)? = ");
 Get_and_echo_Sc_num;
 Angle = SC_num/57.2958;
 
@@ -45,7 +52,6 @@ switch(type){
 }
 if (type == 't')Result = Tan(Angle);
 else Result = Sin_Cos(Angle, type);
-//Serial.write ("Cos = ");
 FPN_to_String(Result, 1, 5, '\t',Num_string);
 Serial.write (Num_string);
 
@@ -65,13 +71,6 @@ display_FPN_short(Angle, Num_string);
 FPN_to_String(Angle, 2, 3, ' ',Num_string);
 Serial.write (Num_string);
 Serial.write(" Degrees ");
-
-/*if (type == 't');
-else{Serial.write("(");
-Angle = Arc_sin_cos(Result, type, 2);
-
-FPN_to_String(Angle, 2, 3, ')',Num_string);
-Serial.write (Num_string);}*/
 
 newline_A();newline_A();
 while(switch_1_down)wdr();
@@ -133,7 +132,6 @@ if(type =='c'){
 angle = Arc_Tan(tan_x); 
 return angle;}
 */
-
 if (sign == '+')
 return Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num);
 else return (180.0 + Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num));
@@ -143,55 +141,6 @@ if(type =='s'){return Arc_Tan(Num/pow(1.0-(Num*Num), 0.5));}
 
 
 }
-
-
-
-
-/******************************************************************************************************************/
-/*float Arc_sin_cos_power_series(float Cos, char type, char lib){
-
-float Angle;
-float term;
-float Q = 1.0;      //term counter
-float Cos_bkp;
-float difference;
-int counter = 0;
-
-Cos_bkp = Cos;
-if (lib == 2){Angle = PIE/2.0 - Cos;
-Cos = Cos * Cos * Cos;}
-
-if (lib == 1){Angle = FPN_sub(FPN_div(PIE,2), Cos);
-Cos = FPN_mult(FPN_mult(Cos, Cos), Cos);}
-
-term = FPN_div(0.5,3.0);                 //term counter = 1
-
-Angle = FPN_sub (Angle, FPN_mult(term, Cos));
-difference = Angle;
-
-while(1){wdr(); 
-Q += 1.0;
-
-if (lib == 1){
-term = term * ((2.0*Q) - 1.0)*((2.0*Q) - 1.0)/(2.0*Q)/((2.0*Q)+1.0);
-Cos = Cos * Cos_bkp * Cos_bkp;}
-
-if (lib == 2){
-term = FPN_mult(term,FPN_mult(FPN_sub (FPN_mult(2.0,Q), 1.0), FPN_sub (FPN_mult(2.0,Q), 1.0)));
-term = FPN_div (term, (FPN_mult(FPN_mult(2.0,Q),FPN_add (FPN_mult(2.0,Q), 1.0))));
-Cos = FPN_mult(FPN_mult(Cos, Cos_bkp), Cos_bkp);if(!((++counter)%10))Serial.write(".");}
- 
-Angle = FPN_sub (Angle, FPN_mult(term, Cos));
-difference = FPN_sub(difference, Angle);
-if (FPN_LT(difference, 1e-6) && FPN_GT(difference, -1e-6))break;
-difference = Angle;}
-
-Angle = FPN_mult(Angle, 57.2958);
-
-if (type == 'c');
-if (type == 's'){Angle = Angle - 90.0; Angle = Angle * -1.0;}
-
-return Angle;}*/
 
 
 
@@ -223,6 +172,52 @@ if(Num <= 1.0) Result -= PIE;
 }
 
 return Result * 57.2958;}
+
+
+
+
+
+/****************************************Root to best integer value. Start iteration at 2***************************************/
+float root(float Num){
+
+float inc = 1.0;
+float product_mem, product = 1.0;
+float start_value = 2.0;
+float result = 1;
+float Tens_multiplier = 0.1;
+
+int Tens_expt = 2;
+int root = 2;
+
+
+Num *= 100.0;
+
+while(1){
+  for(int m = 0; m< root; m++)product = product * start_value;
+  
+if (product <= Num){result = start_value; product_mem = product;}
+else break;
+start_value += inc;
+product = 1.0;}
+
+if (product_mem > Num)result = 1.0;                           //Initial value for numbers less than 4 
+
+
+/*************************Improve iteration starting with one decimal place then 2, 3......up to 6 in all******************************/
+for(int p = 1; p <= 6; p++)
+{inc /= 10.0;
+product = 1.0;
+start_value = result + inc;
+while(1){
+  for(int m = 0; m< root; m++)product = product * start_value;
+if (product <= Num){result = start_value; product_mem = product;}
+else break;
+start_value += inc;
+product = 1.0;}}
+
+
+return result * Tens_multiplier;}        
+
 
 
 
