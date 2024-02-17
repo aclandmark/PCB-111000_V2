@@ -26,11 +26,11 @@ float Angle, SC_num;
 
 setup_HW_with_reset_analysis;
 
-while(switch_1_up);
-while(switch_1_down);
+//while(switch_1_up);
+//while(switch_1_down);
 
-float test = 0.8725;
-Serial.print(root(test),5);
+//float test = 0.8725;
+//Serial.print(root(test),5);
 
 
 wdt_enable(WDTO_30MS);
@@ -133,8 +133,10 @@ angle = Arc_Tan(tan_x);
 return angle;}
 */
 if (sign == '+')
-return Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num);
-else return (180.0 + Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num));
+//return Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num);
+return Arc_Tan(root(1.0-(Num*Num))/Num);
+//else return (180.0 + Arc_Tan(pow(1.0-(Num*Num), 0.5)/Num));
+else return (180.0 + Arc_Tan(root(1.0-(Num*Num))/Num));
 }
 
 if(type =='s'){return Arc_Tan(Num/pow(1.0-(Num*Num), 0.5));}
@@ -149,11 +151,18 @@ float Arc_Tan(float Num){
 float term;
 float Result;
 
+if (Num > 1e4)return 90.0;
+if (Num < -1e4)return -90.0;
+
 if ((Num > -1.0) && (Num < 1.0)){
 term = Num;
 Result = Num;
-  for (int m = 3; m <50; m+=2){
-term = term *Num*Num/(float)m;
+  for (int m = 3; m <20; m+=2){ //50
+    //term = term*Num*Num/(float)m;
+term = FPN_mult(term, Num);
+term = FPN_div(term, (float)m);
+term = FPN_mult(term, Num);
+
   
  if ((m+1)%4)Result = Result + term;
  else Result = Result - term; 
@@ -161,8 +170,12 @@ term = term *Num*Num/(float)m;
 else{
  term = 1.0/Num; 
 Result = term;
-for (int m = 3; m <20; m+=2){
-term = term/Num/Num/(float)m;
+for (int m = 3; m <20; m+=2){   //20
+//term = term/Num/Num/(float)m;
+term = FPN_div(term, Num);
+term = FPN_div(term, (float)m);
+term = FPN_div(term, Num);
+
 if ((m+1)%4)Result = Result + term;
  else   Result = Result - term; 
  term = term *(float)m;}
@@ -176,8 +189,62 @@ return Result * 57.2958;}
 
 
 
+/*******************************************************************************************************************/
+float root(float Num){
+
+float inc = 1.0;
+float product_mem, product = 1.0;
+float start_value = 2.0;
+float result = 1;
+float Tens_multiplier = 1.0;
+
+int Tens_expt = 0;
+int root = 2;
+
+//newline_A();Serial.print(Num,5);Serial.write('\t');
+
+while(Num < 1.0){Num *= 100; Tens_expt += root;} 
+for(int m = 0; m < Tens_expt; m += root)Tens_multiplier /= 10.0;
+
+
+
+while(1){
+  for(int m = 0; m< root; m++)product = FPN_mult(product, start_value);
+  
+if (product <= Num){result = start_value; product_mem = product;}
+else break;
+//start_value += inc;
+start_value = FPN_add(start_value, inc);
+product = 1.0;}
+
+if (product_mem > Num)result = 1.0;                           //Initial value for numbers less than 4 
+
+
+/*************************Improve iteration starting with one decimal place then 2, 3......up to 6 in all******************************/
+
+
+for(int p = 1; p <= 6; p++)
+{//inc /= 10.0;
+  inc = FPN_div(inc, 10);
+product = 1.0;
+start_value = result + inc;
+while(1){
+  for(int m = 0; m< root; m++)product = FPN_mult (product, start_value);
+if (product <= Num){result = start_value; product_mem = product;}
+else break;
+//start_value += inc;
+start_value = FPN_add(start_value, inc);
+product = 1.0;}}
+
+//Serial.print(FPN_mult(result, Tens_multiplier),5);newline_A();
+return FPN_mult(result, Tens_multiplier);}       
+
+
+
+
 
 /****************************************Root to best integer value. Start iteration at 2***************************************/
+/*
 float root(float Num){
 
 float inc = 1.0;
@@ -202,8 +269,10 @@ product = 1.0;}
 
 if (product_mem > Num)result = 1.0;                           //Initial value for numbers less than 4 
 
-
+*/
 /*************************Improve iteration starting with one decimal place then 2, 3......up to 6 in all******************************/
+
+/*
 for(int p = 1; p <= 6; p++)
 {inc /= 10.0;
 product = 1.0;
@@ -216,7 +285,7 @@ start_value += inc;
 product = 1.0;}}
 
 
-return result * Tens_multiplier;}        
+return result * Tens_multiplier;}  */      
 
 
 
