@@ -237,53 +237,6 @@ num = num + twos_expt;                                          //Add the expone
 return (*(float*)(&num));}                                      //Tell the compiler that the long number is now to be treated as a floating point number
 
 
-/****************************************Root to best integer value. Start iteration at 2***************************************/
-/*
-float root(float Num){
-
-float inc = 1.0;
-float product_mem, product = 1.0;
-float start_value = 2.0;
-float result = 1;
-float Tens_multiplier = 0.1;
-
-int Tens_expt = 2;
-int root = 2;
-
-
-Num *= 100.0;
-
-while(1){
-  for(int m = 0; m< root; m++)product = product * start_value;
-  
-if (product <= Num){result = start_value; product_mem = product;}
-else break;
-start_value += inc;
-product = 1.0;}
-
-if (product_mem > Num)result = 1.0;                           //Initial value for numbers less than 4 
-
-*/
-/*************************Improve iteration starting with one decimal place then 2, 3......up to 6 in all******************************/
-
-/*
-for(int p = 1; p <= 6; p++)
-{inc /= 10.0;
-product = 1.0;
-start_value = result + inc;
-while(1){
-  for(int m = 0; m< root; m++)product = product * start_value;
-if (product <= Num){result = start_value; product_mem = product;}
-else break;
-start_value += inc;
-product = 1.0;}}
-
-
-return result * Tens_multiplier;}  */      
-
-
-
-
 /**********************************************************************************************************************/
 /*
 cos x = 1-(x^2)/2! + (x^4)/4! - (x^6)/6! + (x^8)/8!...................
