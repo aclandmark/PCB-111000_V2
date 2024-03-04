@@ -194,14 +194,6 @@ waiting_for_I2C_master_with_ISR;}                   //Be ready for next TWI inte
 
 
 
-/**********************************************************************************************/
-void I2C_initiate_7_8125mS_ref(void){
-char num_bytes=0;
-char mode = 'U';
-waiting_for_I2C_master;
-send_byte_with_Ack(num_bytes);
-send_byte_with_Nack(mode);
-clear_I2C_interrupt;} 
 
 
 
