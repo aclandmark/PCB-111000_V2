@@ -30,14 +30,11 @@ TWCR |= (1 << TWEA) | (1 << TWIE);} 	//Slave mode with interrupt and Enable Ackn
 
 
 /************************************************************************/
-void PCB_test(void){					
-char num_bytes=0;		 
-char mode = 'O';
-
-waiting_for_I2C_master;		
-send_byte_with_Ack(num_bytes);
-send_byte_with_Nack(mode);
-TWCR = (1 << TWINT);}
+void PCB_test (char test_num, char test_digit){
+char s[2]; char num_bytes=2; char mode = 'O';
+s[0] = test_num;
+s[1] = test_digit;
+I2C_Tx(num_bytes, mode, s);}
 
 
 
