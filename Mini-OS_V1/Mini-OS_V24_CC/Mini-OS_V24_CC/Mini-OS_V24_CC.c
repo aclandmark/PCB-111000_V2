@@ -14,7 +14,7 @@ Following POR check cal factor and perform auto clock recovery if necassary
 0x3FE	user cal if set
 0x3FD	Default cal supplied by Atmel
 0x3FC	If 1: press 'x' diagnostic mode else press 'r' normal mode
-0x3FB	If 0 use multiplexter (T0) period of 4ms else use period of 2mS (std)
+0x3FB	If 0 use multiplexer (T0) period of 4ms else use period of 2mS (std)
 0x3FA	POR Cal_mode	==0xFF mode is UP 	==0 mode is down.
 0x3F9	==1 Set by programmer; or = 0xFF default value
 0x3F8	EEP_subs  PRN_8bit_GEN().
@@ -26,14 +26,14 @@ Zero to 0x3F5: For user strings and data
 # include "I2C_V24_0_CC_header_file.h"
 # include "I2C_V24_0_CC_display_subroutines.c"
 
-# include "../../../Mini-OS_Resources/I2C_V22_0_IO_subroutines.c"
-# include "../../../Mini-OS_Resources/I2C_V22_0_Arithmetic_subroutines.c"
-# include "../../../Mini-OS_Resources/I2C_V22_0_ISR_subroutines.c"
-# include "../../../Mini-OS_Resources/I2C_V22_0_osccal_subroutines.c"
-# include "../../../Mini-OS_Resources/I2C_modes_B_to_F.c"
-# include "../../../Mini-OS_Resources/I2C_mode_definitions.h"
-# include "../../../Mini-OS_Resources/I2C_clock_stop_watch_subroutines.c"
-# include "../../../Mini-OS_Resources/I2C_Eeprom_subroutines.c"
+# include "../../../Mini-OS_Resources/IO_subroutines.c"
+# include "../../../Mini-OS_Resources/Arithmetic_subroutines.c"
+# include "../../../Mini-OS_Resources/ISR_subroutines_V1.c"
+# include "../../../Mini-OS_Resources/osccal_subroutines.c"
+# include "../../../Mini-OS_Resources/modes_B_to_F.c"
+# include "../../../Mini-OS_Resources/mode_definitions_V1.h"
+# include "../../../Mini-OS_Resources/clock_stop_watch_subroutines.c"
+# include "../../../Mini-OS_Resources/Eeprom_subroutines.c"
 
 
 
