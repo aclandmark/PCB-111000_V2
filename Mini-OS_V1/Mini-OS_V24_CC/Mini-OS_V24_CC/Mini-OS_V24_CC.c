@@ -26,14 +26,14 @@ Zero to 0x3F5: For user strings and data
 # include "I2C_V24_0_CC_header_file.h"
 # include "I2C_V24_0_CC_display_subroutines.c"
 
-# include "../../Resources/I2C_V22_0_IO_subroutines.c"
-# include "../../Resources/I2C_V22_0_Arithmetic_subroutines.c"
-# include "../../Resources/I2C_V22_0_ISR_subroutines.c"
-# include "../../Resources/I2C_V22_0_osccal_subroutines.c"
-# include "../../Resources/I2C_modes_B_to_F.c"
-# include "../../Resources/I2C_mode_definitions.h"
-# include "../../Resources/I2C_clock_stop_watch_subroutines.c"
-# include "../../Resources/I2C_Eeprom_subroutines.c"
+# include "../../../Mini-OS_Resources/I2C_V22_0_IO_subroutines.c"
+# include "../../../Mini-OS_Resources/I2C_V22_0_Arithmetic_subroutines.c"
+# include "../../../Mini-OS_Resources/I2C_V22_0_ISR_subroutines.c"
+# include "../../../Mini-OS_Resources/I2C_V22_0_osccal_subroutines.c"
+# include "../../../Mini-OS_Resources/I2C_modes_B_to_F.c"
+# include "../../../Mini-OS_Resources/I2C_mode_definitions.h"
+# include "../../../Mini-OS_Resources/I2C_clock_stop_watch_subroutines.c"
+# include "../../../Mini-OS_Resources/I2C_Eeprom_subroutines.c"
 
 
 
