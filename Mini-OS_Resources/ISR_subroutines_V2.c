@@ -16,7 +16,7 @@ else {Display_driver(); }}
 
 
 if(eeprom_read_byte((uint8_t*)0x3FB) == 0x01){			//Low level brightness
-if(!(T0_interupt_cnt)){									//Set to zero by Proj subroutine reset (I2C_Tx_LED_dimmer() subroutine)
+if(!(T0_interupt_cnt)){									//Set to zero by Proj subroutine I2C_Tx_LED_dimmer() subroutine mode Q
 if(mode == 'F'){										//Initiates I2C_initiate_10mS_ref
 TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
 sei();
@@ -25,7 +25,7 @@ TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));}
 else {Display_driver(); }}
 
 
-if (!(MUX_cntl))														//Default setting Zero  Low intensity.
+if (!(MUX_cntl))														//Default setting Zero Set in "main" routine Low intensity.
 {TCNT0 = 240;															//Initialise Timer 0 for 125uS pulse
 	switch(T0_interupt_cnt){
 		case 0: T0_interupt_cnt = 1;break;
@@ -33,7 +33,7 @@ if (!(MUX_cntl))														//Default setting Zero  Low intensity.
 
 else{																			//Demonstrate the operation of the multiplexer
 	
-	switch (MUX_cntl){
+	switch (MUX_cntl){															//Set by project Multiplexer_demo mode "L"
 		case 1: TCNT0 = 248; break;		//250
 		case 2: TCNT0 = 244; break;		//375
 		case 3: TCNT0 = 240; break;		//500
