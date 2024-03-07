@@ -212,6 +212,8 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 
 #define T0_delay_2000us 5, 240
 #define T0_delay_30000us 5,16
+
+
 #define T1_delay_1sec 5,0xE17D
 #define T1_delay_500ms 5,0xF0BE
 #define T1_delay_10ms 3, 0xF63C
