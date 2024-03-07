@@ -113,31 +113,19 @@ TIMSK2 |= (1 << TOIE2);
 \
 MUX_cntl = I2C_data[0];	\
 \
-			if(eeprom_read_byte((uint8_t*)0x3FB) == 0xFF){\
+			eeprom_write_byte((uint8_t*)0x3FB, 0x01);{\
 			switch (MUX_cntl){\
-			case 0:	timer_T0_sub_with_interrupt(T0_delay_2ms);break;\
-			case 1: timer_T0_sub_with_interrupt(T0_delay_4ms);break;\
-			case 2:	timer_T0_sub_with_interrupt(T0_delay_6ms);break;\
-			case 3: timer_T0_sub_with_interrupt(T0_delay_8ms);break;\
-			case 4:	timer_T0_sub_with_interrupt(T0_delay_10ms);break;\
-			case 5: timer_T0_sub_with_interrupt(T0_delay_12ms);break;\
-			case 6: timer_T0_sub_with_interrupt(T0_delay_20ms);break;\
-			case 7: timer_T0_sub_with_interrupt(T0_delay_33ms);break;\
-			default: timer_T0_sub_with_interrupt(T0_delay_2ms);break;}}\
+			case 0:	timer_T0_sub_with_interrupt(T0_delay_125us);break;\
+			case 1: timer_T0_sub_with_interrupt(T0_delay_250us);break;\
+			case 2:	timer_T0_sub_with_interrupt(T0_delay_375us);break;\
+			case 3: timer_T0_sub_with_interrupt(T0_delay_500us);break;\
+			case 4:	timer_T0_sub_with_interrupt(T0_delay_625us);break;\
+			case 5: timer_T0_sub_with_interrupt(T0_delay_750us);break;\
+			case 6: timer_T0_sub_with_interrupt(T0_delay_1250us);break;\
+			case 7: timer_T0_sub_with_interrupt(T0_delay_2000us);break;\
+			default: timer_T0_sub_with_interrupt(T0_delay_125us);break;}}\
 \
-			else{T0_interupt_cnt = 0;\
-			switch (MUX_cntl){\
-			case 0:	timer_T0_sub_with_interrupt(T0_delay_500us);break;\
-			case 1: timer_T0_sub_with_interrupt(T0_delay_1ms);break;\
-			case 2:	timer_T0_sub_with_interrupt(T0_delay_1500us);break;\
-			case 3: timer_T0_sub_with_interrupt(T0_delay_2ms);break;\
-			case 4:	timer_T0_sub_with_interrupt(T0_delay_2500us);break;\
-			case 5: timer_T0_sub_with_interrupt(T0_delay_3ms);break;\
-			case 6: timer_T0_sub_with_interrupt(T0_delay_5ms);break;\
-			case 7: timer_T0_sub_with_interrupt(T0_delay_8ms);break;\
-			default: timer_T0_sub_with_interrupt(T0_delay_500us);break;}}\
-\
-			for(int p = 0; p <= 7; p++)display_buf[p] = p + '0';\
+			for(int p = 0; p <= 7; p++)display_buf[p] = p + '0';
 
 
 
@@ -185,11 +173,12 @@ default: break;}
 
 
 /********************************************************************************************/
-# define I2C_Tx_LED_dimmer \
+#define I2C_Tx_LED_dimmer \
 if(I2C_data[0] == 1)\
 {if(eeprom_read_byte((uint8_t*)0x3FB) != 0x01)\
 	{eeprom_write_byte((uint8_t*)0x3FB, 0x01);}\
-	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}
+	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}\
+	T0_interupt_cnt = 0;
 
 
 
