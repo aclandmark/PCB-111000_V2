@@ -189,7 +189,8 @@ default: break;}
 if(I2C_data[0] == 1)\
 {if(eeprom_read_byte((uint8_t*)0x3FB) != 0x01)\
 	{eeprom_write_byte((uint8_t*)0x3FB, 0x01);}\
-	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}
+	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}\
+	T0_interupt_cnt = 0;
 
 
 
