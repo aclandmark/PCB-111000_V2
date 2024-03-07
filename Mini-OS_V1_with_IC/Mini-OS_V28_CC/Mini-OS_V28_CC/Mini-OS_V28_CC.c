@@ -52,7 +52,7 @@ int main (void){
 	Projects V1_9 and Bootloader V4_21_CA.\
 	External programmer V2_30B\r\n";*/
 	
-	char *SW_Version = "System files: Mini-OS_V24_0_CC plus pcb_Bootloader_V4_26_CC \r\n";
+	char *SW_Version = "System files: Mini-OS_V28_CC plus pcb_Bootloader_V4_26_CC \r\n";
 	
 	
 	char *SW_info = "SW information:\
