@@ -113,7 +113,7 @@ int main (void){
 	MUX_cntl = 0;
 	if(eeprom_read_byte((uint8_t*)0x3FB) == 0xFF)
 	{timer_T0_sub_with_interrupt(T0_delay_2ms);}				//Normal Display brightness
-	else {timer_T0_sub_with_interrupt(T0_delay_500us);}
+	else {timer_T0_sub_with_interrupt(T0_delay_125us);}
 
 
 	while(1){													//main loop in which the program resides
