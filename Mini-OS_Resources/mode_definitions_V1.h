@@ -185,7 +185,7 @@ default: break;}
 
 
 /********************************************************************************************/
-# define I2C_Tx_LED_dimmer \
+#define I2C_Tx_LED_dimmer \
 if(I2C_data[0] == 1)\
 {if(eeprom_read_byte((uint8_t*)0x3FB) != 0x01)\
 	{eeprom_write_byte((uint8_t*)0x3FB, 0x01);}\
