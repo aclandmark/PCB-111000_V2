@@ -166,6 +166,9 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 #define decimalP	PORTB &= (~(seg_a));	PORTD &= (~(seg_b | seg_e | seg_f | seg_g ))
 
 
+
+
+/**********************************************************************************************************************/
 #define T0_delay_33ms 5,0
 #define T0_delay_20ms 5,100
 #define T0_delay_16ms 5,131
@@ -181,8 +184,37 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 #define T0_delay_1500us 3,69
 #define T0_delay_1ms 3,128
 #define T0_delay_667us 3,173
-#define T0_delay_500us 3,194
-#define T0_delay_250us 2,6
+
+
+#define T0_delay_875us 3,144
+
+
+#define T0_delay_125us 3,240
+#define T0_delay_1875us 3,16
+
+#define T0_delay_250us 4,248
+#define T0_delay_3750us 4,136
+
+#define T0_delay_375us 4, 244
+#define T0_delay_5625us 4, 76
+
+
+#define T0_delay_500us 4,240
+#define T0_delay_7500us 4,16
+
+#define T0_delay_625us 5,251
+#define T0_delay_9375us 5,181
+
+#define T0_delay_750us 5,250
+#define T0_delay_11250us 5,166
+
+#define T0_delay_1250us 5, 246
+#define T0_delay_18750us 5, 106
+
+#define T0_delay_2000us 5, 240
+#define T0_delay_30000us 5,16
+
+
 
 #define T1_delay_1sec 5,0xE17D
 #define T1_delay_500ms 5,0xF0BE
