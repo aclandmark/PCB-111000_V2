@@ -173,12 +173,20 @@ default: break;}
 
 
 /********************************************************************************************/
-#define I2C_Tx_LED_dimmer \
+/*#define I2C_Tx_LED_dimmer \
 if(I2C_data[0] == 1)\
 {if(eeprom_read_byte((uint8_t*)0x3FB) != 0x01)\
 	{eeprom_write_byte((uint8_t*)0x3FB, 0x01);}\
 	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}\
-	T0_interupt_cnt = 0;
+	T0_interupt_cnt = 0;*/
+
+#define I2C_Tx_LED_dimmer \
+switch (I2C_data[0]){\
+case 0: break;\
+case 1: eeprom_write_byte((uint8_t*)0x3FB, 0x01);break;\
+case 3: eeprom_write_byte((uint8_t*)0x3FB, 0x03);break;\
+default: eeprom_write_byte((uint8_t*)0x3FB, 0x02);break;}\
+T0_interupt_cnt = 0;
 
 
 
