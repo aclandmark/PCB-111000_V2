@@ -5,7 +5,7 @@ char I2C_master_receive(char);
 
 /*****************************************************************************************/
 ISR(TIMER0_OVF_vect) {
-if(eeprom_read_byte((uint8_t*)0x3FB) == 0xFF){			//Normal brightness
+if(eeprom_read_byte((uint8_t*)0x3FB) == 0x01){			//High level brightness
 TCNT0 = 0;
 if(mode == 'F') {
 TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
@@ -15,7 +15,22 @@ TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));}
 else {Display_driver(); }}
 
 
-if(eeprom_read_byte((uint8_t*)0x3FB) == 0x01){			//Low level brightness
+if(eeprom_read_byte((uint8_t*)0x3FB) == 0x02){			//Medium level brightness
+if(!(T0_interupt_cnt)){									//Set to zero by Proj subroutine I2C_Tx_LED_dimmer() subroutine mode Q
+if(mode == 'F'){										//Initiates I2C_initiate_10mS_ref
+TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
+sei();
+Display_driver(); 
+TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));}
+else {Display_driver(); }}
+
+TCNT0 = 248;											//Initialise Timer 0 for 250uS pulse
+	switch(T0_interupt_cnt){
+		case 0: T0_interupt_cnt = 1;break;
+		case 1: {clear_display;} T0_interupt_cnt = 0; TCNT0 = 200; break;}}
+
+
+if(eeprom_read_byte((uint8_t*)0x3FB) == 0x03){			//Low level brightness and multilexer demo
 if(!(T0_interupt_cnt)){									//Set to zero by Proj subroutine I2C_Tx_LED_dimmer() subroutine mode Q
 if(mode == 'F'){										//Initiates I2C_initiate_10mS_ref
 TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
