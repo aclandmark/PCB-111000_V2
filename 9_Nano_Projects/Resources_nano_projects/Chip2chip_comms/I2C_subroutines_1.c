@@ -91,10 +91,30 @@ Timer_T1_sub(T1_delay_100ms);}}
 void I2C_Tx_LED_dimmer(void){
 char Dimmer_control;
 
+
+if ((PIND & 0x04) && (PINB & 0x40) && (PIND & 0x80)) Dimmer_control = 0;				//No user switches pressed
+
+if((PIND & 0x04)^0x04) && ((PINB & 0x40)^0x40) && (PIND & 0x80))Dimmer_control = 1;		//sw1 and sw2 pressed
+
+if((PIND & 0x04)^0x04) && (PINB & 0x40) && ((PIND & 0x80)^0x80))Dimmer_control = 2;		//sw1 and sw3 pressed
+
+if ((PIND & 0x04) && ((PINB & 0x40)^0x40) && ((PIND & 0x80)^0x80))Dimmer_control = 3;	//sw2 and sw3 pressed
+
+/*
 if((PINB & 0x40)^0x40)Dimmer_control = 1;			//if Switch_2 down
 else Dimmer_control = 0;							//Normal operation
 
-I2C_Tx(1, 'Q', &Dimmer_control);}	
+I2C_Tx(1, 'Q', &Dimmer_control);}*/	
+
+
+
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
+#define switch_2_down ((PINB & 0x40)^0x40)
+#define switch_2_up   (PINB & 0x40)
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+
 
 
 
