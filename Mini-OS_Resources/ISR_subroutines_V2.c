@@ -24,10 +24,10 @@ Display_driver();
 TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));}
 else {Display_driver(); }}
 
-TCNT0 = 248;											//Initialise Timer 0 for 250uS pulse
+TCNT0 = 224;											//Initialise Timer 0 for 250uS pulse
 	switch(T0_interupt_cnt){
 		case 0: T0_interupt_cnt = 1;break;
-		case 1: {clear_display;} T0_interupt_cnt = 0; TCNT0 = 200; break;}}
+		case 1: {clear_display;} T0_interupt_cnt = 0; TCNT0 = 32; break;}}
 
 
 if(eeprom_read_byte((uint8_t*)0x3FB) == 0x03){			//Low level brightness and multilexer demo
