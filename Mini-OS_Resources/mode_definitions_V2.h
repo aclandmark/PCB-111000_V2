@@ -113,7 +113,7 @@ TIMSK2 |= (1 << TOIE2);
 \
 MUX_cntl = I2C_data[0];	\
 \
-			eeprom_write_byte((uint8_t*)0x3FB, 0x01);{\
+			eeprom_write_byte((uint8_t*)0x3FB, 0x03);{\
 			switch (MUX_cntl){\
 			case 0:	timer_T0_sub_with_interrupt(T0_delay_125us);break;\
 			case 1: timer_T0_sub_with_interrupt(T0_delay_250us);break;\
