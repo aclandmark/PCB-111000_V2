@@ -11,7 +11,7 @@ char digits[8];
 
 setup_HW_Arduino;
 
-while(switch_1_down);
+//aawhile(switch_1_down);
 
 if (reset_status == 3){Serial.write("Integer Number? Terminate in CR");
 Int_KBD_to_display_A(digits);
@@ -24,7 +24,8 @@ if(reset_status == 2)
 for (int m = 0; m <= 7; m++)digits[m] = eeprom_read_byte((uint8_t*)m);
 I2C_Tx_8_byte_array(digits);}
 
-while(switch_1_up);
+//while(switch_1_up);
+waitforkeypress_A();
 SW_reset;
 
 }
