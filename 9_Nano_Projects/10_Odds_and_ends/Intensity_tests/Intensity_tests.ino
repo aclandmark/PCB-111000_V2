@@ -10,9 +10,7 @@ char digits[8];
 
 
 setup_HW_Arduino;
-
-//aawhile(switch_1_down);
-
+if(reset_status == 1){User_prompt_A; Serial.write("Press AK\r\n");};
 if (reset_status == 3){Serial.write("Integer Number? Terminate in CR");
 Int_KBD_to_display_A(digits);
 for (int m = 0; m <= 7; m++)eeprom_write_byte((uint8_t*)m, digits[m]);
