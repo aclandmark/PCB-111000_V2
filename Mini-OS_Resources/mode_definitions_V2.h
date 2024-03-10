@@ -125,7 +125,7 @@ MUX_cntl = I2C_data[0];	\
 			case 7: timer_T0_sub_with_interrupt(T0_delay_2000us);break;\
 			default: timer_T0_sub_with_interrupt(T0_delay_125us);break;}}\
 \
-			for(int p = 0; p <= 7; p++)display_buf[p] = p + '0';
+			for(int p = 0; p <= 7; p++){display_buf[p] = (p + MUX_cntl)%8 + '0';}
 
 
 
