@@ -7,7 +7,7 @@ char I2C_master_receive(char);
 ISR(TIMER0_OVF_vect) {
 	
 	if(!(T0_interupt_cnt)){									//Set to zero by Proj subroutine I2C_Tx_LED_dimmer() subroutine mode Q
-		if(mode == 'F'){										//Initiates I2C_initiate_10mS_ref
+		if(mode == 'F'){									//Initiates I2C_initiate_10mS_ref
 			TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
 			sei();
 			Display_driver();
@@ -15,51 +15,30 @@ ISR(TIMER0_OVF_vect) {
 		else {Display_driver(); }}
 	
 	
-if(eeprom_read_byte((uint8_t*)0x3FB) == 0x01){			//High level brightness
-TCNT0 = 0;
-/*if(mode == 'F') {
-TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
-sei();
-Display_driver(); 
-TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));}
-else {Display_driver(); }*/
-}
+if(eeprom_read_byte((uint8_t*)0x3FB) == 0x01){				//High level brightness
+TCNT0 = 0;}
 
 
-if(eeprom_read_byte((uint8_t*)0x3FB) == 0x02){			//Medium level brightness
-/*if(!(T0_interupt_cnt)){									//Set to zero by Proj subroutine I2C_Tx_LED_dimmer() subroutine mode Q
-if(mode == 'F'){										//Initiates I2C_initiate_10mS_ref
-TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
-sei();
-Display_driver(); 
-TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));}
-else {Display_driver(); }}*/
-
-TCNT0 = 224;											//Initialise Timer 0 for 250uS pulse
+if(eeprom_read_byte((uint8_t*)0x3FB) == 0x02){				//Medium level brightness
+	
+TCNT0 = 224;												//Initialise Timer 0 for 250uS pulse
 	switch(T0_interupt_cnt){
 		case 0: T0_interupt_cnt = 1;break;
 		case 1: {clear_display;} T0_interupt_cnt = 0; TCNT0 = 32; break;}}
 
 
-if(eeprom_read_byte((uint8_t*)0x3FB) == 0x03){			//Low level brightness and multiplexer demo
-/*if(!(T0_interupt_cnt)){									//Set to zero by Proj subroutine I2C_Tx_LED_dimmer() subroutine mode Q
-if(mode == 'F'){										//Initiates I2C_initiate_10mS_ref
-TIMSK2 &= (!((1 << OCIE2A) | (1 << TOV2)));
-sei();
-Display_driver(); 
-TIMSK2 |= ((1 << OCIE2A) | (1 << TOV2));}
-else {Display_driver(); }}*/
+if(eeprom_read_byte((uint8_t*)0x3FB) == 0x03){				//Low level brightness and multiplexer demo
 
-
-if (!(MUX_cntl))														//Default setting Zero Set in "main" routine Low intensity.
-{TCNT0 = 240;															//Initialise Timer 0 for 125uS pulse
+if (!(MUX_cntl))											//Default setting Zero Set in "main" routine Low intensity.
+{TCNT0 = 240;												//Initialise Timer 0 for 125uS pulse
 	switch(T0_interupt_cnt){
 		case 0: T0_interupt_cnt = 1;break;
-		case 1: {clear_display;} T0_interupt_cnt = 0; TCNT0 = 16; break;}}		//Set T2 to interrupt after 1875uS
+		case 1: {clear_display;} 
+			T0_interupt_cnt = 0; TCNT0 = 16; break;}}		//Set T2 to interrupt after 1875uS
 
-else{																			//Demonstrate the operation of the multiplexer
+else{														//Demonstrate the operation of the multiplexer
 	
-	switch (MUX_cntl){															//Set by project Multiplexer_demo mode "L"
+	switch (MUX_cntl){										//Set by project Multiplexer_demo mode "L"
 		case 1: TCNT0 = 248; break;		//250
 		case 2: TCNT0 = 244; break;		//375
 		case 3: TCNT0 = 240; break;		//500
@@ -72,7 +51,7 @@ else{																			//Demonstrate the operation of the multiplexer
 		case 0: T0_interupt_cnt = 1;break;
 		case 1: {clear_display;}
 			switch (MUX_cntl){
-				case 1: TCNT0 = 108; break;		//3750	//136
+				case 1: TCNT0 = 108; break;		//3750
 				case 2: TCNT0 = 76; break;		//5625
 				case 3: TCNT0 = 16; break;		//7500
 				case 4: TCNT0 = 181; break;		//9375
@@ -106,7 +85,7 @@ ISR(TIMER2_OVF_vect) {
 long TCNT1_BKP;
 char cal_168_mode;
 switch (mode){
-case 'K':   timer_2_counter++; if(timer_2_counter == 3)						//Scrolls scientific number accross the display
+case 'K':   timer_2_counter++; if(timer_2_counter == 3)						//Scrolls scientific number across the display
 {timer_2_counter=0; display_float(Sc_Num_string);} break;
 
 case 'M':     case 'N':  case 'T': case 'X':   								//Atmega 328 calibration subroutines 
@@ -133,43 +112,44 @@ default:
 timer_2_counter++; if(timer_2_counter == 16){timer_2_counter=0; 			//Enter this loop every second
 if(mode != 'F'){update_timer (); Ten_mS_tick = 41;}							//Internal clock modes 7,8 and 9 (counts to 41 (40.96) in 10ms)
 if(mode == 'F') { OCR2A = 41;Ext_tick();}}break;}}							//10mS external ref signal
-																			//Ext_tck: //send a TWI start condition with interupt
+																			//Ext_tck: //send a TWI start condition with interrupt
 
 
 
 /*****************************************************************************************/
-ISR(TIMER2_COMPA_vect){OCR2A = OCR2A + 41;  OCR2A = OCR2A%256; Ext_tick();}		//call every 10mS mode F only
+ISR(TIMER2_COMPA_vect){OCR2A = OCR2A + 41;  
+	OCR2A = OCR2A%256; Ext_tick();}											//call every 10mS mode F only
 
 
 
 
 /*****************************************************************************************/
 ISR(TWI_vect){
-switch(entry_point){																	//Address of slave (master read operation)  SLA + R
-case 'A': TWDR = 0x03; TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE); 				//Send slave address + 'R'
+switch(entry_point){																		//Address of slave (master read operation)  SLA + R
+case 'A': TWDR = 0x03; TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE); 					//Send slave address + 'R'
 			entry_point='B'; break;
-case 'B': if (TWSR == 0x40){TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE);			//Ack received wait for payload size
+case 'B': if (TWSR == 0x40){TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE);				//Ack received wait for payload size
 			entry_point='C';} 
 			else {TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE); 
-			entry_point='A';} break;													//Repeated Start: Nack received
+			entry_point='A';} break;														//Repeated Start: Nack received
 case 'C': payload_size = TWDR; 
-			if(!(payload_size))entry_point = 'Z'; 										//No payload: Exit
-			else {TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE);		//Send a repeated start condition
+			if(!(payload_size))entry_point = 'Z'; 											//No payload: Exit
+			else {TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE);			//Send a repeated start condition
 			entry_point='E';} break;
-case 'E': TWDR = 0x03; TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE); 				//Send slave address + 'R'
+case 'E': TWDR = 0x03; TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE); 					//Send slave address + 'R'
 			entry_point='F'; break;
 case 'F': if (TWSR != 0x40){TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE);		
-			entry_point='E';} 															//Nack received: Send repeated start
-			else {TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE); 		//Ack received: Continue
+			entry_point='E';} 																//Nack received: Send repeated start
+			else {TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE); 			//Ack received: Continue
 			entry_point='G';} break;
-case 'G': display_buf[disp_ptr] = TWDR; disp_ptr++; 									//Save first char in display buff
-			if (disp_ptr < (payload_size-1)){TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE);
-			entry_point = 'G';}															//Save subsequent chars in display buff
+case 'G': display_buf[disp_ptr] = TWDR; disp_ptr++; 										//Save first char in display buff
+			if (disp_ptr < (payload_size-1))
+			{TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE);
+			entry_point = 'G';}																//Save subsequent chars in display buff
 			else{TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE);entry_point = 'H';}break;
-case 'H': display_buf[disp_ptr] = TWDR;													//Last char
-			//TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO); 						//Clear interrupt and transmit stop NOT actually needed
+case 'H': display_buf[disp_ptr] = TWDR;														//Last char
 			entry_point = 'Z';
-			break;}																		//Data transfer complete: Exit
+			break;}																			//Data transfer complete: Exit
 if(entry_point=='Z'){TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
 wdr();}}
 
