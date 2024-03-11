@@ -72,7 +72,7 @@ else{																			//Demonstrate the operation of the multiplexer
 		case 0: T0_interupt_cnt = 1;break;
 		case 1: {clear_display;}
 			switch (MUX_cntl){
-				case 1: TCNT0 = 136; break;		//3750
+				case 1: TCNT0 = 148; break;		//3750	//136
 				case 2: TCNT0 = 76; break;		//5625
 				case 3: TCNT0 = 16; break;		//7500
 				case 4: TCNT0 = 181; break;		//9375
