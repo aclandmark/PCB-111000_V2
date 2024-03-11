@@ -107,6 +107,7 @@ RHSofDP = 0;expnt_result = 0;
 #define two_fifty_mS_delay_with_interrupts  TIMSK1 |= (1 << TOIE1);two_fifty_mS_delay; TIMSK1 &= (~(1 << TOIE1));
 
 #define one_sec_delay  timer_T1_sub_with_interrupt(T1_delay_1sec);while (T1_ovf_flag == 0);T1_ovf_flag = 0;
+#define T1_delay_1sec 5,0xE17B
 #define one_sec_delay_with_interrupts  TIMSK1 |= (1 << TOIE1);one_sec_delay; TIMSK1 &= (~(1 << TOIE1));
 
 
@@ -191,7 +192,8 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 #define T0_delay_125us 3,240
 #define T0_delay_1875us 3,16
 
-#define T0_delay_250us 4,248
+#define T0_delay_250us 3,224
+#define T0_delay_S_250us 4,248
 #define T0_delay_3750us 4,136
 
 #define T0_delay_375us 4, 244
@@ -214,9 +216,9 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 #define T0_delay_30000us 5,16
 
 
-#define T1_delay_1sec 5,0xE17D
-#define T1_delay_500ms 5,0xF0BE
-#define T1_delay_10ms 3, 0xF63C
+
+#define T1_delay_500ms 5, 0xF0C3
+//#define T1_delay_20ms 3, 0xF63C
 
 
 /*********************************************************************************************************************/
