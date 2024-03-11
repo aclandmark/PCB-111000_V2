@@ -30,6 +30,10 @@ UDR0 = data;}
 
 void waitforchar(void){unsigned char n=225; 																																			
 while (!(UCSR0A & (1 << RXC0))) {n--; if(n==0) break;}}
+	
+char waitforkeypress (void){										//Wait here indefinitely but prevent WDTime-out
+	while (!(UCSR0A & (1 << RXC0)))
+return UDR0;}	
 
 void newline(void){sendString ("\r\n");}
 
