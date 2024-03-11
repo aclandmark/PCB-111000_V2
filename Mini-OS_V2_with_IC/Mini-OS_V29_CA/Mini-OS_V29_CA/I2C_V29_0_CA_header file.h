@@ -6,7 +6,6 @@
 #include <avr/eeprom.h>
 
 
-
 /*********************************************************************************************************************/
 void I2C_master_transmit(char);
 char I2C_master_receive(char);
@@ -111,12 +110,14 @@ RHSofDP = 0;expnt_result = 0;
 
 
 
+
 /*********************************************************************************************************************/
 #define	digit_3			PORTB |= (1 << PB0)
 #define	digit_2			PORTB |= (1 << PB2)
 #define	digit_1			PORTB |= (1 << PB3)
 #define	digit_0			PORTB |= (1 << PB4)
 #define	toggle_digit_0	PORTB ^= (1 << PB4)
+
 
 #define	digit_7		PORTB |= (1 << PB5)
 #define	digit_6		PORTC |= (1 << PC0)
@@ -132,6 +133,7 @@ RHSofDP = 0;expnt_result = 0;
 #define	seg_g 	(1 << PD7)
 
 
+
 /*********************************************************************************************************************/
 #define set_digit_drivers \
 DDRB |= (1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3) | (1 << DDB4) | (1 << DDB5);\
@@ -143,6 +145,7 @@ PORTC &= (~((1 << PC0) | (1 << PC1) | (1 << PC2)));
 
 #define clear_display  PORTB |= (seg_a ); \
 PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
+
 
 #define clear_display_buffer  for(int m = 0; m<=7; m++)display_buf[m] = 0;
 
@@ -164,7 +167,6 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 #define nine	PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c | seg_f | seg_g))
 #define zero	PORTB &= (~(seg_a)); PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f ))
 #define decimalP	PORTB &= (~(seg_a));	PORTD &= (~(seg_b | seg_e | seg_f | seg_g ))
-
 
 
 
@@ -193,8 +195,7 @@ PORTD |= (seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 #define T0_delay_1875us 3,16
 
 #define T0_delay_250us 4,248
-#define T0_delay_1750us 4,200
-
+#define T0_delay_S_250us 4,248
 #define T0_delay_3750us 4,136
 
 #define T0_delay_375us 4, 244
