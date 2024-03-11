@@ -105,7 +105,7 @@ if((PINB & 0x40)^0x40)Dimmer_control = 1;			//if Switch_2 down
 else Dimmer_control = 0;							//Normal operation
 
 }*/	
-Serial.print((int) Dimmer_control);
+//Serial.print((int) Dimmer_control);
 I2C_Tx(1, 'Q', &Dimmer_control);}
 
 
