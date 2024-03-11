@@ -220,7 +220,7 @@ PORTD &= (~(seg_b | seg_c | seg_d | seg_e | seg_f | seg_g));
 
 
 #define T1_delay_500ms 5, 0xF0C3
-#define T1_delay_10ms 3, 0xF63C
+//#define T1_delay_20ms 3, 0xF63C
 
 
 /****************************************************************************************************/
