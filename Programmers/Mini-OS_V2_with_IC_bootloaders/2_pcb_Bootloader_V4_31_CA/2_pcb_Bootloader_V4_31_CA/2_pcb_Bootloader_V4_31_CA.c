@@ -2,7 +2,7 @@
 
 /********  ATMEGA pcb bootloader runs in the boot space of the ATMEGA328**********/
 /*Compile it using optimisation level s ONLY
-It shares the ATMEGA 328 with the display control program which runs in the applicarion code space.
+It shares the ATMEGA 328 with the display control program which runs in the application code space.
 Rx/Tx work at 57.6k
 Its config bits provide BOD at 2.9V.
 */
@@ -36,6 +36,7 @@ int main (void){
 
 	char cal_factor=0;
 	char target_detected = 0;
+	char keypress;
 
 	/*This program is loaded into the boot section starting at SW location 0x7000*/
 	/*Config bit selection ensures that all resets send the program counter to 0x7000*/
@@ -98,21 +99,34 @@ int main (void){
 
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
+				counter = 1;
+				
+				prog_counter=0; line_length_old=0;
+				Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0;
+				w_pointer = 0; r_pointer = 0;line_counter = 0;
+
 				Atmel_config(Prog_enable_h, 0);
 
+				/**********************************************/
+				while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
+				{if (keypress == 'x'){while(1);}}									//X pressed to escape
+				/**********************************************/
+							
+				
 				/***Erase target flash and program target config space***/
 				Atmel_config(Chip_erase_h, 0);
+				
+
+				
+				UCSR0B |= (1<<RXCIE0); 	sei();							//UART interrupts now active
+
+				Program_Flash();
+				
 				Atmel_config(write_extended_fuse_bits_h,0xFF);
 				Atmel_config(write_fuse_bits_H_h,0xD5);					//BOD 2.9V
 				Atmel_config(write_fuse_bits_h,0xC2);					//0mS SUT 8MHz RC clock
 				Atmel_config(write_lock_bits_h,0xEB);
-
-				prog_counter=0; line_length_old=0;
-				Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0;
-				w_pointer = 0; r_pointer = 0;line_counter = 0;
-				UCSR0B |= (1<<RXCIE0); 	sei();							//UART interrupts now active
-
-				Program_Flash();
+								
 				PORTD |= (1 << PD7);									//Halt led activity
 				Verify_Flah_99();
 
