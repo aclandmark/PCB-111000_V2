@@ -23,7 +23,7 @@ Following POR check cal factor and perform auto clock recovery if necassary
 Zero to 0x3F5: For user strings and data
 ***********************/
 
-# include "I2C_V29_0_CA_header file.h"
+# include "I2C_V29_0_CA_header_file.h"
 # include "I2C_V29_0_CA_display_subroutines.c"
 
 # include "../../../Mini-OS_Resources/IO_subroutines.c"
