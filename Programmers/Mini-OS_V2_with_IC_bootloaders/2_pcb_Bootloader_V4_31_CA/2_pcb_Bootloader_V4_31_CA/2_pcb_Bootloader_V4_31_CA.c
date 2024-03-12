@@ -27,6 +27,7 @@ Its config bits provide BOD at 2.9V.
 #include "1_AT_bootloader_V4_31_CA_SW_subs.c"
 #include "1_AT_bootloader_V4_31_CA_HW_subs.c"*/
 
+
 #define LED_2_on	 PORTD &= (~(1 << PD7));
 #define LED_2_off	 PORTD |= (1 << PD7);
 
@@ -132,7 +133,7 @@ int main (void){
 				Atmel_config(write_lock_bits_h,0xEB);
 								
 				PORTD |= (1 << PD7);									//Halt led activity
-				Verify_Flah_99();
+				Verify_Flash();
 
 				Reset_H;												//Extra line Exit programming mode
 
@@ -219,7 +220,7 @@ int main (void){
 
 
 				
-				void Verify_Flah_99 (void){																	//short version
+				void Verify_Flash (void){																	//short version
 					int   star_counter;
 					signed int phys_address;
 					char offset=0;
