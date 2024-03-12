@@ -109,7 +109,7 @@ int main (void){
 
 				/**********************************************/
 				while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
-				{if (keypress == 'x'){while(1);}}									//X pressed to escape
+				{if (keypress == 'x'){sendString("Reset!");}}									//X pressed to escape
 				/**********************************************/
 							
 				
