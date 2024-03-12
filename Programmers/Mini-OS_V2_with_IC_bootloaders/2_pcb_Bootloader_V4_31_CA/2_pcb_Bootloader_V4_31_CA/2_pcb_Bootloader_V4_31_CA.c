@@ -99,7 +99,7 @@ int main (void){
 
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
-				counter = 1;
+				counter = 1;////////////=1;
 				
 				prog_counter=0; line_length_old=0;
 				Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0;
@@ -109,7 +109,7 @@ int main (void){
 
 				/**********************************************/
 				while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
-				{if (keypress == 'x'){sendString("Reset!");}}									//X pressed to escape
+				{if (keypress == 'x'){sendString("Reset!\r\n");}}									//X pressed to escape
 				/**********************************************/
 							
 				
