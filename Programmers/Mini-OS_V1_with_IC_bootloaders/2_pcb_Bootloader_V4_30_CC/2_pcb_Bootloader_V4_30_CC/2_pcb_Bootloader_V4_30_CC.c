@@ -124,7 +124,7 @@ int main (void){
 
 				Program_Flash();
 				PORTD &= (~(1 << PD7));													//Halt led activity
-				Verify_Flash_99();
+				Verify_Flash();
 
 
 				Reset_H;																//Exit programming mode
@@ -214,7 +214,7 @@ int main (void){
 
 
 				
-				void Verify_Flash_99 (void){			//short version
+				void Verify_Flash (void){			//short version
 					int   star_counter;
 					signed int phys_address;
 					char offset=0;
