@@ -22,9 +22,18 @@ Its config bits provide BOD at 2.9V.
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 
-#include "1_AT_bootloader_V4_32_CC_heade_file.h"
+/*#include "1_AT_bootloader_V4_32_CC_heade_file.h"
 #include "1_AT_bootloader_V4_32_CC_SW_subs.c"
-#include "1_AT_bootloader_V4_32_CC_HW_subs.c"
+#include "1_AT_bootloader_V4_32_CC_HW_subs.c"*/
+
+#define LED_2_on		 PORTD &= (~(1 << PD7));
+#define LED_2_off		 PORTD |= (1 << PD7);
+
+
+#include "../../../Bootloader_resources/Bootloader_header_file.h"
+#include "../../../Bootloader_resources/Bootloader_HW_subs.c"
+#include "../../../Bootloader_resources/Bootloader_SW_subs.c"
+
 
 #define wdr()  __asm__ __volatile__("wdr")
 
@@ -113,7 +122,7 @@ int main (void){
 
 				Program_Flash();
 				PORTD &= (~(1 << PD7));														//Halt led activity
-				Verify_Flash_99();
+				Verify_Flash();
 
 
 				Reset_H;																	//Extra line Exit programming mode
@@ -200,9 +209,8 @@ int main (void){
 
 
 
-
 				
-				void Verify_Flash_99 (void){			//short version
+				void Verify_Flash (void){			//short version
 					int   star_counter;
 					signed int phys_address;
 					char offset=0;
