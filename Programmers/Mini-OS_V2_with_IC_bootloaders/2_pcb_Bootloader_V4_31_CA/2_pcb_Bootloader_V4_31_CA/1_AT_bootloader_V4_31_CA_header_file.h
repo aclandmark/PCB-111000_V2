@@ -21,6 +21,7 @@ void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}
 #define RBL 255
 
 /* SW subs prototypes*/
+
 void newline(void);
 char receiveChar(void);
 char isCharavailable (int);
@@ -36,11 +37,13 @@ void decode_HEX_cmd_SUB(void);
 void write_page_SUB(int);
 
 /* HW subs prototypes*/
+
 char Atmel_config ( unsigned int, unsigned int );
 char Read_write_mem(char, int, char);
 void Load_page(char, int, unsigned char);
 
 /* main subs prototypes*/
+
 void Program_Flash (void);
 void Verify_Flah_99(void);
 void timer_T0_sub(char, unsigned char);
@@ -82,12 +85,14 @@ volatile int   tempInt1, tempInt2;
 volatile int store[80];
 volatile int char_count;
 
+
 /*********variables for the new_record subroutine****************/
 volatile char Count_down;
 
 /*********variables for the start_new_code_block subroutine****************/
 volatile int write_address;	
 volatile signed char line_offset;
+
 
 #define Prog_enable 0xAC530000
 #define Prog_enable_h 0xAC53
@@ -110,6 +115,7 @@ volatile signed char line_offset;
 
 #define Chip_erase 0xAC800000
 #define Chip_erase_h 0xAC80
+
 
 /********HW V 1.3 Define target Pin & CC LED definitions START for boot loader**********/
 #define PGD_cmd_H PORTB |= cmd_pin
