@@ -45,7 +45,7 @@ void Load_page(char, int, unsigned char);
 /* main subs prototypes*/
 
 void Program_Flash (void);
-void Verify_Flah_99(void);
+void Verify_Flash(void);
 void timer_T0_sub(char, unsigned char);
 
 #define inc_r_pointer \
