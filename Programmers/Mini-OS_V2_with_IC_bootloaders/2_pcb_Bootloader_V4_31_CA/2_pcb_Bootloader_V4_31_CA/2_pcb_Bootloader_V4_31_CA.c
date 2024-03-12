@@ -46,10 +46,11 @@ int main (void){
 	WDTCSR |= (1 <<WDCE) | (1<< WDE);
 	WDTCSR = 0;
 
-	/*For every reset the default osc cal word is automatically loaded by the micoprocessor HW*/
+	/*For every reset the default oscillator cal word is automatically loaded by the microprocessor HW*/
 	/*Placing the cal read macro here will apply user calibration*/
 	/*EEPROM upper address is 0x400* (i.e.1024 1kB) User Cal word must be stored in EEPROM locations
 	0x3FE and 0x3FF*/
+	
 	eeprom_write_byte((uint8_t*)0x3FD, OSCCAL); 		//New line Save OSCAAL
 
 	if ((eeprom_read_byte((uint8_t*)0x3FE) > 0x0F)\
@@ -63,7 +64,6 @@ int main (void){
 	/*POR or watchdog timer resets are detected and cause the program counter to switch to location 0x0000
 	where the application program resides*/
 
-	//check reset
 	if (!(MCUSR & (1 << EXTRF)) )						//POR, BOR or watchdog timeout but not the reset switch
 	{MCUCR = (1<<IVCE);MCUCR = 0x0;						//select interrupt vector table starting at 0x000
 	asm("jmp 0x0000");}
@@ -76,7 +76,6 @@ int main (void){
 
 	ADMUX |= (1 << REFS0);								//select internal ADC ref and remove external supply on AREF pin
 	USART_init(0,16);
-
 	
 	while(1){
 		boot_target;
@@ -95,11 +94,11 @@ int main (void){
 
 				sendString ("Sw!\r\n");wdt_enable(WDTO_60MS); while(1);}}
 				sendString ("\r\nSend file (ATMEGA168):\r\n");
-				PORTD &= (~(1 << PD7));									//Start led activity
+				PORTD &= (~(1 << PD7));												//Start led activity
 
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
-				counter = 1;////////////=1;
+				counter = 1;
 				
 				prog_counter=0; line_length_old=0;
 				Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0;
@@ -107,17 +106,14 @@ int main (void){
 
 				Atmel_config(Prog_enable_h, 0);
 
-				/**********************************************/
+				
 				while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
-				{if (keypress == 'x'){sendString("Reset!\r\n");}}									//X pressed to escape
-				/**********************************************/
-							
+				{if (keypress == 'x'){sendString("Reset!\r\n");}}					//x pressed to escape
+											
 				
 				/***Erase target flash and program target config space***/
 				Atmel_config(Chip_erase_h, 0);
-				
-
-				
+								
 				UCSR0B |= (1<<RXCIE0); 	sei();							//UART interrupts now active
 
 				Program_Flash();
@@ -130,12 +126,10 @@ int main (void){
 				PORTD |= (1 << PD7);									//Halt led activity
 				Verify_Flah_99();
 
-
 				Reset_H;												//Extra line Exit programming mode
 
-
 				if(prog_counter == read_ops) sendString(" OK"); else sendString("!!??");
-				} else{sendChar('!');									//target not detected during power up and targt detect phase
+				} else{sendChar('!');									//target not detected during power up and target detect phase
 			}
 
 			if(cal_factor==1) sendString("  UC\r\n"); else sendString("  DC\r\n");
@@ -193,18 +187,18 @@ int main (void){
 					Program_record();	}
 
 					else{if(Hex_address != PIC_address)//loop 2
-						{//normal break	loop 3
-							if (section_break){																//PAGE Adress increases by at least 0x40
+						{																					//normal break	loop 3
+							if (section_break){																//PAGE address increases by at least 0x40
 								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    			//+0x20 for offset pages
 							if(orphan) write_page_SUB(page_address + PageSZ);}   							//0x20??
 							
-							else{//loop 4
+							else{																			//loop 4
 								if(page_break){if((Flash_flag) && (!(orphan))) write_page_SUB(page_address);
-								orphan = 0; }}//  break within page loop 4
-							}//loop 3
+								orphan = 0; }}																//  break within page loop 4
+							}																				//loop 3
 							start_new_code_block(); Program_record();  if(short_line)short_line=0;			//short_line no break
-						}	//loop 2
-					}	//loop 1
+						}																					//loop 2
+					}																						//loop 1
 					
 					UCSR0B &= (~(1<<RXCIE0));
 					while(1){if (isCharavailable(2)==1)receiveChar();else break;}
@@ -217,7 +211,7 @@ int main (void){
 
 
 				
-				void Verify_Flah_99 (void){			//short version
+				void Verify_Flah_99 (void){																	//short version
 					int   star_counter;
 					signed int phys_address;
 					char offset=0;
