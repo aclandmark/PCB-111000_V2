@@ -21,6 +21,7 @@ void Clock_period(void){for(int p = 0; p<= 3; p++){asm("nop");}}	//P <= 3 AT STA
 #define RBL 255
 
 /* SW subs prototypes*/
+
 void newline(void);
 char receiveChar(void);
 char isCharavailable (int);
@@ -36,11 +37,13 @@ void decode_HEX_cmd_SUB(void);
 void write_page_SUB(int);
 
 /* HW subs prototypes*/
+
 char Atmel_config ( unsigned int, unsigned int );
 char Read_write_mem(char, int, char);
 void Load_page(char, int, unsigned char);
 
 /* main subs prototypes*/
+
 void Program_Flash (void);
 void Verify_Flash_99(void);
 void timer_T0_sub(char, unsigned char);
@@ -58,7 +61,7 @@ int Hex_address;
 int PIC_address;
 signed int page_address;
 signed int PAmask;
-signed char offset;		//used for different things
+signed char offset;
 signed char space_on_page;
 signed int PageSZ;
 char Flash_flag;
@@ -82,11 +85,14 @@ volatile int   tempInt1, tempInt2;
 volatile int store[80];		
 volatile int char_count;
 
+
 /*********variables for the new_record subroutine****************/
 volatile char Count_down;
+
 /*********variables for the start_new_code_block subroutine****************/
 volatile int write_address;	
 volatile signed char line_offset;
+
 
 #define Prog_enable 0xAC530000
 #define Prog_enable_h 0xAC53
@@ -110,6 +116,7 @@ volatile signed char line_offset;
 #define Chip_erase 0xAC800000
 #define Chip_erase_h 0xAC80
 
+
 /********HW V 1.3 Define target Pin & CC LED definitions START for boot loader**********/
 #define PGD_cmd_H		PORTB |= cmd_pin
 #define PGD_cmd_L		PORTB &= ~(cmd_pin)
@@ -121,8 +128,8 @@ volatile signed char line_offset;
 
 #define boot_target cmd_pin =  0x08; resp_pin = 0x10; clock_pin =  0x20; reset_pin = 0x08; DDRB |= 0x28; DDRC |= 0x08;
 
-#define LED_2_off		 PORTD &= (~(1 << PD7));
 #define LED_2_on		 PORTD |= (1 << PD7);
+#define LED_2_off		 PORTD &= (~(1 << PD7));
 
 #define Atmel_powerup \
 {two_msec_delay;}\
