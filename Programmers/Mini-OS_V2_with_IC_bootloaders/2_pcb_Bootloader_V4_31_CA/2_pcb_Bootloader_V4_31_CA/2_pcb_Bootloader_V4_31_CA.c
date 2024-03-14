@@ -84,7 +84,7 @@ int main (void){
 	PORTC = 0x07;										//Limit LED activity
 
 	ADMUX |= (1 << REFS0);								//select internal ADC ref and remove external supply on AREF pin
-	USART_init(0,16);
+	USART_init(0,16);		//16//25
 	
 	while(1){
 		boot_target;
@@ -116,8 +116,8 @@ int main (void){
 				Atmel_config(Prog_enable_h, 0);
 
 				
-				while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
-				{if (keypress == 'x'){sendString("Reset!\r\n");}}					//x pressed to escape
+				//while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
+				//{if (keypress == 'x'){sendString("Reset!\r\n");}}					//x pressed to escape
 											
 				
 				/***Erase target flash and program target config space***/
