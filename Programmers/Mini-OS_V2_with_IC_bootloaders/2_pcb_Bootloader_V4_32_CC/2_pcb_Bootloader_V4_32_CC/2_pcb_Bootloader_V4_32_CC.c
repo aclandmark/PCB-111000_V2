@@ -26,9 +26,10 @@ Its config bits provide BOD at 2.9V.
 #include "1_AT_bootloader_V4_32_CC_SW_subs.c"
 #include "1_AT_bootloader_V4_32_CC_HW_subs.c"*/
 
-#define LED_2_on		 PORTD &= (~(1 << PD7));
-#define LED_2_off		 PORTD |= (1 << PD7);
-
+#define LED_2_on				PORTD &= (~(1 << PD7));
+#define LED_2_off				PORTD |= (1 << PD7);
+#define setup_leds				DDRD |= (1 << DDD7); PORTD &= ~(1 << PD7);
+#define Halt_LED_Activity		PORTD &= (~(1 << PD7));	
 
 #include "../../../Bootloader_resources/Bootloader_header_file.h"
 #include "../../../Bootloader_resources/Bootloader_HW_subs.c"
@@ -55,7 +56,7 @@ int main (void){
 	WDTCSR |= (1 <<WDCE) | (1<< WDE);
 	WDTCSR = 0;
 
-	/*For every reset the default osc cal word is automatically loaded by the micoprocessor HW*/
+	/*For every reset the default oscillator cal word is automatically loaded by the micoprocessor HW*/
 	/*Placing the cal read macro here will apply user calibration*/
 	/*EEPROM upper address is 0x400* (i.e.1024 1kB) User Cal word must be stored in EEPROM locations
 	0x3FE and 0x3FF*/
@@ -80,9 +81,7 @@ int main (void){
 	MCUCR = (1<<IVSEL);
 	MCUSR &= (~(1 << EXTRF));  							//Reset the external reset flag
 
-	DDRD |= (1 << DDD7); PORTD &= ~(1 << PD7);			//define led activity
-	
-	
+	setup_leds;
 	ADMUX |= (1 << REFS0);								//select internal ADC ref and remove external supply on AREF pin
 	USART_init(0,16);									//57.6k
 
@@ -132,7 +131,7 @@ int main (void){
 				Atmel_config(write_fuse_bits_h,0xC2);										//0mS SUT 8MHz RC clock
 				Atmel_config(write_lock_bits_h,0xEB);
 				
-				PORTD &= (~(1 << PD7));														//Halt led activity
+				Halt_LED_Activity;
 				Verify_Flash();
 
 				Reset_H;																	//Extra line Exit programming mode
