@@ -105,38 +105,40 @@ int main (void){
 				sendString ("Sw!\r\n");wdt_enable(WDTO_60MS); while(1);}}
 				sendString ("\r\nSend file (ATMEGA168):\r\n");
 				Start_LED_Activity;
-				
+
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
 				counter = 1;
+
 				prog_counter=0; line_length_old=0;
 				Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0;
 				w_pointer = 0; r_pointer = 0;line_counter = 0;
 
+
 				Atmel_config(Prog_enable_h, 0);
-				
+
 				//while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
 				//{if (keypress == 'x'){sendString("Reset!\r\n");}}					//x pressed to escape
 
 				/***Erase target flash and program target config space***/
 				Atmel_config(Chip_erase_h, 0);
+				
 
-				UCSR0B |= (1<<RXCIE0); 	sei();							//UART interrupts now active
+				UCSR0B |= (1<<RXCIE0); 	sei();												//UART interrupts now active
 
 				Program_Flash();
 				
 				Atmel_config(write_extended_fuse_bits_h,0xFF);
-				Atmel_config(write_fuse_bits_H_h,0xD5);					//BOD 2.9V
-				Atmel_config(write_fuse_bits_h,0xC2);					//0mS SUT 8MHz RC clock
+				Atmel_config(write_fuse_bits_H_h,0xD5);										//BOD 2.9V
+				Atmel_config(write_fuse_bits_h,0xC2);										//0mS SUT 8MHz RC clock
 				Atmel_config(write_lock_bits_h,0xEB);
-								
+				
 				Halt_LED_Activity;
 				Verify_Flash();
 
-				Reset_H;												//Extra line Exit programming mode
+				Reset_H;																	//Extra line Exit programming mode
 
-				if(prog_counter == read_ops) sendString(" OK"); 
-				else sendString("!!??");
+				if(prog_counter == read_ops) sendString(" OK"); else sendString("!!??");
 				} else{sendChar('!');}									//target not detected during power up and target detect phase
 
 			if(cal_factor==1) sendString("  UC\r\n"); else sendString("  DC\r\n");
