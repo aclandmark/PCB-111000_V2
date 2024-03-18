@@ -28,10 +28,11 @@ Its config bits provide BOD at 2.9V.
 #include "1_AT_bootloader_V4_31_CA_HW_subs.c"*/
 
 
-#define LED_2_on	 		PORTD &= (~(1 << PD7));
-#define LED_2_off	 		PORTD |= (1 << PD7);
-#define setup_leds			DDRD |= (1 << DDD7); PORTD |= (1 << PD7); PORTC = 0x07;			
-#define Halt_LED_Activity	PORTD |= (1 << PD7);	
+#define LED_2_on	 			PORTD &= (~(1 << PD7));
+#define LED_2_off	 			PORTD |= (1 << PD7);
+#define setup_leds				DDRD |= (1 << DDD7); PORTD |= (1 << PD7); PORTC = 0x07;	
+#define Start_LED_Activity		PORTD &= (~(1 << PD7));		
+#define Halt_LED_Activity		PORTD |= (1 << PD7);	
 
 #include "../../../Bootloader_resources/Bootloader_header_file.h"
 #include "../../../Bootloader_resources/Bootloader_HW_subs.c"
@@ -103,8 +104,8 @@ int main (void){
 
 				sendString ("Sw!\r\n");wdt_enable(WDTO_60MS); while(1);}}
 				sendString ("\r\nSend file (ATMEGA168):\r\n");
-				PORTD &= (~(1 << PD7));												//Start led activity
-
+				Start_LED_Activity;
+				
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
 				counter = 1;
