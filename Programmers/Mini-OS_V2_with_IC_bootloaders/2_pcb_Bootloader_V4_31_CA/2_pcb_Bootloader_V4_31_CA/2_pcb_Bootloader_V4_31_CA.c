@@ -45,7 +45,7 @@ int main (void){
 
 	char cal_factor=0;
 	char target_detected = 0;
-	char keypress;
+	//char keypress;
 
 	/*This program is loaded into the boot section starting at SW location 0x7000*/
 	/*Config bit selection ensures that all resets send the program counter to 0x7000*/
@@ -84,7 +84,7 @@ int main (void){
 	PORTC = 0x07;										//Limit LED activity
 
 	ADMUX |= (1 << REFS0);								//select internal ADC ref and remove external supply on AREF pin
-	USART_init(0,16);		//16//25
+	USART_init(0,16);
 	
 	while(1){
 		boot_target;
@@ -108,21 +108,18 @@ int main (void){
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
 				counter = 1;
-				
 				prog_counter=0; line_length_old=0;
 				Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0;
 				w_pointer = 0; r_pointer = 0;line_counter = 0;
 
 				Atmel_config(Prog_enable_h, 0);
-
 				
 				//while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
 				//{if (keypress == 'x'){sendString("Reset!\r\n");}}					//x pressed to escape
-											
-				
+
 				/***Erase target flash and program target config space***/
 				Atmel_config(Chip_erase_h, 0);
-								
+
 				UCSR0B |= (1<<RXCIE0); 	sei();							//UART interrupts now active
 
 				Program_Flash();
@@ -137,12 +134,11 @@ int main (void){
 
 				Reset_H;												//Extra line Exit programming mode
 
-				if(prog_counter == read_ops) sendString(" OK"); else sendString("!!??");
-				} else{sendChar('!');									//target not detected during power up and target detect phase
-			}
+				if(prog_counter == read_ops) sendString(" OK"); 
+				else sendString("!!??");
+				} else{sendChar('!');}									//target not detected during power up and target detect phase
 
 			if(cal_factor==1) sendString("  UC\r\n"); else sendString("  DC\r\n");
-
 
 		}return 1;}
 
