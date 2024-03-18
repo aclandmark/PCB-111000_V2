@@ -177,7 +177,7 @@ int main (void){
 				start_new_code_block();
 				Program_record();
 				
-				while(1){		//loop1
+				while(1){																						//loop1
 					new_record();
 					if (line_length==0)break; 																	//ISR variable
 
@@ -187,18 +187,18 @@ int main (void){
 					Program_record();	}
 
 					else{if(Hex_address != PIC_address)//loop 2
-						{//normal break	loop 3
-							if (section_break){																	//PAGE Adress increases by at least 0x40
+						{																						//normal break	loop 3
+							if (section_break){																	//PAGE address increases by at least 0x40
 								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    				//+0x20 for offset pages
 							if(orphan) write_page_SUB(page_address + PageSZ);}   								//0x20??
 							
-							else{//loop 4
+							else{																				//loop 4
 								if(page_break){if((Flash_flag) && (!(orphan))) write_page_SUB(page_address);
-								orphan = 0; }}//  break within page loop 4
-							}//loop 3
+								orphan = 0; }}																	//  break within page loop 4
+							}																					//loop 3
 							start_new_code_block(); Program_record();  if(short_line)short_line=0;				//short_line no break
-						}	//loop 2
-					}	//loop 1
+						}																						//loop 2
+					}																							//loop 1
 					
 					UCSR0B &= (~(1<<RXCIE0));
 					while(1){if (isCharavailable(2)==1)receiveChar();else break;}
