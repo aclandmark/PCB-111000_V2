@@ -29,6 +29,7 @@ Its config bits provide BOD at 2.9V.
 #define LED_2_on				PORTD &= (~(1 << PD7));
 #define LED_2_off				PORTD |= (1 << PD7);
 #define setup_leds				DDRD |= (1 << DDD7); PORTD &= ~(1 << PD7);
+#define Start_LED_Activity		PORTD |= (1 << PD7);	
 #define Halt_LED_Activity		PORTD &= (~(1 << PD7));	
 
 #include "../../../Bootloader_resources/Bootloader_header_file.h"
@@ -41,6 +42,8 @@ Its config bits provide BOD at 2.9V.
 
 signed int  read_ops=0;
 char dummy_byte;
+
+//ORIGINAL
 
 int main (void){
 
@@ -56,12 +59,12 @@ int main (void){
 	WDTCSR |= (1 <<WDCE) | (1<< WDE);
 	WDTCSR = 0;
 
-	/*For every reset the default oscillator cal word is automatically loaded by the micoprocessor HW*/
+	/*For every reset the default oscillator cal word is automatically loaded by the microprocessor HW*/
 	/*Placing the cal read macro here will apply user calibration*/
 	/*EEPROM upper address is 0x400* (i.e.1024 1kB) User Cal word must be stored in EEPROM locations
 	0x3FE and 0x3FF*/
 	
-	eeprom_write_byte((uint8_t*)0x3FD, OSCCAL);
+	eeprom_write_byte((uint8_t*)0x3FD, OSCCAL); 		//New line Save OSCAAL
 
 	if ((eeprom_read_byte((uint8_t*)0x3FE) > 0x0F)\
 	&&  (eeprom_read_byte((uint8_t*)0x3FE) < 0xF0) && (eeprom_read_byte((uint8_t*)0x3FE)\
@@ -73,7 +76,7 @@ int main (void){
 	/*************This program works with 8MHz clock and EEPROM preserved*********************************/
 	/*POR or watchdog timer resets are detected and cause the program counter to switch to location 0x0000
 	where the application program resides*/
-	
+
 	if (!(MCUSR & (1 << EXTRF)) )						//POR, BOR or watchdog timeout but not the reset switch
 	{MCUCR = (1<<IVCE);MCUCR = 0x0;						//select interrupt vector table starting at 0x000
 	asm("jmp 0x0000");}
@@ -83,10 +86,10 @@ int main (void){
 
 	setup_leds;
 	ADMUX |= (1 << REFS0);								//select internal ADC ref and remove external supply on AREF pin
-	USART_init(0,16);									//57.6k
-
+	USART_init(0,16);
+	
 	while(1){
-		boot_target;									//Set up IO
+		boot_target;
 		Atmel_powerup_and_target_detect;
 		
 		/*****************Power-up and make contact with target****************************/
@@ -102,7 +105,7 @@ int main (void){
 
 				sendString ("Sw!\r\n");wdt_enable(WDTO_60MS); while(1);}}
 				sendString ("\r\nSend file (ATMEGA168):\r\n");
-				PORTD |= (1 << PD7);														//Start led activity
+				Start_LED_Activity;
 
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
@@ -137,14 +140,11 @@ int main (void){
 				Reset_H;																	//Extra line Exit programming mode
 
 				if(prog_counter == read_ops) sendString(" OK"); else sendString("!!??");
-				} else{sendChar('!');														//target not detected during power up and targt detect phase
-			}
+				} else{sendChar('!');}									//target not detected during power up and target detect phase
 
 			if(cal_factor==1) sendString("  UC\r\n"); else sendString("  DC\r\n");
-			
-			
-		}return 1;}
 
+		}return 1;}
 
 
 		ISR(USART_RX_vect){
@@ -217,6 +217,8 @@ int main (void){
 
 
 
+
+
 				
 				void Verify_Flash (void){			//short version
 					int   star_counter;
@@ -238,12 +240,9 @@ int main (void){
 						if (!( star_counter - 200)){sendChar('*' + offset);star_counter = 0;}}}
 
 
+
 						void timer_T0_sub(char Counter_speed, unsigned char Start_point){
 							TCNT0 = Start_point;
 							TCCR0B = Counter_speed;
 							while(!(TIFR0 && (1<<TOV0)));
 						TIFR0 |= (1<<TOV0); TCCR0B = 0;}
-
-						
-
-						
