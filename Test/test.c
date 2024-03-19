@@ -7,7 +7,7 @@ I2C program version 4
 
 V9.9 Prevents users applying impractical user-cal values to the ATMEGA 328
 Performs scan of the ATMEGA 328 clock cal factor
-Following POR check cal factor and perform auto clock recovery if necassary
+Following POR check cal factor and perform auto clock recovery if necessary
 
 *EEPROM reservations
 0x3FF	user cal if set
@@ -23,8 +23,8 @@ Following POR check cal factor and perform auto clock recovery if necassary
 Zero to 0x3F5: For user strings and data
 ***********************/
 
-# include "I2C_V29_0_CA_header_file.h"
-# include "I2C_V29_0_CA_display_subroutines.c"
+# include "I2C_V27_0_CA_header file.h"
+# include "I2C_V27_0_CA_display_subroutines.c"
 
 # include "../../../Mini-OS_Resources/IO_subroutines.c"
 # include "../../../Mini-OS_Resources/Arithmetic_subroutines.c"
@@ -47,7 +47,7 @@ int main (void){
 	char sign_bit;
 	char test_num, test_digit;
 
-	char *SW_Version = "System files: Mini-OS_V29_CA plus pcb_Bootloader_V4_27_CA \r\n";
+	char *SW_Version = "System files: Mini-OS_V27_CA plus pcb_Bootloader_V4_25_CA \r\n";
 		
 	
 	char *SW_info = "SW information:\
@@ -92,7 +92,7 @@ int main (void){
 	MCUSR &= (~(1 << PORF));
 
 	OSCCAL_WV = OSCCAL;
-
+	
 	/*
 	
 	if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
@@ -109,19 +109,19 @@ int main (void){
 
 */
 
-/*******************/
-switch (eeprom_read_byte((uint8_t*)0x3FB))
-{
-	case 1: timer_T0_sub_with_interrupt(T0_delay_2ms);break;
-	case 3: timer_T0_sub_with_interrupt(T0_delay_125us);break;
-	default: eeprom_write_byte((uint8_t*)0x3FB, 0x02);timer_T0_sub_with_interrupt(T0_delay_250us);break;
-}
-T0_interupt_cnt = 0;										//Start multiplexer
-TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
-MUX_cntl = 0;											//Only used in multiplexer demo project 
-/******************/
-
-
+	/*******************/
+	switch (eeprom_read_byte((uint8_t*)0x3FB))
+	{
+		case 1: timer_T0_sub_with_interrupt(T0_delay_2ms);break;
+		case 3: timer_T0_sub_with_interrupt(T0_delay_125us);break;
+		default: eeprom_write_byte((uint8_t*)0x3FB, 0x02);timer_T0_sub_with_interrupt(T0_delay_250us);break;
+	}
+	T0_interupt_cnt = 0;										//Start multiplexer
+	TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
+	MUX_cntl = 0;											//Only used in multiplexer demo project
+	/******************/
+	
+	
 	while(1){													//main loop in which the program resides
 
 		while((mode == 'F')\
