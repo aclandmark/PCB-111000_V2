@@ -92,9 +92,9 @@ int main (void){
 	MCUSR &= (~(1 << PORF));
 
 	OSCCAL_WV = OSCCAL;
-
 	
 	/*
+	
 	if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
 	(eeprom_read_byte((uint8_t*)0x3FB) == 0x01));
 	else eeprom_write_byte((uint8_t*)0x3FB,0x01);				//set display brightness
@@ -106,6 +106,7 @@ int main (void){
 	if(eeprom_read_byte((uint8_t*)0x3FB) == 0xFF)
 	{timer_T0_sub_with_interrupt(T0_delay_2ms);}				//Normal Display brightness
 	else {timer_T0_sub_with_interrupt(T0_delay_125us);}
+
 */
 
 	/*******************/
@@ -119,8 +120,6 @@ int main (void){
 	TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
 	MUX_cntl = 0;											//Only used in multiplexer demo project
 	/******************/
-
-	
 	
 	
 	while(1){													//main loop in which the program resides
