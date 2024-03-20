@@ -21,10 +21,10 @@ TCNT0 = 0;}
 
 if(eeprom_read_byte((uint8_t*)0x3FB) == 0x02){				//Medium level brightness
 	
-TCNT0 = 224;												//Initialise Timer 0 for 250uS pulse
+TCNT0 = 212;		//224												//Initialise Timer 0 for 250uS pulse
 	switch(T0_interupt_cnt){
 		case 0: T0_interupt_cnt = 1;break;
-		case 1: {clear_display;} T0_interupt_cnt = 0; TCNT0 = 32; break;}}
+		case 1: {clear_display;} T0_interupt_cnt = 0; TCNT0 = 50; break;}}		//32
 
 
 if(eeprom_read_byte((uint8_t*)0x3FB) == 0x03){				//Low level brightness and multiplexer demo
