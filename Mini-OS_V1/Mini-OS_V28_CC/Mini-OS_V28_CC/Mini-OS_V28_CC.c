@@ -24,6 +24,7 @@ Zero to 0x3F5: For user strings and data
 ***********************/
 
 # include "I2C_V28_0_CC_header_file.h"
+# include "../../../Mini-OS_Resources/Mini-OS_header_file.h"
 # include "I2C_V28_0_CC_display_subroutines.c"
 
 # include "../../../Mini-OS_Resources/IO_subroutines.c"
@@ -121,7 +122,7 @@ int main (void){
 	{
 		case 1: timer_T0_sub_with_interrupt(T0_delay_2ms);break;
 		case 3: timer_T0_sub_with_interrupt(T0_delay_125us);break;
-		default: eeprom_write_byte((uint8_t*)0x3FB, 0x02);timer_T0_sub_with_interrupt(T0_delay_250us);break;
+		default: eeprom_write_byte((uint8_t*)0x3FB, 0x02);timer_T0_sub_with_interrupt(T0_delay_350us);break;
 	}
 	T0_interupt_cnt = 0;										//Start multiplexer
 	TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
