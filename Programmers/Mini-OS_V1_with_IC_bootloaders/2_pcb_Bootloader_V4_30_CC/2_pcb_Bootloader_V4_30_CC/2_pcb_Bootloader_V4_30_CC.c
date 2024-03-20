@@ -30,6 +30,10 @@ The ATMEGA 328 is programed using Atmega Programmer 2.17/2.18/2.2.  Its config b
 
 #define LED_2_on		 PORTD |= (1 << PD7);
 #define LED_2_off		 PORTD &= (~(1 << PD7));
+#define setup_leds				DDRD |= (1 << DDD7); PORTD &= ~(1 << PD7);
+#define Start_LED_Activity		PORTD |= (1 << PD7);
+#define Halt_LED_Activity		PORTD &= (~(1 << PD7));
+
 
 #include "../../../Bootloader_resources/Bootloader_header_file.h"
 #include "../../../Bootloader_resources/Bootloader_HW_subs.c"
@@ -43,8 +47,10 @@ signed int  read_ops=0;
 char dummy_byte;
 
 int main (void){
+
 	char cal_factor=0;
 	char target_detected = 0;
+	//char keypress;
 
 	/*This program is loaded into the boot section starting at SW location 0x7000*/
 	/*Config bit selection ensures that all resets send the program counter to 0x7000*/
@@ -54,11 +60,12 @@ int main (void){
 	WDTCSR |= (1 <<WDCE) | (1<< WDE);
 	WDTCSR = 0;
 
-	/*For every reset the default osc cal word is automatically loaded by the micoprocessor HW*/
+	/*For every reset the default oscillator cal word is automatically loaded by the microprocessor HW*/
 	/*Placing the cal read macro here will apply user calibration*/
 	/*EEPROM upper address is 0x400* (i.e.1024 1kB) User Cal word must be stored in EEPROM locations
 	0x3FE and 0x3FF*/
-	eeprom_write_byte((uint8_t*)0x3FD, OSCCAL); 
+	
+	eeprom_write_byte((uint8_t*)0x3FD, OSCCAL); 		//New line Save OSCAAL
 
 	if ((eeprom_read_byte((uint8_t*)0x3FE) > 0x0F)\
 	&&  (eeprom_read_byte((uint8_t*)0x3FE) < 0xF0) && (eeprom_read_byte((uint8_t*)0x3FE)\
@@ -71,22 +78,17 @@ int main (void){
 	/*POR or watchdog timer resets are detected and cause the program counter to switch to location 0x0000
 	where the application program resides*/
 
-	//check reset
-	if (!(MCUSR & (1 << EXTRF)) )				//POR, BOR or watchdog timeout but not the reset switch
-	{MCUCR = (1<<IVCE);MCUCR = 0x0;				//select interrupt vector table starting at 0x000
-	
+	if (!(MCUSR & (1 << EXTRF)) )						//POR, BOR or watchdog timeout but not the reset switch
+	{MCUCR = (1<<IVCE);MCUCR = 0x0;						//select interrupt vector table starting at 0x000
 	asm("jmp 0x0000");}
-	MCUCR = (1<<IVCE);  						//use interrupt vector table starting at start of boot section
+	MCUCR = (1<<IVCE);  								//use interrupt vector table starting at start of boot section
 	MCUCR = (1<<IVSEL);
-	MCUSR &= (~(1 << EXTRF));  					//Reset the external reset flag
+	MCUSR &= (~(1 << EXTRF));  							//Reset the external reset flag
 
-	DDRD |= (1 << DDD7); PORTD |= (1 << PD7);	//define led activity
-	DDRB |= (1 << DDB0) | (1 << DDB2);
-	DDRC |= (1 << DDC0) | (1 << DDC1) | (1 << DDC2);
+	setup_leds;
+	ADMUX |= (1 << REFS0);								//select internal ADC ref and remove external supply on AREF pin
+	USART_init(0,16);
 	
-	ADMUX |= (1 << REFS0);						//select internal ADC ref and remove external supply on AREF pin
-	USART_init(0,16);							//57.6k
-
 	while(1){
 		boot_target;
 		Atmel_powerup_and_target_detect;
@@ -104,41 +106,46 @@ int main (void){
 
 				sendString ("Sw!\r\n");wdt_enable(WDTO_60MS); while(1);}}
 				sendString ("\r\nSend file (ATMEGA168):\r\n");
-				PORTD |= (1 << PD7);													//Start led activity
+				Start_LED_Activity;
 
 				PageSZ = 0x40; PAmask = 0x1FC0; FlashSZ=0x2000;
 
-				Atmel_config(Prog_enable_h, 0);
-
-				/***Erase target flash and program target config space***/
-				Atmel_config(Chip_erase_h, 0);
-				Atmel_config(write_extended_fuse_bits_h,0xFF);
-				Atmel_config(write_fuse_bits_H_h,0xD5);									//BOD 2.9V
-				Atmel_config(write_fuse_bits_h,0xC2);									//0mS SUT 8MHz RC clock
-				Atmel_config(write_lock_bits_h,0xEB);
+				counter = 1;
 
 				prog_counter=0; line_length_old=0;
 				Flash_flag = 0;  PIC_address = 0;  section_break = 0; orphan = 0;
 				w_pointer = 0; r_pointer = 0;line_counter = 0;
-				UCSR0B |= (1<<RXCIE0); 	sei();											//UART interrupts now active
+
+
+				Atmel_config(Prog_enable_h, 0);
+
+				//while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
+				//{if (keypress == 'x'){sendString("Reset!\r\n");}}					//x pressed to escape
+
+				/***Erase target flash and program target config space***/
+				Atmel_config(Chip_erase_h, 0);
+				
+
+				UCSR0B |= (1<<RXCIE0); 	sei();												//UART interrupts now active
 
 				Program_Flash();
-				PORTD &= (~(1 << PD7));													//Halt led activity
+				
+				Atmel_config(write_extended_fuse_bits_h,0xFF);
+				Atmel_config(write_fuse_bits_H_h,0xD5);										//BOD 2.9V
+				Atmel_config(write_fuse_bits_h,0xC2);										//0mS SUT 8MHz RC clock
+				Atmel_config(write_lock_bits_h,0xEB);
+				
+				Halt_LED_Activity;
 				Verify_Flash();
 
-
-				Reset_H;																//Exit programming mode
-
+				Reset_H;																	//Extra line Exit programming mode
 
 				if(prog_counter == read_ops) sendString(" OK"); else sendString("!!??");
-				} else{sendChar('!');													//target not detected during power up and targt detect phase
-			}
+				} else{sendChar('!');}									//target not detected during power up and target detect phase
 
 			if(cal_factor==1) sendString("  UC\r\n"); else sendString("  DC\r\n");
 
-
 		}return 1;}
-
 
 
 		ISR(USART_RX_vect){
@@ -151,7 +158,7 @@ int main (void){
 			else {if (tempChar1 <= '9') tempChar = tempChar1 - '0'; else tempChar = tempChar1 - '7';}
 
 			switch (counter){
-				case 0x0:  break;	
+				case 0x0:  break;
 				case 0x1: tempInt1 = tempChar<<4;  break;
 				case 0x2: tempInt1 += tempChar;  char_count = 9 + ((tempInt1) *2);
 				local_pointer = w_pointer++; store[local_pointer] = tempInt1; break;
@@ -179,36 +186,36 @@ int main (void){
 				start_new_code_block();
 				Program_record();
 				
-				while(1){		//loop1
+				while(1){																						//loop1
 					new_record();
-					if (line_length==0)break; 															//ISR variable
+					if (line_length==0)break; 																	//ISR variable
 
 
-					if ((Hex_address == PIC_address) && (!(short_line))){								//normal ongoing code block
+					if ((Hex_address == PIC_address) && (!(short_line))){										//normal ongoing code block
 						if (space_on_page == (PageSZ - offset)){page_address = (Hex_address & PAmask);}
 					Program_record();	}
 
 					else{if(Hex_address != PIC_address)//loop 2
-						{//normal break	loop 3
-							if (section_break){																//PAGE Address increases by at least 0x40
-								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    			//+0x20 for offset pages
-							if(orphan) write_page_SUB(page_address + PageSZ);}   							//0x20??
-								
-							else{//loop 4
+						{																						//normal break	loop 3
+							if (section_break){																	//PAGE address increases by at least 0x40
+								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    				//+0x20 for offset pages
+							if(orphan) write_page_SUB(page_address + PageSZ);}   								//0x20??
+							
+							else{																				//loop 4
 								if(page_break){if((Flash_flag) && (!(orphan))) write_page_SUB(page_address);
-								orphan = 0; }}//  break within page loop 4
-							}//loop 3
-							start_new_code_block(); Program_record();  if(short_line)short_line=0;			//short_line no break
-						}	//loop 2
-					}	//loop 1
+								orphan = 0; }}																	//  break within page loop 4
+							}																					//loop 3
+							start_new_code_block(); Program_record();  if(short_line)short_line=0;				//short_line no break
+						}																						//loop 2
+					}																							//loop 1
 					
 					UCSR0B &= (~(1<<RXCIE0));
 					while(1){if (isCharavailable(2)==1)receiveChar();else break;}
 					
-					
 					if((Flash_flag) && (!(orphan))){write_page_SUB(page_address);}
 					if(orphan) {write_page_SUB(page_address + PageSZ);}
 				}
+
 
 
 
@@ -234,12 +241,13 @@ int main (void){
 						if (!( star_counter - 200)){sendChar('*' + offset);star_counter = 0;}}}
 
 
+
 						void timer_T0_sub(char Counter_speed, unsigned char Start_point){
 							TCNT0 = Start_point;
 							TCCR0B = Counter_speed;
 							while(!(TIFR0 && (1<<TOV0)));
 						TIFR0 |= (1<<TOV0); TCCR0B = 0;}
-
 						
-
+						
+						
 						
