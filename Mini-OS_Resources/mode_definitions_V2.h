@@ -200,7 +200,7 @@ eeprom_write_byte((uint8_t*)0x3FC, 0x0);
 
 
 /*************************************************************************************************/
-# define restore_168_EEPROM_strings \
+/*# define restore_168_EEPROM_strings \
 	Initialise_I2C_master_write;\
 	{int m = 0x200;\
 	while (m <= 0x3F6)\
@@ -208,7 +208,7 @@ eeprom_write_byte((uint8_t*)0x3FC, 0x0);
 	m++;}\
 	I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FE));\
 	I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FF));\
-	TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}	
+	TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}*/	
 
 
 
