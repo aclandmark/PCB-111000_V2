@@ -31,7 +31,6 @@ Zero to 0x3F5: For user strings and data
 # include "../../../Mini-OS_Resources/Arithmetic_subroutines.c"
 # include "../../../Mini-OS_Resources/ISR_subroutines_V2.c"
 # include "../../../Mini-OS_Resources/osccal_subroutines.c"
-# include "../../../Mini-OS_Resources/modes_B_to_F.c"
 # include "../../../Mini-OS_Resources/mode_definitions_V2.h"
 # include "../../../Mini-OS_Resources/clock_stop_watch_subroutines.c"
 # include "../../../Mini-OS_Resources/Eeprom_subroutines.c"
@@ -73,7 +72,7 @@ int main (void){
 
 	
 	TWBR = 32;													//gives 100KHz I2C clock for TWSR
-	ASSR = (1 << AS2); 										//initialise T2 for crystal
+	ASSR = (1 << AS2); 											//initialise T2 for crystal
 	timer_2_counter=0;											//Initialise timer_2_counter to zero
 
 
@@ -88,40 +87,22 @@ int main (void){
 	/****************************************************/
 
 	if ((PIND & (1 << PD1)) && (MCUSR & (1 << PORF)))
-	Cal_at_Power_on_Reset ();//AND PORF
+	Cal_at_Power_on_Reset ();
 
 	MCUSR &= (~(1 << PORF));
 
 	OSCCAL_WV = OSCCAL;
 
-	/*
-	
-	if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
-	(eeprom_read_byte((uint8_t*)0x3FB) == 0x01));
-	else eeprom_write_byte((uint8_t*)0x3FB,0x01);				//set display brightness
-
-
-	T0_interupt_cnt = 0;										//Start multiplexer
-	TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
-	MUX_cntl = 0;
-	if(eeprom_read_byte((uint8_t*)0x3FB) == 0xFF)
-	{timer_T0_sub_with_interrupt(T0_delay_2ms);}				//Normal Display brightness
-	else {timer_T0_sub_with_interrupt(T0_delay_125us);}
-
-*/
-
-/*******************/
 switch (eeprom_read_byte((uint8_t*)0x3FB))
 {
 	case 1: timer_T0_sub_with_interrupt(T0_delay_2ms);break;
 	case 3: timer_T0_sub_with_interrupt(T0_delay_125us);break;
-	default: eeprom_write_byte((uint8_t*)0x3FB, 0x02);timer_T0_sub_with_interrupt(T0_delay_350us);break;
+	default: eeprom_write_byte((uint8_t*)0x3FB, 0x02);
+	timer_T0_sub_with_interrupt(T0_delay_350us);break;
 }
-T0_interupt_cnt = 0;										//Start multiplexer
-TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
-MUX_cntl = 0;											//Only used in multiplexer demo project 
-/******************/
-
+T0_interupt_cnt = 0;											//Start multiplexer
+TIMSK0 |= (1 << TOIE0);											//T0 interrupt enabled
+MUX_cntl = 0;													//Only used in multiplexer demo project 
 
 	while(1){													//main loop in which the program resides
 
@@ -132,12 +113,12 @@ MUX_cntl = 0;											//Only used in multiplexer demo project
 
 
 		while(1){													//Repetitively poll the PIC until it responds
-			TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);			//send a start condition  (this identical to a "repeated start")
+			TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);		//send a start condition  (this identical to a "repeated start")
 			while (!(TWCR & (1 << TWINT)));							//Wait for TWINT flag
-			TWDR = 0x03;												//Address of slave (master read operation)  SLA + R
-			TWCR = (1 << TWINT) | (1 << TWEN);							//Clear TWINT bit to start transmission of address
+			TWDR = 0x03;											//Address of slave (master read operation)  SLA + R
+			TWCR = (1 << TWINT) | (1 << TWEN);						//Clear TWINT bit to start transmission of address
 			while (!(TWCR & (1 << TWINT)));							//Wait for TWINT flag
-			if (TWSR == 0x40)break;										//SLA + W successfully transmitted ACK recveived
+			if (TWSR == 0x40)break;									//SLA + W successfully transmitted ACK received
 			if(clock_flag==1){refresh_clock_display;}}
 
 			clock_flag=0;
@@ -146,7 +127,7 @@ MUX_cntl = 0;											//Only used in multiplexer demo project
 			if(payload_size)mode = I2C_master_receive(1);
 			else mode = I2C_master_receive(0);
 
-			if (mode != 8) display_mask=0;								//dissable flashing digits
+			if (mode != 8) display_mask=0;								//disable flashing digits
 
 			if(payload_size){											//payload is zero for mode 'G'
 
@@ -157,96 +138,60 @@ MUX_cntl = 0;											//Only used in multiplexer demo project
 			TWCR = (1 << TWINT ) | (1 << TWEN ) | (1 << TWSTO );}		//Send stop bit
 
 			switch(mode){
-				case 3: case 8: case 7:
+				case 3: 
 				case 'F':  case 'I':  case 'Q': break;
 				default: {clear_display_buffer;}break;}
 
 				switch (mode){
 
-					case 1:		I2C_Tx_2_integers; break;						//Uses the 32 vertical segments to display two binary numbers
+					case 1:		I2C_Tx_2_integers; break;				//Uses the 32 vertical segments to display two binary numbers
 
-					case 2:														//Illuminates/clears any of the 56 segments
+					case 2:												//Illuminates/clears any of the 56 segments
 					case 3: 	I2C_Tx_any_segment; break;
 
+					case 4: 	I2C_Tx_8_byte_array;break;				//Display a string of 8 digits
 
-					case 4: 	I2C_Tx_8_byte_array;break;						//Display a string of 8 digits
+					case 5: 	I2C_Tx_display_char; break;				//Displays +/- char as number and binary
 
+					case 6: 	I2C_Tx_long; break;						//Displays 8 digit number
 
-					case 5: 	I2C_Tx_display_char; break;						//Displays +/- char as number and binary
+					case 'C':	basic_clock(); break;					//I2C_Tx_OS_timer(AT_clock_mode, start_time): Starts the timer/clock
 
-
-					case 6: 	I2C_Tx_long; break;								//Displays 8 digit number
-
-
-					case 7: 	I2C_Tx_Compile_tables();break;					//I2C_Tx_Initiate_tables() and I2C_Tx_Inc/dec_tables()
-
-
-					case 8:		I2C_Tx_2URNs_from_IO ();break;					//Generates numbers of type 0.1234 With an exponent
-
-
+					case 'D':	multi_mode_clock(); break;				//Used with subroutine I2C_Tx_Clock_command(char timer_mode, char command): Controls the timer/clock
 					
-					case 9:		I2C_Tx_Uarithmetic_OP ();break;					//Takes numbers entered using mode 8 and does some arithmetic
+					case 'E':	stop_watch(); break;					//Used by I2C_Tx_Clock_command(one100ms_mode) and I2C_Tx_Clock_command(ten_ms_mode)
 
+					case 'F':	I2C_initiate_10mS_ref; break;			//Ten_mS_interrupt for combined clock and stopwatch;
 					
-					case 'A':	I2C_Tx_accumulator_1();break;					//Implements add, subtract and clear modes
+					case 'G':	I2C_Tx_BWops;	break;					//Used to illustrate bit wise logic operations
 
-					case 'B':	I2C_Tx_accumulator_2();break;					//Aquires data for use by accumulator
+					case 'H':	Message_from_the_OS(); break;			//Messages compiled by user and saved to pcb_A Atmega 328 EEPROM
 
+					case 'I':	I2C_displayToLong; break;				//Converts display to long number and transmits it to the Atmega 168
 
+					case 'J':	I2C_Tx_real_num; break;					//Displays a real number
 
-					case 'C':	basic_clock(); break;							//I2C_Tx_OS_timer(AT_clock_mode, start_time): Starts the timer/clock
-
-					case 'D':	multi_mode_clock(); break;						//Used with subroutine I2C_Tx_Clock_command(char timer_mode, char command): Controls the timer/clock
-
-					
-					case 'E':	stop_watch(); break;							//Used by I2C_Tx_Clock_command(one100ms_mode) and I2C_Tx_Clock_command(ten_ms_mode)
-
-
-					case 'F':	I2C_initiate_10mS_ref; break;					//Ten_mS_interrupt for combined clock and stopwatch;
-
-					
-					case 'G':	I2C_Tx_BWops;	break;							//Used to illustarte bit wise logic operations
-
-
-					case 'H':	Message_from_the_OS(); break;					//Messages compiled by user and saved to pcb_A Atmega 328 EEPROM
-
-
-					case 'I':	I2C_displayToLong; break;						//Converts display to long number and transmits it to the Atmega 168
-
-					case 'J':	I2C_Tx_real_num; break;							//Displays a real number
-
-					case 'K':	I2C_Tx_float_num; break;						//Scrolls scientific number accross the display
-
+					case 'K':	I2C_Tx_float_num; break;				//Scrolls scientific number across the display
 
 					case 'L':	Multiplexer_demo; break;
 
+					case 'M':	cal_plot_328(); break;					//Scans 328 cal-factor from 0x10 to 0xF0
 
-
-					case 'M':	cal_plot_328(); break;							//Scans 328 cal-factor fronmm 0x10 to 0xF0
-
-
-					case 'N':	manual_cal_PCB_A_device(); break;
-
+					case 'N':	manual_cal_PCB_A_device(); break;		//The Atmega328
 					
-					case 'O':	PCB_test; break;								//For manufacturing test: Dissables the multiplexer
+					case 'O':	PCB_test; break;						//For manufacturing test: disables the multiplexer
 					
 					case 'P':	I2C_Rx_get_version; break;
 
 					case 'Q':	I2C_Tx_LED_dimmer; break;
 
-					case 'U':	start_T2_for_ATMEGA_168_cal(1); break;
-
-
 					/**********Mode'T' is used by Cal_at_Power_on_Reset()***************************/
 
-					case 'V':	set_diagnostic_mode; break;						//0x3FC is set to 1 when the user enters 'x' at the p/r prompt
+					case 'U':	start_T2_for_ATMEGA_168_cal(1); break;
 
-
-					case 'W':	restore_168_EEPROM_strings; break;				//Obsolete: was used to restore AT168 EEPROM from backup version on AT328
+					case 'V':	set_diagnostic_mode; break;				//0x3FC is set to 1 when the user enters 'x' at the p/r prompt
 
 					case 'X':	cal_spot_check();break;
-
-					case 'Y': eeprom_write_byte((uint8_t*)0x3FE,0xBC);eeprom_write_byte((uint8_t*)0x3FF,0xBC);wdt_enable(WDTO_60MS); while(1);break;
 
 					case 'Z':	Initialise_I2C_master_write; I2C_master_transmit(OSCCAL);
 					I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FE));
@@ -257,13 +202,11 @@ MUX_cntl = 0;											//Only used in multiplexer demo project
 
 
 
-
-				
-
 				void I2C_master_transmit(char data){
 					TWDR = data;
 					TWCR = (1 << TWINT) | (1 << TWEN);
 				while (!(TWCR & (1 << TWINT)));}
+
 
 				char I2C_master_receive(char mode){
 					char data;
