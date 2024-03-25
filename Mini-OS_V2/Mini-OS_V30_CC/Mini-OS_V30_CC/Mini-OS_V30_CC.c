@@ -37,7 +37,7 @@ Zero to 0x3F5: For user strings and data
 
 
 	
-	char *SW_Version = "System files: Mini-OS_V30_CC plus pcb_Bootloader_V4_28_CC \r\n";
+	char *SW_Version = "System files: Mini-OS_V30_CC plus pcb_Bootloader_V4_32_CC \r\n";
 	
 	
 	char *SW_info = "SW information:\
