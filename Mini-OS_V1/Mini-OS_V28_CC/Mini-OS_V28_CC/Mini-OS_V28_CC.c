@@ -31,13 +31,23 @@ Zero to 0x3F5: For user strings and data
 # include "../../../Mini-OS_Resources/Arithmetic_subroutines.c"
 # include "../../../Mini-OS_Resources/ISR_subroutines_V2.c"
 # include "../../../Mini-OS_Resources/osccal_subroutines.c"
-# include "../../../Mini-OS_Resources/modes_B_to_F.c"
 # include "../../../Mini-OS_Resources/mode_definitions_V2.h"
 # include "../../../Mini-OS_Resources/clock_stop_watch_subroutines.c"
 # include "../../../Mini-OS_Resources/Eeprom_subroutines.c"
 
 
+char *SW_Version = "System files: Mini-OS_V28_CC plus pcb_Bootloader_V4_26_CC \r\n";
 
+
+char *SW_info = "SW information:\
+Use Project_pcb_168_V2.30_Arduino_V2 to update system files\r\n\
+See Nano projects directory for user work.\r\n";
+
+
+# include "../../../Mini-OS_Resources/Mini-OS_Main.c"
+
+
+/*
 int main (void){
 
 	signed char digit_num=0;
@@ -48,10 +58,7 @@ int main (void){
 	char sign_bit;
 	char test_num, test_digit;
 
-	/*char *SW_Version = "OS: I2C_V20_0_CA\r\n";
-	char *SW_info = "SW information: Operating system I2C_V20_0_CA\
-	Projects V1_9 and Bootloader V4_21_CA.\
-	External programmer V2_30B\r\n";*/
+	
 	
 	char *SW_Version = "System files: Mini-OS_V28_CC plus pcb_Bootloader_V4_26_CC \r\n";
 	
@@ -63,10 +70,10 @@ int main (void){
 	
 	
 
-	/****Watchdog initiated for mode F only (user clock/stop watch with
-	external 10mS crystal interrupt).*********/
+	****Watchdog initiated for mode F only (user clock/stop watch with
+	external 10mS crystal interrupt).*********
 
-	/***********Brown-out:  This is set (using config bits only) for 2.9V*************/
+	***********Brown-out:  This is set (using config bits only) for 2.9V*************
 
 	if(MCUSR & (1 << BORF)){									//Detect brown-out
 	MCUSR &= (~(1 << BORF));}									//Reset brown-out flag
@@ -88,12 +95,12 @@ int main (void){
 	OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);				//Save OSCALL working and default values
 
 
-	/****************************************************/
+	
 	sei();
 
 	if(eeprom_read_byte((uint8_t*)0x3F9) == 1)					//Post programming //and POR
 	Cal_at_Power_on_Reset ();									//call cal routine
-	/****************************************************/
+	
 
 	if ((PIND & (1 << PD1)) && (MCUSR & (1 << PORF)))
 	Cal_at_Power_on_Reset ();//AND PORF
@@ -103,21 +110,9 @@ int main (void){
 	OSCCAL_WV = OSCCAL;
 
 	
-	/*
-	if((eeprom_read_byte((uint8_t*)0x3FB) == 0xFF) ||\
-	(eeprom_read_byte((uint8_t*)0x3FB) == 0x01));
-	else eeprom_write_byte((uint8_t*)0x3FB,0x01);				//set display brightness
+	
 
-
-	T0_interupt_cnt = 0;										//Start multiplexer
-	TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
-	MUX_cntl = 0;
-	if(eeprom_read_byte((uint8_t*)0x3FB) == 0xFF)
-	{timer_T0_sub_with_interrupt(T0_delay_2ms);}				//Normal Display brightness
-	else {timer_T0_sub_with_interrupt(T0_delay_125us);}
-*/
-
-	/*******************/
+	
 	switch (eeprom_read_byte((uint8_t*)0x3FB))
 	{
 		case 1: timer_T0_sub_with_interrupt(T0_delay_2ms);break;
@@ -127,7 +122,7 @@ int main (void){
 	T0_interupt_cnt = 0;										//Start multiplexer
 	TIMSK0 |= (1 << TOIE0);									//T0 interrupt enabled
 	MUX_cntl = 0;											//Only used in multiplexer demo project
-	/******************/
+	
 	
 	
 	while(1){													//main loop in which the program resides
@@ -244,7 +239,7 @@ int main (void){
 					case 'U':	start_T2_for_ATMEGA_168_cal(1); break;
 
 
-					/**********Mode'T' is used by Cal_at_Power_on_Reset()***************************/
+					**********Mode'T' is used by Cal_at_Power_on_Reset()***************************
 
 					case 'V':	set_diagnostic_mode; break;						//0x3FC is set to 1 when the user enters 'x' at the p/r prompt
 
@@ -278,7 +273,7 @@ int main (void){
 					else TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
 					while (!(TWCR & (1 << TWINT)));
 					data =  TWDR;
-				return data;}
+				return data;}*/
 
 
 
