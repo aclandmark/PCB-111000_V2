@@ -36,7 +36,7 @@ Zero to 0x3F5: For user strings and data
 # include "../../../Mini-OS_Resources/Eeprom_subroutines.c"
 
 
-char *SW_Version = "System files: Mini-OS_V28_CC plus pcb_Bootloader_V4_26_CC \r\n";
+char *SW_Version = "System files: Mini-OS_V28_CC plus pcb_Bootloader_V4_30_CC \r\n";
 
 
 char *SW_info = "SW information:\
