@@ -37,7 +37,7 @@ Zero to 0x3F5: For user strings and data
 
 
 
-char *SW_Version = "System files: Mini-OS_V29_CA plus pcb_Bootloader_V4_27_CA \r\n";
+char *SW_Version = "System files: Mini-OS_V29_CA plus pcb_Bootloader_V4_31_CA \r\n";
 
 
 char *SW_info = "SW information:\
