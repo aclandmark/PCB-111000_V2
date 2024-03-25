@@ -37,7 +37,16 @@ Zero to 0x3F5: For user strings and data
 
 
 
-int main (void){
+char *SW_Version = "System files: Mini-OS_V29_CA plus pcb_Bootloader_V4_27_CA \r\n";
+
+
+char *SW_info = "SW information:\
+Use Project_pcb_168_V2.30_Arduino_V2 to update system files\r\n\
+See Nano projects directory for user work.\r\n";
+
+# include "../../../Mini-OS_Resources/Mini-OS_Main.c"
+
+/*int main (void){
 
 	signed char digit_num=0;
 	int letter=0;
@@ -52,14 +61,14 @@ int main (void){
 	
 	char *SW_info = "SW information:\
 	Use Project_pcb_168_V2.30_Arduino_V2 to update system files\r\n\
-		See Nano projects directory for user work.\r\n";
+		See Nano projects directory for user work.\r\n";*/
 
 	/****Watchdog initiated for mode F only (user clock/stop watch with
 	external 10mS crystal interrupt).*********/
 
 	/***********Brown-out:  This is set (using config bits only) for 2.9V*************/
 
-	if(MCUSR & (1 << BORF)){									//Detect brown-out
+	/*if(MCUSR & (1 << BORF)){									//Detect brown-out
 	MCUSR &= (~(1 << BORF));}									//Reset brown-out flag
 
 	ADMUX |= (1 << REFS0);										//select internal ADC ref and remove external supply on AREF pin
@@ -77,16 +86,16 @@ int main (void){
 
 
 	OSCCAL_DV = eeprom_read_byte((uint8_t*)0x3FD);				//Save OSCALL working and default values
-
+*/
 
 	/****************************************************/
-	sei();
+	//sei();
 
-	if(eeprom_read_byte((uint8_t*)0x3F9) == 1)					//Post programming //and POR
-	Cal_at_Power_on_Reset ();									//call cal routine
+	//if(eeprom_read_byte((uint8_t*)0x3F9) == 1)					//Post programming //and POR
+	//Cal_at_Power_on_Reset ();									//call cal routine
 	/****************************************************/
 
-	if ((PIND & (1 << PD1)) && (MCUSR & (1 << PORF)))
+	/*if ((PIND & (1 << PD1)) && (MCUSR & (1 << PORF)))
 	Cal_at_Power_on_Reset ();
 
 	MCUSR &= (~(1 << PORF));
@@ -183,11 +192,11 @@ MUX_cntl = 0;													//Only used in multiplexer demo project
 					
 					case 'P':	I2C_Rx_get_version; break;
 
-					case 'Q':	I2C_Tx_LED_dimmer; break;
+					case 'Q':	I2C_Tx_LED_dimmer; break;*/
 
 					/**********Mode'T' is used by Cal_at_Power_on_Reset()***************************/
 
-					case 'U':	start_T2_for_ATMEGA_168_cal(1); break;
+					/*case 'U':	start_T2_for_ATMEGA_168_cal(1); break;
 
 					case 'V':	set_diagnostic_mode; break;				//0x3FC is set to 1 when the user enters 'x' at the p/r prompt
 
@@ -214,7 +223,7 @@ MUX_cntl = 0;													//Only used in multiplexer demo project
 					else TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
 					while (!(TWCR & (1 << TWINT)));
 					data =  TWDR;
-				return data;}
+				return data;}*/
 
 
 
