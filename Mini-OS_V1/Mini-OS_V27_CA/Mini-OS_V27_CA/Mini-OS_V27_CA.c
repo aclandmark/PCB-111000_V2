@@ -35,7 +35,7 @@ Zero to 0x3F5: For user strings and data
 # include "../../../Mini-OS_Resources/clock_stop_watch_subroutines.c"
 # include "../../../Mini-OS_Resources/Eeprom_subroutines.c"
 
-char *SW_Version = "System files: Mini-OS_V27_CA plus pcb_Bootloader_V4_25_CA \r\n";
+char *SW_Version = "System files: Mini-OS_V27_CA plus pcb_Bootloader_V4_29_CA \r\n";
 
 
 char *SW_info = "SW information:\
