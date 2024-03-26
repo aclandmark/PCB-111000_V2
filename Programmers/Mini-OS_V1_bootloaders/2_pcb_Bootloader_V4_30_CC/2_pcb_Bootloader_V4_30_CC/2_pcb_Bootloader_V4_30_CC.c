@@ -28,9 +28,19 @@ The ATMEGA 328 is programed using Atmega Programmer 2.17/2.18/2.2.  Its config b
 #include "1_AT_bootloader_V4_30_CC_HW_subs.c"*/
 
 
-#define LED_2_on		 PORTD |= (1 << PD7);
+/*#define LED_2_on		 PORTD |= (1 << PD7);
 #define LED_2_off		 PORTD &= (~(1 << PD7));
 #define setup_leds				DDRD |= (1 << DDD7); PORTD &= ~(1 << PD7);
+#define Start_LED_Activity		PORTD |= (1 << PD7);
+#define Halt_LED_Activity		PORTD &= (~(1 << PD7));*/
+
+#define LED_2_on		 PORTD |= (1 << PD7);
+#define LED_2_off		 PORTD &= (~(1 << PD7));
+
+#define setup_leds			DDRD |= (1 << DDD7); PORTD |= (1 << PD7);\
+DDRB |= (1 << DDB0) | (1 << DDB2);\
+DDRC |= (1 << DDC0) | (1 << DDC1) | (1 << DDC2); 
+
 #define Start_LED_Activity		PORTD |= (1 << PD7);
 #define Halt_LED_Activity		PORTD &= (~(1 << PD7));
 
