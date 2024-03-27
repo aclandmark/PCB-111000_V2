@@ -100,7 +100,6 @@ int main (void){
 		}return 1;}
 
 
-
 		ISR(USART_RX_vect){
 			unsigned char tempChar=0;
 			unsigned char tempChar1;
@@ -139,32 +138,32 @@ int main (void){
 				start_new_code_block();
 				Program_record();
 				
-				while(1){		//loop1
+				while(1){																						//loop1
 					new_record();
-					if (line_length==0)break; 																//ISR variable
+					if (line_length==0)break; 																	//ISR variable
 
 
-					if ((Hex_address == PIC_address) && (!(short_line))){									//normal ongoing code block
+					if ((Hex_address == PIC_address) && (!(short_line))){										//normal ongoing code block
 						if (space_on_page == (PageSZ - offset)){page_address = (Hex_address & PAmask);}
 					Program_record();	}
 
 					else{if(Hex_address != PIC_address)//loop 2
-						{																					//normal break	loop 3
-							if (section_break){																//PAGE address increases by at least 0x40
-								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    			//+0x20 for offset pages
-							if(orphan) write_page_SUB(page_address + PageSZ);}   							//0x20??
+						{																						//normal break	loop 3
+							if (section_break){																	//PAGE address increases by at least 0x40
+								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    				//+0x20 for offset pages
+							if(orphan) write_page_SUB(page_address + PageSZ);}   								//0x20??
 							
-							else{																			//loop 4
+							else{																				//loop 4
 								if(page_break){if((Flash_flag) && (!(orphan))) write_page_SUB(page_address);
-								orphan = 0; }}																//  break within page loop 4
-							}																				//loop 3
-							start_new_code_block(); Program_record();  if(short_line)short_line=0;			//short_line no break
-						}																					//loop 2
-					}																						//loop 1
+								orphan = 0; }}																	//  break within page loop 4
+							}																					//loop 3
+							start_new_code_block(); Program_record();  if(short_line)short_line=0;				//short_line no break
+						}																						//loop 2
+					}																							//loop 1
 					
 					UCSR0B &= (~(1<<RXCIE0));
 					while(1){if (isCharavailable(2)==1)receiveChar();else break;}
-
+					
 					if((Flash_flag) && (!(orphan))){write_page_SUB(page_address);}
 					if(orphan) {write_page_SUB(page_address + PageSZ);}
 				}
@@ -172,8 +171,9 @@ int main (void){
 
 
 
+
 				
-				void Verify_Flash (void){																	//short version
+				void Verify_Flash (void){			//short version
 					int   star_counter;
 					signed int phys_address;
 					char offset=0;
@@ -193,12 +193,13 @@ int main (void){
 						if (!( star_counter - 200)){sendChar('*' + offset);star_counter = 0;}}}
 
 
+
 						void timer_T0_sub(char Counter_speed, unsigned char Start_point){
 							TCNT0 = Start_point;
 							TCCR0B = Counter_speed;
 							while(!(TIFR0 && (1<<TOV0)));
 						TIFR0 |= (1<<TOV0); TCCR0B = 0;}
-
 						
-
+						
+						
 						
