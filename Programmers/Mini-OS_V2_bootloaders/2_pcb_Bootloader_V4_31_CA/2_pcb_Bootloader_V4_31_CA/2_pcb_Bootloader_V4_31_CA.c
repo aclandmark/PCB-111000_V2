@@ -22,10 +22,6 @@ Its config bits provide BOD at 2.9V.
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 
-/*
-#include "1_AT_bootloader_V4_31_CA_header_file.h"
-#include "1_AT_bootloader_V4_31_CA_SW_subs.c"
-#include "1_AT_bootloader_V4_31_CA_HW_subs.c"*/
 
 
 #define LED_2_on	 			PORTD &= (~(1 << PD7));
@@ -37,6 +33,9 @@ Its config bits provide BOD at 2.9V.
 #include "../../../Bootloader_resources/Bootloader_header_file.h"
 #include "../../../Bootloader_resources/Bootloader_HW_subs.c"
 #include "../../../Bootloader_resources/Bootloader_SW_subs.c"
+#include "../../../Bootloader_resources/Bootloader_main.c"
+
+
 
 /*
 #define wdr()  __asm__ __volatile__("wdr")
