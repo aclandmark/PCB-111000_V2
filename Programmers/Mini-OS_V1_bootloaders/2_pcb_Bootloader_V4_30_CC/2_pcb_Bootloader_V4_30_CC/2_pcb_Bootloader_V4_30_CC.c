@@ -49,7 +49,7 @@ DDRC |= (1 << DDC0) | (1 << DDC1) | (1 << DDC2);
 #include "../../../Bootloader_resources/Bootloader_HW_subs.c"
 #include "../../../Bootloader_resources/Bootloader_SW_subs.c"
 
-
+/*
 #define wdr()  __asm__ __volatile__("wdr")
 
 
@@ -62,18 +62,18 @@ int main (void){
 	char target_detected = 0;
 	//char keypress;
 
-	/*This program is loaded into the boot section starting at SW location 0x7000*/
-	/*Config bit selection ensures that all resets send the program counter to 0x7000*/
+	This program is loaded into the boot section starting at SW location 0x7000
+	Config bit selection ensures that all resets send the program counter to 0x7000
 
 	wdr();
 	MCUSR &= ~(1<<WDRF);
 	WDTCSR |= (1 <<WDCE) | (1<< WDE);
 	WDTCSR = 0;
 
-	/*For every reset the default oscillator cal word is automatically loaded by the microprocessor HW*/
-	/*Placing the cal read macro here will apply user calibration*/
-	/*EEPROM upper address is 0x400* (i.e.1024 1kB) User Cal word must be stored in EEPROM locations
-	0x3FE and 0x3FF*/
+	For every reset the default oscillator cal word is automatically loaded by the microprocessor HW
+	Placing the cal read macro here will apply user calibration
+	EEPROM upper address is 0x400* (i.e.1024 1kB) User Cal word must be stored in EEPROM locations
+	0x3FE and 0x3FF
 	
 	eeprom_write_byte((uint8_t*)0x3FD, OSCCAL); 		//New line Save OSCAAL
 
@@ -84,9 +84,9 @@ int main (void){
 	else{cal_factor=0;}
 
 
-	/*************This program works with 8MHz clock and EEPROM preserved*********************************/
-	/*POR or watchdog timer resets are detected and cause the program counter to switch to location 0x0000
-	where the application program resides*/
+	*************This program works with 8MHz clock and EEPROM preserved*********************************
+	POR or watchdog timer resets are detected and cause the program counter to switch to location 0x0000
+	where the application program resides
 
 	if (!(MCUSR & (1 << EXTRF)) )						//POR, BOR or watchdog timeout but not the reset switch
 	{MCUCR = (1<<IVCE);MCUCR = 0x0;						//select interrupt vector table starting at 0x000
@@ -103,7 +103,7 @@ int main (void){
 		boot_target;
 		Atmel_powerup_and_target_detect;
 		
-		/*****************Power-up and make contact with target****************************/
+		*****************Power-up and make contact with target****************************
 		if(target_detected == 1){
 
 			while(1){
@@ -132,7 +132,7 @@ int main (void){
 				//while ((keypress = waitforkeypress()) != ':')						//Ignore characters before the first ':'
 				//{if (keypress == 'x'){sendString("Reset!\r\n");}}					//x pressed to escape
 
-				/***Erase target flash and program target config space***/
+				***Erase target flash and program target config space***
 				Atmel_config(Chip_erase_h, 0);
 				
 
@@ -256,7 +256,7 @@ int main (void){
 							TCNT0 = Start_point;
 							TCCR0B = Counter_speed;
 							while(!(TIFR0 && (1<<TOV0)));
-						TIFR0 |= (1<<TOV0); TCCR0B = 0;}
+						TIFR0 |= (1<<TOV0); TCCR0B = 0;}*/
 						
 						
 						
