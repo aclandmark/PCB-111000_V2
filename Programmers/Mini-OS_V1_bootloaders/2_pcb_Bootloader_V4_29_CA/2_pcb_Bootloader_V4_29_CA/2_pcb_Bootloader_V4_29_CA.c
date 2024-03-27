@@ -23,9 +23,6 @@ The ATMEGA 328 is programed using Atmega Programmer 2.17/2.18/2.2.  Its config b
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 
-/*#include "1_AT_bootloader_V4_29_CA_header_file.h"
-#include "1_AT_bootloader_V4_29_CA_SW_subs.c"
-#include "1_AT_bootloader_V4_29_CA_HW_subs.c"*/
 
 #define LED_2_on	 PORTD &= (~(1 << PD7));
 #define LED_2_off	 PORTD |= (1 << PD7);
