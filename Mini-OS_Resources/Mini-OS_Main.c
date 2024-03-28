@@ -1,43 +1,6 @@
-/*********************
 
-COMPILE using OPTIMIZE level (-01) only
 
-Projects version 9
-I2C program version 4
 
-V9.9 Prevents users applying impractical user-cal values to the ATMEGA 328
-Performs scan of the ATMEGA 328 clock cal factor
-Following POR check cal factor and perform auto clock recovery if necassary
-
-*EEPROM reservations
-0x3FF	user cal if set
-0x3FE	user cal if set
-0x3FD	Default cal supplied by Atmel
-0x3FC	If 1: press 'x' diagnostic mode else press 'r' normal mode
-0x3FB	If 0 use multiplexer (T0) period of 4ms else use period of 2mS (std)
-0x3FA	POR Cal_mode	==0xFF mode is UP 	==0 mode is down.
-0x3F9	==1 Set by programmer; or = 0xFF default value
-0x3F8	EEP_subs  PRN_8bit_GEN().
-0x3F7
-0x3F6	Reserved
-Zero to 0x3F5: For user strings and data
-***********************/
-/*
-# include "I2C_V29_0_CA_header_file.h"
-# include "../../../Mini-OS_Resources/Mini-OS_header_file.h"
-# include "I2C_V29_0_CA_display_subroutines.c"
-
-# include "../../../Mini-OS_Resources/IO_subroutines.c"
-# include "../../../Mini-OS_Resources/Arithmetic_subroutines.c"
-# include "../../../Mini-OS_Resources/ISR_subroutines_V2.c"
-# include "../../../Mini-OS_Resources/osccal_subroutines.c"
-# include "../../../Mini-OS_Resources/mode_definitions_V2.h"
-# include "../../../Mini-OS_Resources/clock_stop_watch_subroutines.c"
-# include "../../../Mini-OS_Resources/Eeprom_subroutines.c"
-
-# include "../../../Mini-OS_Resources/Mini-OS_Main.c"
-
-*/
 
 int main (void){
 
@@ -49,13 +12,7 @@ int main (void){
 	char sign_bit;
 	char test_num, test_digit;
 
-	//char *SW_Version = "System files: Mini-OS_V29_CA plus pcb_Bootloader_V4_27_CA \r\n";
-		
 	
-	/*char *SW_info = "SW information:\
-	Use Project_pcb_168_V2.30_Arduino_V2 to update system files\r\n\
-	See Nano projects directory for user work.\r\n";*/
-
 	/****Watchdog initiated for mode F only (user clock/stop watch with
 	external 10mS crystal interrupt).*********/
 
