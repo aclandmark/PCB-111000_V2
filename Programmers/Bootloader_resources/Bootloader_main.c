@@ -150,7 +150,7 @@ int main (void){
 				start_new_code_block();
 				Program_record();
 				
-				while(1){		//loop1
+				while(1){																					//loop1
 					new_record();
 					if (line_length==0)break; 																//ISR variable
 
@@ -159,7 +159,7 @@ int main (void){
 						if (space_on_page == (PageSZ - offset)){page_address = (Hex_address & PAmask);}
 					Program_record();	}
 
-					else{if(Hex_address != PIC_address)//loop 2
+					else{if(Hex_address != PIC_address)														//loop 2
 						{																					//normal break	loop 3
 							if (section_break){																//PAGE address increases by at least 0x40
 								if((Flash_flag) && (!(orphan)))write_page_SUB(page_address);    			//+0x20 for offset pages
