@@ -173,13 +173,6 @@ default: break;}
 
 
 /********************************************************************************************/
-/*#define I2C_Tx_LED_dimmer \
-if(I2C_data[0] == 1)\
-{if(eeprom_read_byte((uint8_t*)0x3FB) != 0x01)\
-	{eeprom_write_byte((uint8_t*)0x3FB, 0x01);}\
-	else {eeprom_write_byte((uint8_t*)0x3FB, 0xFF);}}\
-	T0_interupt_cnt = 0;*/
-
 #define I2C_Tx_LED_dimmer \
 switch (I2C_data[0]){\
 case 0: break;\
@@ -200,37 +193,5 @@ eeprom_write_byte((uint8_t*)0x3FC, 0x0);
 
 
 /*************************************************************************************************/
-/*# define restore_168_EEPROM_strings \
-	Initialise_I2C_master_write;\
-	{int m = 0x200;\
-	while (m <= 0x3F6)\
-	{I2C_master_transmit(eeprom_read_byte((uint8_t*)m));\
-	m++;}\
-	I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FE));\
-	I2C_master_transmit(eeprom_read_byte((uint8_t*)0x3FF));\
-	TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);}*/	
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
