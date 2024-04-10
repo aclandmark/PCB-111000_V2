@@ -12,10 +12,10 @@ and the bootloader in the boot section using "5_Project_pcb_168_V2.30_Arduino_V2
 0x3FC	If 'x' pressed at p/r prompt 0x3FC is set to 1 for diagnostic mode.
 if 'r' is pressed, normal mode runs
 0x3FB	Controls brightness
-0x3FA	No longer used
+0x3FA	Spare for PRN_8bit_GEN() (in case pf burn-out)
 0x3F9	Set to 1 by programmer to trigger auto calibration;
-0x3F8	EEP_subs  PRN_8bit_GEN().
-0x3F7	Spare for PRN_8bit_GEN() (in case pf burn-out)
+0x3F8	EEP_subs  PRN_8bit_GEN().V1 may suffer burn out
+0x3F7	V1 may suffer burn out
 0x3F6	Reserved??
 Zero to 0x3F5: For user strings and data
 ***********************/
