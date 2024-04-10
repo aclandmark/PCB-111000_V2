@@ -48,6 +48,7 @@ char PRN_8bit_GEN(void){
 unsigned int bit;
 char lfsr;
 
+if(eeprom_read_byte((uint8_t*)(0x3FA)) == 0)eeprom_write_byte((uint8_t*)(0x3FA),0xFF);
 lfsr = eeprom_read_byte((uint8_t*)(0x3F8));
 bit = (( lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 4)) & 1;
 lfsr = (lfsr >> 1) | (bit << 7);
