@@ -208,7 +208,7 @@ case 'D':                                                     //Delete Target EE
 sendString("\r\nTarget "); Text_EEP_reset;  
 if(waitforkeypress() == 'D'){
 Text_10_sec_wait;                                             //sendString("10 sec wait");
-for (int m = 0; m <= 0x3F5;m++)     
+for (int m = 0; m <= 0x3FF;m++)     
 {Read_write_mem('I', m, 0xFF);}
 sendString(" Done\r\n");}wdt_enable(WDTO_60MS); while(1);break;
 
