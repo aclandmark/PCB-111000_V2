@@ -1,7 +1,7 @@
 
 PCB111000 has beeen developed as a learning aid for the C language when applied to AVR devices.  
-It consists of a USB bridge to communicate with a PC, an 8 digit display and two AVR devices. One of the AVR devices hosts a miniOS which drives the display and
-the other, the user device, hosts user projects.
+It consists of a USB bridge to communicate with a PC, an 8 digit display and two AVR devices. One of the AVR devices hosts a
+programmer and miniOS which drives the display, the other, the user device, hosts user projects.
 
 There are three versions of PCB111000:
 
