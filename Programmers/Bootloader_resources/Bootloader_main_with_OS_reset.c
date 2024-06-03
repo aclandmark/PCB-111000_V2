@@ -49,13 +49,13 @@ int main (void){
 	//Reset mini-OS if PORTB4 (MISO) pin set low by user project otherwise continue to programmer
 	 
 	MCUCR &= (~(1 << PUD));								//Pull up disable set to zero: week pull-up enabled
-	DDRB &= (~(1 << DDB4));								//PORTB4 set to input
-	PORTB |= (1 << PORTB4);								//PORTB4 set for week pull up.
+	DDRB &= (~(1 << DDB3));								//PORTB4 set to input
+	PORTB |= (1 << PORTB3);								//PORTB4 set for week pull up.
 	
 	//_delay_ms(10);
 	two_msec_delay;
 	
-	if ((PINB & 0x04)^0x04)								//If PORTB4 pulled low by user project reset jump to 0x0000
+	if ((PINB & 0x03)^0x03)								//If PORTB4 pulled low by user project reset jump to 0x0000
 	{MCUCR = (1<<IVCE);MCUCR = 0x0;						//select interrupt vector table starting at 0x000
 	asm("jmp 0x0000");}
 	
