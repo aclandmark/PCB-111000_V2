@@ -39,5 +39,5 @@ DDRC |= (1 << DDC0) | (1 << DDC1) | (1 << DDC2);
 #include "../../../Bootloader_resources/Bootloader_header_file.h"
 #include "../../../Bootloader_resources/Bootloader_HW_subs.c"
 #include "../../../Bootloader_resources/Bootloader_SW_subs.c"
-#include "../../../Bootloader_resources/Bootloader_main.c"
+#include "../../../Bootloader_resources/Bootloader_main_with_OS_reset.c"
 
