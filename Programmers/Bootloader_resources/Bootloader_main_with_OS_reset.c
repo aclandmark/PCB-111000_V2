@@ -52,6 +52,9 @@ int main (void){
 	DDRB &= (~(1 << DDB4));								//PORTB4 set to input
 	PORTB |= (1 << PORTB4);								//PORTB4 set for week pull up.
 	
+	//_delay_ms(10);
+	two_msec_delay;
+	
 	if ((PINB & 0x04)^0x04)								//If PORTB4 pulled low by user project reset jump to 0x0000
 	{MCUCR = (1<<IVCE);MCUCR = 0x0;						//select interrupt vector table starting at 0x000
 	asm("jmp 0x0000");}
