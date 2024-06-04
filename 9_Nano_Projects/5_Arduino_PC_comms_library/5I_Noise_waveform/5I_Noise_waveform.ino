@@ -60,7 +60,7 @@ Quad = (Quad %4) + 1;}}
 
 void Waveform_generator(char Quad){
 
-Serial.write('.');
+//Serial.write('.');
   switch (Quad){
 
     case 1:
@@ -156,7 +156,8 @@ count = (unsigned int)(Time * 20000)/rate;
 
 ISR(PCINT0_vect)
 { if (switch_2_up)return; 
-  sei(); Serial.write('.');while(1);}
+  sei(); //Serial.write('.');
+  while(1);}
 
 
 ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01);
@@ -166,7 +167,8 @@ eeprom_write_byte((uint8_t*)0x1F9, waveform >> 8);
 eeprom_write_byte((uint8_t*)0x1F8, p);
 eeprom_write_byte((uint8_t*)0x1F7, m1);
 eeprom_write_byte((uint8_t*)0x1F6, m2);
-Reset_Atmega328;}
+Reset_Atmega328;
+Reset_I2C;}
     
    /**************************************************************************************/
 
