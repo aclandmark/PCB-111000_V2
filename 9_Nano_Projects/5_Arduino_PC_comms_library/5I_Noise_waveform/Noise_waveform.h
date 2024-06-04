@@ -157,10 +157,14 @@ else {PORTB |= (1 << PB1);}
 
 #define Reset_Atmega328 \
 DDRC |= (1 << PC3);\
-PORTC &= (~((1 << PC3)));
+PORTC &= (~((1 << PC3)));\
+_delay_ms(2);\
+PORTC |= (1 << PC3);
 
-
-
+#define Reset_I2C \
+DDRB |= (1 << DDB4);\
+PORTB &= (~(1 << PORTB4));
+ 
 
 /**********************************************************************************************************/
 #define OSC_CAL \
