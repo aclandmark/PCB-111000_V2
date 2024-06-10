@@ -193,11 +193,6 @@ TWDR;
 TWCR = (1 << TWINT);
 
 
-//while (!(TWCR & (1 << TWINT)))wdr();\
-//{int m = 0; while((!(TWCR & (1 << TWINT))) && (m++ < 1000))wdr();}\
-
-
-
 /**********************************************************************************************************/
 #include "Resources_nano_projects\Subroutines\HW_timers.c"
 #include "Resources_nano_projects\PC_comms\Basic_Rx_Tx_Arduino.c"
@@ -206,3 +201,7 @@ TWCR = (1 << TWINT);
 #include "Resources_nano_projects\Chip2chip_comms\I2C_slave_Rx_Tx.c"
 #include "Resources_nano_projects\Subroutines\FPN_DIY_IO.c"
 #include "Resources_nano_projects\Subroutines\Random_and_prime_nos.c"
+
+
+
+/**********************************************************************************************************/
