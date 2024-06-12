@@ -35,7 +35,7 @@ switch(reset_status){
   case POR_reset:                break;
   case WDT_reset:                break;
   case  WDT_with_ISR_reset:       break;
-  case External_reset:            Serial.write(eeprom_read_byte((uint8_t*)0x1FB)+1);
+  case External_reset:            Serial.write(eeprom_read_byte((uint8_t*)0x1FB)+'0');
                                   eeprom_write_byte((uint8_t*)0x1FB, 0);break;}
 
 rate =  15;    //5;
