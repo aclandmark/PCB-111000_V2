@@ -156,9 +156,11 @@ else {PORTB |= (1 << PB1);}
 
 
 #define Reset_Atmega328 \
+PORTC |= (1 << PC3);\
 DDRC |= (1 << PC3);\
+_delay_ms(1);\
 PORTC &= (~((1 << PC3)));\
-_delay_ms(2);\
+_delay_ms(1);\
 PORTC |= (1 << PC3);
 
 #define Reset_I2C \
