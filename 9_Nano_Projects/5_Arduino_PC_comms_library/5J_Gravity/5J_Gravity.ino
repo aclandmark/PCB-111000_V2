@@ -23,6 +23,7 @@ if the signal from the I2C master is more than several mS late.
     unsigned int PRN; 
     int m;
     unsigned char PRN_counter;
+    unsigned char test;
    
   setup_HW_Arduino;
   
@@ -32,11 +33,15 @@ if the signal from the I2C master is more than several mS late.
   enable_pci_on_sw2;
  
 switch(reset_status){
-  case POR_reset:                break;
+  case POR_reset:                User_prompt_A; Serial.print((int)eeprom_read_byte((uint8_t*)0x1FB));break;
   case WDT_reset:                break;
-  case  WDT_with_ISR_reset:       break;
-  case External_reset:            Serial.write(eeprom_read_byte((uint8_t*)0x1FB)+'0');
-                                  eeprom_write_byte((uint8_t*)0x1FB, 0);break;}
+  case  WDT_with_ISR_reset:       test = eeprom_read_byte((uint8_t*)0x1FB);
+                                  test += 1;
+                                eeprom_write_byte((uint8_t*)0x1FB, test); _delay_ms(5);
+                                 Serial.write('*');Serial.print((int)(eeprom_read_byte((uint8_t*)0x1FB)));Serial.write("\r\n");
+                                 break;
+case External_reset:            eeprom_write_byte((uint8_t*)0x1FB, 0);break;}
+                                  
 
 rate =  15;    //5;
 PRN_counter = 0;
@@ -130,9 +135,9 @@ ISR(PCINT0_vect)
 
 /**********************************************************************************************/
 ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01);
-eeprom_write_byte((uint8_t*)0x1FB, (eeprom_read_byte((uint8_t*)0x1FB)+1));
+
 Reset_Atmega328;
-Reset_I2C;}
+Reset_I2C;while(1);}
   
 
 
