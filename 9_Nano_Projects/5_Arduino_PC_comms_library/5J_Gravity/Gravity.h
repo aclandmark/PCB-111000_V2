@@ -186,7 +186,8 @@ if((User_response == 'R') || (User_response == 'r'))break;} Serial.write("\r\n")
 /**********************************************************************************************************/
 #define waiting_for_I2C_master \
 TWCR = (1 << TWEA) | (1 << TWEN);\
-{int m = 0; while((!(TWCR & (1 << TWINT))) && (m++ < 1000))wdr();}\
+{int m = 0; while((!(TWCR & (1 << TWINT))) && (m++ < 5000))wdr();\
+if (m >= 4999){sei(); while((!(TWCR & (1 << TWINT))));}}\
 TWDR;
 
 #define clear_I2C_interrupt \
