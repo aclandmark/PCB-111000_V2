@@ -91,6 +91,7 @@ Timer_T1_sub(T1_delay_100ms);}}
 void I2C_Tx_LED_dimmer(void){
 char Dimmer_control;
 
+Dimmer_control = 0;
 
 if ((PIND & 0x04) && (PINB & 0x40) && (PIND & 0x80)) Dimmer_control = 0;				//No user switches pressed
 
