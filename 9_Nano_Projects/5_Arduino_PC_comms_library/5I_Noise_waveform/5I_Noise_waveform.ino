@@ -14,6 +14,25 @@ The "waiting_for_I2C_master" macro is modified so that a watch dog reset is gene
 if the signal from the I2C master is more than several mS late. 
 */
 
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     	OSCCAL
+0x1FC and 0x1FB            	PRN generator
+0x1FA                      	Reset source
+0x1F9                   	Crash counter
+0x1F8 t0 3					Waveform parameters
+
+
+
+
+*/
+
+
+
+
+
+
+
 #include "Noise_waveform.h"
 
 char Quad_global;
