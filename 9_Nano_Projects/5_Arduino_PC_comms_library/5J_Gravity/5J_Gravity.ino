@@ -33,14 +33,14 @@ if the signal from the I2C master is more than several mS late.
   enable_pci_on_sw2;
  
 switch(reset_status){
-  case POR_reset:                User_prompt_A; Serial.print((int)eeprom_read_byte((uint8_t*)0x1FB));break;
+  case POR_reset:                if(switch_1_up){User_prompt_A; Serial.print((int)eeprom_read_byte((uint8_t*)0x1FA));}break;   //0x1FB
   case WDT_reset:                break;
-  case  WDT_with_ISR_reset:       test = eeprom_read_byte((uint8_t*)0x1FB);
-                                  test += 1;
-                                eeprom_write_byte((uint8_t*)0x1FB, test); _delay_ms(5);
-                                 Serial.write('*');Serial.print((int)(eeprom_read_byte((uint8_t*)0x1FB)));Serial.write("\r\n");
+  case  WDT_with_ISR_reset:       //_delay_ms(10);test = eeprom_read_byte((uint8_t*)0x1FA);
+                                  //test += 1;
+                                eeprom_write_byte((uint8_t*)0x1FA, eeprom_read_byte((uint8_t*)0x1FA)+1); _delay_ms(5);
+                                 Serial.write('*');Serial.print((int)(eeprom_read_byte((uint8_t*)0x1FA)));Serial.write("\r\n");
                                  break;
-case External_reset:            eeprom_write_byte((uint8_t*)0x1FB, 0);break;}
+case External_reset:            eeprom_write_byte((uint8_t*)0x1FA, 0);break;}
                                   
 
 rate =  15;    //5;
