@@ -14,16 +14,27 @@ The "waiting_for_I2C_master" macro is modified so that a watch dog reset is gene
 if the signal from the I2C master is more than several mS late. 
 */
 
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+0x1F9                      Crash counter
+0x1F8                      rate
+*/
+
+
+
+
 #include "Gravity.h"
 
  int rate;
 
- int main (void)                          //Example 1
+ int main (void)  
   {
     unsigned int PRN; 
     int m;
     unsigned char PRN_counter;
-    unsigned char test;
    
   setup_HW_Arduino;
   
@@ -33,17 +44,17 @@ if the signal from the I2C master is more than several mS late.
   enable_pci_on_sw2;
  
 switch(reset_status){
-  case POR_reset:                if(switch_1_up){User_prompt_A; Serial.print((int)eeprom_read_byte((uint8_t*)0x1FA));}break;   //0x1FB
+  case POR_reset:                if(!(switch_1_up)){User_prompt_A; Serial.print((int)eeprom_read_byte((uint8_t*)0x1F9));}
+                                  rate =  5;break;
   case WDT_reset:                break;
-  case  WDT_with_ISR_reset:       //_delay_ms(10);test = eeprom_read_byte((uint8_t*)0x1FA);
-                                  //test += 1;
-                                eeprom_write_byte((uint8_t*)0x1FA, eeprom_read_byte((uint8_t*)0x1FA)+1); _delay_ms(5);
-                                 Serial.write('*');Serial.print((int)(eeprom_read_byte((uint8_t*)0x1FA)));Serial.write("\r\n");
+  case  WDT_with_ISR_reset:      eeprom_write_byte((uint8_t*)0x1F9, (int)(eeprom_read_byte((uint8_t*)0x1F9))+1); _delay_ms(5);
+                                Serial.write('*');Serial.print((int)(eeprom_read_byte((uint8_t*)0x1F9)));Serial.write("\r\n");
+                                 rate = (int)(eeprom_read_byte((uint8_t*)0x1F8));
                                  break;
-case External_reset:            eeprom_write_byte((uint8_t*)0x1FA, 0);break;}
+case External_reset:            rate =  5; eeprom_write_byte((uint8_t*)0x1F9, 0);break;}
                                   
 
-rate =  15;    //5;
+ 
 PRN_counter = 0;
   PRN = PRN_16bit_GEN (0, &PRN_counter);
 descending(16);
@@ -61,21 +72,18 @@ SW_reset;
       unsigned int count, top, Start_point;
 float Time;
     unsigned int PORT_1;
-   //num_steps = +1;
+   
     PORT_1 = 1 << 16-num_steps;
     top = 65535;
   for (int m = 1; m <= num_steps; m++)
   {  
-    //Long_to_PC_Basic((PORT_1));String_to_PC_Basic("\t");
     I2C_Tx_2_integers(PORT_1, 0);
         
     switch (m){
     case 1: Time=1.0; break;
     case 2: Time = sqrt(2.0) - 1.0; break;
     default: Time = sqrt ((float)m ) - sqrt ((float)(m-1));break; }
-    
-   //Int_to_PC_Basic(int(Time * 10000.0));String_to_PC_Basic("\r\n");
-
+   
     count = (unsigned int)(Time * 65000.0)/rate; //3
       Start_point = top - count;
     if (m != num_steps)Timer_T1_sub(4, Start_point);
@@ -92,14 +100,11 @@ float Time;
     top = 65535;
   for (int m = num_steps; m; m--)
   { 
-    //Long_to_PC_Basic((PORT_1));String_to_PC_Basic("\t");    
     switch (m){
     case 1: Time=1.0; break;
     case 2: Time = sqrt(2.0) - 1.0; break;
     default: Time = sqrt ((float)m ) - sqrt ((float)(m-1));break;}
 
-    //Int_to_PC_Basic(int(Time * 10000.0));String_to_PC_Basic("\r\n");
-      
     count = (unsigned int)(Time * 65000.0)/rate;   //3
       Start_point = top - count;
     Timer_T1_sub(4, Start_point);
@@ -118,11 +123,8 @@ void Long_to_PC_Basic (long number)
   while ((number = number / 10) > 0);
   s[i] = '\0';
   for (int m = i; m > 0; m--)Serial.write(s[m - 1]);
-  Serial.write(' ');
-}
+  Serial.write(' ');}
 
-
-   /**************************************************************************************/
 
 
 /**********************************************************************************************/
@@ -134,8 +136,9 @@ ISR(PCINT0_vect)
 
 
 /**********************************************************************************************/
-ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01);
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01);
 
+eeprom_write_byte((uint8_t*)0x1F8, rate);
 Reset_Atmega328;
 Reset_I2C;while(1);}
   
