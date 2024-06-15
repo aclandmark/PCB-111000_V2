@@ -80,9 +80,9 @@ else TWCR = (1 << TWINT);
 if (MCUSR & (1 << WDRF)){reset_status = 2;}\
 if (MCUSR & (1 << PORF))reset_status = 1;\
 if (MCUSR & (1 << EXTRF))reset_status = 3;\
-if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FC))))reset_status = 4;\
-if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FC) == 0x01))reset_status = 5;\
-eeprom_write_byte((uint8_t*)0x1FC, 0xFF);\
+if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FA))))reset_status = 4;\
+if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FA) == 0x01))reset_status = 5;\
+eeprom_write_byte((uint8_t*)0x1FA, 0xFF);\
 MCUSR = 0;
 
 
@@ -156,9 +156,11 @@ else {PORTB |= (1 << PB1);}
 
 
 #define Reset_Atmega328 \
+PORTC |= (1 << PC3);\
 DDRC |= (1 << PC3);\
+_delay_ms(1);\
 PORTC &= (~((1 << PC3)));\
-_delay_ms(2);\
+_delay_ms(1);\
 PORTC |= (1 << PC3);
 
 #define Reset_I2C \
@@ -186,7 +188,8 @@ if((User_response == 'R') || (User_response == 'r'))break;} Serial.write("\r\n")
 /**********************************************************************************************************/
 #define waiting_for_I2C_master \
 TWCR = (1 << TWEA) | (1 << TWEN);\
-{int m = 0; while((!(TWCR & (1 << TWINT))) && (m++ < 1000))wdr();}\
+{int m = 0; while((!(TWCR & (1 << TWINT))) && (m++ < 5000))wdr();\
+if (m >= 4999){sei(); while((!(TWCR & (1 << TWINT))));}}\
 TWDR;
 
 #define clear_I2C_interrupt \
