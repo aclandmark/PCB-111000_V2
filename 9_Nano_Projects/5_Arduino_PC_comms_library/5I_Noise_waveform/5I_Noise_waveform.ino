@@ -19,12 +19,13 @@ EEPROM usage
 0x1FF, 0x1FE and 0x1FD     	OSCCAL
 0x1FC and 0x1FB            	PRN generator
 0x1FA                      	Reset source
-0x1F9                   	Crash counter
-0x1F8 t0 3					Waveform parameters
-
-
-
-
+0x1F9                   	Crash counter	(Not used here)
+0x1F8						Quad_global
+0x1F7						waveform LB
+0x1F6						waveform HB
+0x1F5						p
+0x1F4						m1
+0x1F3						m2
 */
 
 
@@ -62,12 +63,12 @@ Thirty_two_ms_WDT_with_interrupt;
   m1 = (PRN%7) + 1;
  Quad_global = 1;}
 
-  else Quad_global = eeprom_read_byte((uint8_t*)0x1FB);
+  else Quad_global = eeprom_read_byte((uint8_t*)0x1F8);
 
 if(reset_status != WDT_with_ISR_reset){ 
 waveform = 1 << 7;
 for(int m = 0; m < m1; m++)waveform |= (1 << (6-m));}
-else waveform = ((eeprom_read_byte((uint8_t*)0x1F9))<< 8) + (eeprom_read_byte((uint8_t*)0x1FA));
+else waveform = ((eeprom_read_byte((uint8_t*)0x1F6))<< 8) + (eeprom_read_byte((uint8_t*)0x1F7));
 
 while(1){
 Waveform_generator(Quad_global);
@@ -84,8 +85,8 @@ void Waveform_generator(char Quad){
     
     if(reset_status != WDT_with_ISR_reset){p = m1;}
     else {
-      p =  eeprom_read_byte((uint8_t*)0x1F8);
-        m1 = eeprom_read_byte((uint8_t*)0x1F7);
+      p =  eeprom_read_byte((uint8_t*)0x1F5);
+        m1 = eeprom_read_byte((uint8_t*)0x1F4);
         reset_status = 0;}
     
         if (m1 > 5)rate = 7*m1;
@@ -107,9 +108,9 @@ case 2:
   p=1;}
     
   else{
-   p =  eeprom_read_byte((uint8_t*)0x1F8);
-        m1 = eeprom_read_byte((uint8_t*)0x1F7);
-        m2 = eeprom_read_byte((uint8_t*)0x1F6);
+   p =  eeprom_read_byte((uint8_t*)0x1F5);
+        m1 = eeprom_read_byte((uint8_t*)0x1F4);
+        m2 = eeprom_read_byte((uint8_t*)0x1F3);
         reset_status = 0;}
 
  rate = 20*m1;
@@ -125,9 +126,9 @@ case 2:
  
   if(reset_status != WDT_with_ISR_reset){p = m2;}
   else{
-  p =  eeprom_read_byte((uint8_t*)0x1F8);
-        m1 = eeprom_read_byte((uint8_t*)0x1F7);
-        m2 = eeprom_read_byte((uint8_t*)0x1F6);
+  p =  eeprom_read_byte((uint8_t*)0x1F5);
+        m1 = eeprom_read_byte((uint8_t*)0x1F4);
+        m2 = eeprom_read_byte((uint8_t*)0x1F3);
         reset_status = 0;}
     if (m1 > 5)rate = 3*m1;
   else rate = 20*m2;
@@ -147,9 +148,9 @@ case 2:
   p=0;}
 
   else{
- p =  eeprom_read_byte((uint8_t*)0x1F8);
-        m1 = eeprom_read_byte((uint8_t*)0x1F7);
-        m2 = eeprom_read_byte((uint8_t*)0x1F6);
+ p =  eeprom_read_byte((uint8_t*)0x1F5);
+        m1 = eeprom_read_byte((uint8_t*)0x1F4);
+        m2 = eeprom_read_byte((uint8_t*)0x1F3);
         reset_status = 0;}
 
         rate = 20*m1;
@@ -183,13 +184,13 @@ ISR(PCINT0_vect)
 
 
 /**********************************************************************************************/
-ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01);
-eeprom_write_byte((uint8_t*)0x1FB, Quad_global);
-eeprom_write_byte((uint8_t*)0x1FA, waveform);
-eeprom_write_byte((uint8_t*)0x1F9, waveform >> 8);
-eeprom_write_byte((uint8_t*)0x1F8, p);
-eeprom_write_byte((uint8_t*)0x1F7, m1);
-eeprom_write_byte((uint8_t*)0x1F6, m2);
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01);
+eeprom_write_byte((uint8_t*)0x1F8, Quad_global);
+eeprom_write_byte((uint8_t*)0x1F7, waveform);
+eeprom_write_byte((uint8_t*)0x1F6, waveform >> 8);
+eeprom_write_byte((uint8_t*)0x1F5, p);
+eeprom_write_byte((uint8_t*)0x1F4, m1);
+eeprom_write_byte((uint8_t*)0x1F3, m2);
 Reset_Atmega328;
 Reset_I2C;}
   
