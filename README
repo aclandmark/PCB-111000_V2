@@ -41,14 +41,15 @@ calculator and floating point number to 8 digit display.
 6 Projects used to illustrate use of Atmel Studio 7
 8 projects used to illustrate the operation of floating point numbers, tested using power series as above
 and the generation of pulse and sawtooth wavefors by supperimposing sine wave upon one another.
-5 projects to teset the operation of the PCB dutring assembly
-5 projects usee to exlore the calibration of the RC oscillators used to clock the devices.
+5 projects to test the operation of the PCB dutring assembly
+5 projects used to exlore the calibration of the RC oscillators used to clock the devices.
 
 Any bugs:	Of course there are especially in the conversion of a floating point number to 8 digits.
 		Initially I tried to fix them, but stopped.  If they are of no interest to ayone else 
 		then they are of no nterest to me either.
 
-Projects for  PCB_111000_UNO_V2 and PCB_111000_CP2102:  Projects and the mini-OS for each of these pcbs requires updating however both include most of the initial projects. 
+Projects for  PCB_111000_UNO_V2 and PCB_111000_CP2102:  Projects and the mini-OS for each of these pcbs 
+requires updating however both include most of the initial projects. 
 
 
 
