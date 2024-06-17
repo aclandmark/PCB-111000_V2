@@ -21,3 +21,39 @@ a bootloader as well as the user projects.
 
 In PCB_111000_CP2102 the I2C bus is replaced with a one wire firmware UART.
 
+
+Originally 56 projects were developed for use with PCB111000.
+These have been revised over the years and are now as follows
+
+10 very short projects provided to show what a C program looks like and explore basic methods of flow control
+9 projects exploring the operation of the recever transmitter (USART) block
+7 projects exploring interrupts
+4 projects exploring bit operatons, division and the conversion between 8 bit binary and decimal numbers
+11 projects based on the Arduino USART library with reset analysis including
+	Interger, prime and scientific numbers
+	Integer roots and a pie estimator
+	Power series to compute real number powers and trig functions
+	A floating point number to string sbroutine
+	Displays to simulate gravity, the pendulum and a noise waveform.
+9 Projects to Illustate driving the display from the keyboard and user switches, includes a simple
+calculator and floating point number to 8 digit display.
+7 Projects used to build simple clocks and stop watches
+6 Projects used to illustrate use of Atmel Studio 7
+8 projects used to illustrate the operation of floating point numbers, tested using power series as above
+and the generation of pulse and sawtooth wavefors by supperimposing sine wave upon one another.
+5 projects to teset the operation of the PCB dutring assembly
+5 projects usee to exlore the calibration of the RC oscillators used to clock the devices.
+
+Any bugs:	Of course there are especially in the conversion of a floating point number to 8 digits.
+		Initially I tried to fix them, but stopped.  If they are of no interest to ayone else 
+		then they are of no nterest to me either.
+
+Projects for  PCB_111000_UNO_V2 and PCB_111000_CP2102:  Projects and the mini-OS for each of these pcbs requires updating however both include most of the initial projects. 
+
+
+
+
+
+
+
+
