@@ -4,7 +4,12 @@
  See project "3F_Prime_numbers" for an intruction to prime numbers
  */
 
-
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+/*
 
 
 #include "Prime_factors_header.h"
@@ -99,7 +104,7 @@ i++;}}
 ISR(PCINT2_vect){
 if(switch_3_down) return;
 if((switch_1_up) && (switch_3_up))return;
- if(switch_1_down) eeprom_write_byte((uint8_t*)0x1FC, 0);
+ if(switch_1_down) eeprom_write_byte((uint8_t*)0x1FA, 0);
  SW_reset;}
 
 
