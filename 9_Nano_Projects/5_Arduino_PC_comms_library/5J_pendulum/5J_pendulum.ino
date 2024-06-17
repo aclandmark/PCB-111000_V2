@@ -101,8 +101,6 @@ ISR(PCINT0_vect)
 
 /**********************************************************************************************/
 ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01);
-
-eeprom_write_byte((uint8_t*)0x1F8, rate);
 Reset_Atmega328;
 Reset_I2C;while(1);}
   
