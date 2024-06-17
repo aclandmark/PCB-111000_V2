@@ -40,8 +40,8 @@ calculator and floating point number to 8 digit display.
 7 Projects used to build simple clocks and stop watches
 6 Projects used to illustrate use of Atmel Studio 7
 8 projects used to illustrate the operation of floating point numbers, tested using power series as above
-and the generation of pulse and sawtooth wavefors by supperimposing sine wave upon one another.
-5 projects to test the operation of the PCB dutring assembly
+and the generation of pulse and sawtooth waveforms by supperimposing sine wave upon one another.
+5 projects to test the operation of the PCB during assembly
 5 projects used to exlore the calibration of the RC oscillators used to clock the devices.
 
 Any bugs:	Of course there are especially in the conversion of a floating point number to 8 digits.
