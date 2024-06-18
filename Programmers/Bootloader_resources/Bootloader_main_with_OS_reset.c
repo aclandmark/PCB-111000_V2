@@ -82,11 +82,11 @@ int main (void){
 		if(target_detected == 1){
 
 			while(1){
-				do{sendString("P/R  ");}	 while((isCharavailable(300) == 0));
+				do{sendString("p/g  ");}	 while((isCharavailable(300) == 0));
 
 				dummy_byte = receiveChar();
 				if ((dummy_byte == 'p'))break;
-				if((dummy_byte == 'r') || (dummy_byte == 'x')){
+				if((dummy_byte == 'g') || (dummy_byte == 'x')){
 					if (dummy_byte == 'x') {eeprom_write_byte((uint8_t*)0x3FC, 0x1);}
 
 				sendString ("Sw!\r\n");wdt_enable(WDTO_60MS); while(1);}}
