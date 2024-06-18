@@ -82,7 +82,7 @@ int main (void){
 		if(target_detected == 1){
 
 			while(1){
-				do{sendString("p/r  ");}	 while((isCharavailable(300) == 0));
+				do{sendString("P/R  ");}	 while((isCharavailable(300) == 0));
 
 				dummy_byte = receiveChar();
 				if ((dummy_byte == 'p'))break;
