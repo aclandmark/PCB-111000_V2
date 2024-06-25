@@ -22,6 +22,17 @@ for the power series deffinitions
 #include "e_power_series_header.h"
 
 #define message_1 "\r\nPower function: Enter +ve scientific number\r\n"
+
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
+
+
+
+
 #define message_2 "\r\n\r\nTime_out: Number too large or small. Try again!\r\n"
 
 #define BL 30                                     //Buffer length
@@ -169,6 +180,3 @@ return logE;}
 
 
 /**************************************************************************************************************************/
-
-
-
