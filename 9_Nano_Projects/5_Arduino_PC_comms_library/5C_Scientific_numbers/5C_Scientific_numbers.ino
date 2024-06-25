@@ -25,6 +25,14 @@ UNO_proj_resources\PC_comms\Basic_Rx_Tx_Arduino.c
 */
 
 
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
+
+
 #define message_1 "\r\n\r\nUsing Arduino functions to receive and print scientific numbers.\r\n\
 \r\nEnter scientific number\r\nthen the number of digits before and after the decimal point.\r\n\
 Then press AK to generate a series of numbers.\t"
