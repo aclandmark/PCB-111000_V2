@@ -12,6 +12,13 @@ The Code blocks C complier running on a PC using 64 bit and floating point doubl
 a radius of 370,000,000 in about 10 seconds
 ********************************************************************************/
 
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
+
 
 
 #define message_1 "\r\nEstimate value for PIE. Enter radius (50000 max)?\r\n\
