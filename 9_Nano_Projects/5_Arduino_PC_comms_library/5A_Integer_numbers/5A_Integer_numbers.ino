@@ -41,10 +41,6 @@ EEPROM usage
 0x1FF, 0x1FE and 0x1FD     OSCCAL
 0x1FC and 0x1FB            PRN generator
 0x1FA                      Reset source
-/*
-
-
- 
  */
 
 
