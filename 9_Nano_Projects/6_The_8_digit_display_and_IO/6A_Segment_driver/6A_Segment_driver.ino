@@ -5,6 +5,12 @@
  the display and an actual number.
  */
 
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
 
 
 #include "Segment_driver_header.h"
@@ -62,12 +68,12 @@ wdr();
 ISR(PCINT2_vect)
 { if ((switch_1_up) && (switch_3_up))return;
    if(switch_1_down);
-   if(switch_3_down)eeprom_write_byte((uint8_t*)0x1FC, 0);
+   if(switch_3_down)eeprom_write_byte((uint8_t*)0x1FA, 0);
    while((switch_1_down) || (switch_3_down))wdr();
    setup_watchdog_A; SW_reset;
 }
 
-ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01); while(1);}
 
 
 
