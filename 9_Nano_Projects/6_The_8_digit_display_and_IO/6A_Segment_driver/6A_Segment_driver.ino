@@ -18,7 +18,7 @@ EEPROM usage
 
 
 #define message_1 "\r\nPress key a to g (x for next digit).\r\n\
-Press sw_1 or 2 to clear the display.\r\n"
+Press sw_1 or 3 to clear the display.\r\n"
 #define message_2 "?\r\n"
 #define message_3 "\r\nWDTout with interrupt occurred\r\n\
 A wdr() statement is probably needed some where.\r\n"
