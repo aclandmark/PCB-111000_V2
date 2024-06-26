@@ -12,7 +12,12 @@ bit of DIY programming is required.
 The result is the subroutine "long Int_KBD_to_display(char *)"
 This accepts decimal digits from the KBD and sends them to the display.
 */
-
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
 
 
 #include "INT_KBD_to_displsay_header.h"
@@ -136,7 +141,7 @@ return Long_Num_from_mini_OS;}
 
 
 
-ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01); while(1);}
 
 
 
