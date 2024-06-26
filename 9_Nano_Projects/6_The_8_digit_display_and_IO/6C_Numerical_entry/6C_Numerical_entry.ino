@@ -5,7 +5,12 @@
  Users simply press digits 0 to 9 at the keyboard and the number is displayed.
  Note however that it is displayed in the reverse order (a common problem with number processing).
  */
-
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
 
 
 #include "Segment_driver_header.h"
