@@ -95,6 +95,8 @@ else zero_counter = 0;
 for(int m = 0; m <= ndp; m++)
 {if((fpart = fpart*10.0)<0.1){zero_counter += 1;}}     //Convert RHS of decimal point to an integer
 
+if (fpart > 2e9){Serial.write("OVF ");fpart =fpart/10.0;}
+
 decimal_part = Float2Long(fpart);                       //decimal_part = (long)fpart;     ALTERNATIVE using C library function
 decimal_part = decimal_part + 5;
 decimal_part/=10;                                       //Rounding
