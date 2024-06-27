@@ -2,10 +2,11 @@
 
 #include <avr/wdt.h>
 
-char watch_dog_reset = 0;
+char reset_status;
+//char watch_dog_reset = 0;
 char User_response;
 char str_counter;
-
+unsigned char SREG_BKP;
 
 #define T0_delay_10ms 5,178
 #define T1_delay_100ms 3, 0x9E62
@@ -26,8 +27,9 @@ char str_counter;
 
 
 /*****************************************************************************/
-#define setup_HW_Arduino_IO \
-setup_watchdog;\
+#define setup_HW_Arduino \
+determine_reset_source;\
+setup_watchdog_A;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
 set_up_switched_inputs;\
@@ -40,13 +42,9 @@ OSC_CAL;\
 Serial.begin(115200);\
 while (!Serial);\
 sei();\
-I2C_Tx_LED_dimmer();
-
-
-
-/*****************************************************************************/
-#define setup_HW_Arduino_IO_Extra \
-setup_HW_Arduino_IO;\
+I2C_Tx_LED_dimmer();\
+\
+/*OPTIONAL Setup_HW code gives default ap*/\
 \
 Timer_T0_10mS_delay_x_m(1);\
 I2C_TX_328_check();\
@@ -75,13 +73,27 @@ else TWCR = (1 << TWINT);
 
 
 
+/**********************************************************************************************************/
+#define determine_reset_source \
+if (MCUSR & (1 << WDRF)){reset_status = 2;}\
+if (MCUSR & (1 << PORF))reset_status = 1;\
+if (MCUSR & (1 << EXTRF))reset_status = 3;\
+if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FA))))reset_status = 4;\
+if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FA) == 0x01))reset_status = 5;\
+eeprom_write_byte((uint8_t*)0x1FA, 0xFF);\
+MCUSR = 0;
+
+
 /*****************************************************************************/
-#define setup_watchdog \
-if (MCUSR & (1 << WDRF))watch_dog_reset = 1;\
+#define setup_watchdog_A \
+\
 wdr();\
-MCUSR &= ~(1<<WDRF);\
+SREG_BKP = SREG;\
+cli();\
 WDTCSR |= (1 <<WDCE) | (1<< WDE);\
-WDTCSR = 0;
+WDTCSR = 0;\
+MCUSR = 0;\
+SREG = SREG_BKP;
 
 #define wdr()  __asm__ __volatile__("wdr")
 
