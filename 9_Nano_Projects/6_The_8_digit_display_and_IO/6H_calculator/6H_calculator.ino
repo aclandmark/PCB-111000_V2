@@ -7,7 +7,12 @@
 Development of project 6F to build a simple calculator
 */
 
-
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
 
 
 #include "Calculator_header.h"
@@ -240,7 +245,7 @@ I2C_Tx_8_byte_array(digits);}
 
 
 /****************************************************************************************************************/
-ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01); while(1);}
 
 
 
