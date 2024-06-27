@@ -7,7 +7,12 @@
  * 
 */
 
-
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
 
 #include "INT_IO_to_display_header.h"
 
@@ -116,7 +121,7 @@ Data_Entry_complete=1;}                                           //Return to Li
 
 
 /****************************************************************************************************************/
-ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01); while(1);}
 
 
 
