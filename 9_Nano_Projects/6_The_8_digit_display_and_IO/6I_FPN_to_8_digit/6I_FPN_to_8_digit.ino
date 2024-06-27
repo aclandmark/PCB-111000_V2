@@ -6,7 +6,12 @@ This one limits the number of characters to 8 so that the result always fits on 
 Subroutine "FPN_to_String" is introduced in Project "9B_FPN_to_String" 
 */
 
-
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
 
 #include "6I_header_file.h"
 
@@ -113,7 +118,7 @@ I2C_Tx_8_byte_array(digits);}
 
 
 /****************************************************************************************************************/
-ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FC, 0x01); while(1);}
+ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01); while(1);}
 
 
 
