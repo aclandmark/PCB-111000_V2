@@ -6,6 +6,14 @@
  * Acqures number in terms of the Significand in string form, a denominator and exponent
  * 
 */
+/*
+EEPROM usage
+0x1FF, 0x1FE and 0x1FD     OSCCAL
+0x1FC and 0x1FB            PRN generator
+0x1FA                      Reset source
+*/
+
+
 
 #include "FPN_KBD_to_display_header.h"
 
@@ -24,7 +32,7 @@ char  expnt;
 char counter = 0;
 
 
-setup_HW_Arduino_IO_Extra;
+setup_HW_Arduino;
 
 Serial.write("\r\nEnter scientific number \
 & terminate with Return key.\r\n");
