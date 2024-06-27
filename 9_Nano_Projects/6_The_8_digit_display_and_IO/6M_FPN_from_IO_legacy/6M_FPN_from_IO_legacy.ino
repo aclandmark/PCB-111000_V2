@@ -58,15 +58,17 @@ int main (void){
   long Denominator;
   long Significand;
 
-  setup_HW_Arduino_IO_Extra;
+  setup_HW_Arduino;
 
-if(!(watch_dog_reset))
+//if(!(watch_dog_reset))
+if (reset_status != WDT_reset)
+
 
 {Serial.write("\r\nPress: sw_1 to populate digit_0, sw_3 to shift the display left\r\n\
 sw_2 to enter the number and sw1 to do some arithmetic.\r\n\
 Note: display flashes to indicate number has been entered.\r\n");}
 
-else {Serial.write("\r\nAgain\r\n"); watch_dog_reset = 0;}
+else {Serial.write("\r\nAgain\r\n");}
 
  
  Significand = fpn_from_IO_Legacy(&expnt, &Denominator);
