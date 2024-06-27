@@ -97,9 +97,9 @@ else TWCR = (1 << TWINT);
 if (MCUSR & (1 << WDRF)){reset_status = 2;}\
 if (MCUSR & (1 << PORF))reset_status = 1;\
 if (MCUSR & (1 << EXTRF))reset_status = 3;\
-if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FC))))reset_status = 4;\
-if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FC) == 0x01))reset_status = 5;\
-eeprom_write_byte((uint8_t*)0x1FC, 0xFF);\
+if((reset_status == 2) && (!(eeprom_read_byte((uint8_t*)0x1FA))))reset_status = 4;\
+if((reset_status == 2) && (eeprom_read_byte((uint8_t*)0x1FA) == 0x01))reset_status = 5;\
+eeprom_write_byte((uint8_t*)0x1FA, 0xFF);\
 MCUSR = 0;
 
 
