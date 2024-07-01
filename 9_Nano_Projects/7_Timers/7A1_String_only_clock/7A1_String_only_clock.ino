@@ -148,6 +148,9 @@ ISR(PCINT0_vect)
 /***********************************************************************************************************************/
 ISR (WDT_vect){eeprom_write_byte((uint8_t*)0x1FA, 0x01); //String_to_PC_Basic("ABC");
 for(int m = 0; m <= 7; m++)eeprom_write_byte((uint8_t*)(0x1F7 - m), digits[m]);
+
+eeprom_write_byte((uint8_t*)0x1F9, (int)(eeprom_read_byte((uint8_t*)0x1F9))+1);
+
 Reset_Atmega328;
 Reset_I2C;while(1);}
 
