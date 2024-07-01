@@ -15,7 +15,11 @@ As for Project 7A accurracy is not good
 USER INSTRUCTIONS
 
 Respond to the user prompt by pressing "R" and entering the time when requested or by pressing "r" and letting 
-the clock start at time zero.*/
+the clock start at time zero.
+
+
+Like 7A suffers from I2C bus crashes.  Therefore 7B1 has also beew written based on 7A1
+*/
 
 
 
