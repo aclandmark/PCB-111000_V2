@@ -14,7 +14,13 @@ Pencil and paper recommended to understand string manipulation.
 USER INSTRUCTIONS
 
 Respond to the user prompt by pressing "R" and entering the time when requested or by pressing "r" and letting 
-the clock start at time zero.*/
+the clock start at time zero.
+
+Unfortunately the I2C bus appears to crash after random intervals of anything between say 10 minutes and an hour
+Proj 7A_1 has therefore been developed which uses the watchdog timer with interrupt to reset both mim-OS and the user project
+when a crash occurs
+
+*/
 
 
 
