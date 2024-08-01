@@ -11,15 +11,15 @@ EEPROM usage
  int main (void)                          //Example 1
   { 
     int on_time = 20;
-
+    char switch_released;
   setup_HW;
 
 while(1){
-
+if (switch_2_up)switch_released = 0;
 while (switch_1_up);{switch_LED_1;}
-Timer_T0_10mS_delay_x_m(on_time);          //Alternative line
+Timer_T0_10mS_delay_x_m(on_time);         
 
-if ((on_time > 2) && (switch_2_down)) on_time -= 2;
+if ((on_time > 2) && (switch_2_down) && (switch_released == 0)) {on_time -= 2; switch_released = 1;}
 if (switch_3_down) on_time += 2;
 }
   
