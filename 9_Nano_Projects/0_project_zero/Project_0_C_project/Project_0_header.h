@@ -90,11 +90,9 @@ PORTD |= ((1 << PD3)|(1 << PD4)|(1 << PD5)|(1 << PD6));
 #define LED_1_off     PORTB &= (~( 1<< PB1)); 
 #define LED_2_off     PORTB &= (~(1 << PB0));
 #define LED_2_on      PORTB |= (1 << PB0);
-#define switch_LED_1   PORTB ^= (1 << PB1); 
-#define switch_LED_2   PORTB ^= (1 << PB0); 
 
 #define Led_1_is_on   (PORTB & (1 << PB1))
-
+#define Led_2_is_on   (PORTB & (1 << PB0))
 
 #define Toggle_LED_1 \
 if (PORTB & (1 << PB1)){LED_1_off;}\
