@@ -1,9 +1,19 @@
-void setup() {
-  // put your setup code here, to run once:
+/*
+  EEPROM usage
+  0x1FF, 0x1FE and 0x1FD    OSCCAL
+  0x1FC and 0x1FB       PRN generator
+*/
 
-}
 
-void loop() {
-  // put your main code here, to run repeatedly:
+#include "Project_0_header.h"
 
+
+int main (void)
+{
+
+  setup_HW;
+  LED_1_on;
+
+  
+  SW_reset;
 }
