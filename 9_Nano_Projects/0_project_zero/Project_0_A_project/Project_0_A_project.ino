@@ -11,7 +11,7 @@
 int main (void)
 {
 
-  setup_HW;
+  setup_HW_Basic;
   LED_1_on;
 
   
