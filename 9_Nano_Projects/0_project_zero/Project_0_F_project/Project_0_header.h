@@ -14,7 +14,7 @@ char str_counter;
 #define switch_2_up   (PINB & 0x40)
 
 /*****************************************************************************/
-#define setup_HW \
+#define setup_HW_Basic \
 setup_watchdog;\
 set_up_I2C;\
 ADMUX |= (1 << REFS0);\
@@ -25,19 +25,7 @@ eeprom_write_byte((uint8_t*)(0x1FD),OSCCAL);\
 while (!(PIND & (1 << PD1)));\
 Timer_T0_10mS_delay_x_m(5);\
 OSC_CAL;\
-setup_PC_comms_Basic(0,16);\
-I2C_Tx_LED_dimmer();\
-\
-\
-/*OPTIONAL Setup_HW code gives default ap*/\
-Timer_T0_10mS_delay_x_m(1);\
-I2C_TX_328_check();\
-waiting_for_I2C_master;\
-if (receive_byte_with_Nack()==1)\
-{TWCR = (1 << TWINT);\
-wdt_enable(WDTO_30MS);\
-I2C_Tx_display();}\
-else TWCR = (1 << TWINT);
+setup_PC_comms_Basic(0,16);
 
 
 /*****************************************************************************/
