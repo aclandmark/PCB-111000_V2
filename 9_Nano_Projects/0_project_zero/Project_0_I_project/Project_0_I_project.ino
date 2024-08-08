@@ -5,9 +5,9 @@
 
 
 int main (void)
-{ unsigned int PRN;
+{ unsigned int PRN = 1;
 
-  setup_HW;
+  setup_HW_Basic;
   LED_1_on;
 
   while (1) {
@@ -17,7 +17,7 @@ int main (void)
     if ((Led_1_is_on) && !(Led_2_is_on)) {
       LED_1_off;
       LED_2_on;
-    }
+      }
     else if (!(Led_1_is_on) && (Led_2_is_on)) {
       LED_1_on;
     }
