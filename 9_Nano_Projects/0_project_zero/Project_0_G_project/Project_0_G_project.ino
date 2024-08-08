@@ -1,7 +1,7 @@
 /*
   EEPROM usage
-  0x1FF, 0x1FE and 0x1FD    OSCCAL
-  0x1FC and 0x1FB       PRN generator
+  0x1FF, 0x1FE and 0x1FD		OSCCAL
+  0x1FC and 0x1FB				PRN generator
 */
 
 
@@ -9,24 +9,22 @@
 
 
 int main (void)
-{unsigned char next_LED;
+{
 
-next_LED = eeprom_read_byte((uint8_t*)(0x1FA))%3 + 1;
-eeprom_write_byte((uint8_t*)(0x1FA), next_LED);
+  setup_HW;
 
+  Timer_T0_10mS_delay_x_m(10);
+  if ((switch_1_down) ) {
+    LED_1_on;
+  }
+  else if ((switch_2_down) ) {
+    LED_2_on;
+  }
+  else if ((switch_3_down) ) {
+    LEDs_on;
+  }
 
+  Timer_T0_10mS_delay_x_m(10);
 
-  setup_HW_Basic;
-
-switch(next_LED){
-case 1:LED_1_on;while(switch_1_down);break;
-case 2:LED_2_on;while(switch_2_down);break;
-case 3:LEDs_on; while(switch_3_down);break;
-  
-}
-  
-  //LED_1_on;
-
-  
   SW_reset;
 }
