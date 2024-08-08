@@ -8,24 +8,25 @@
 #include "Project_0_header.h"
 
 
-int main (void)  
-{
-  int on_time = 20;
-  char switch_released;
-  setup_HW;
+int main (void)
+{unsigned char next_LED;
 
-  while (1) {
-    if (switch_2_up)switch_released = 0;
-    while (switch_1_up); {
-      switch_LED_1;
-    }
-    Timer_T0_10mS_delay_x_m(on_time);
+next_LED = eeprom_read_byte((uint8_t*)(0x1FA))%3 + 1;
+eeprom_write_byte((uint8_t*)(0x1FA), next_LED);
 
-    if ((on_time > 2) && (switch_2_down) && (switch_released == 0)) {
-      on_time -= 2;
-      switch_released = 1;
-    }
-    if (switch_3_down) on_time += 2;
-  }
 
+
+  setup_HW_Basic;
+
+switch(next_LED){
+case 1:LED_1_on;while(switch_1_down);break;
+case 2:LED_2_on;while(switch_2_down);break;
+case 3:LEDs_on; while(switch_3_down);break;
+  
+}
+  
+  //LED_1_on;
+
+  
+  SW_reset;
 }
