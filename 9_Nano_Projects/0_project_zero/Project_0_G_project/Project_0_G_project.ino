@@ -11,7 +11,7 @@
 int main (void)
 {
 
-  setup_HW;
+  setup_HW_Basic;
 
   Timer_T0_10mS_delay_x_m(10);
   if ((switch_1_down) ) {
