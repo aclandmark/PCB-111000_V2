@@ -9,11 +9,35 @@
 
 
 int main (void)
-{
-
-  setup_HW;
-  LED_1_on;
-
+{ int Max= 512;
+    char switch_enabled = 1;
+    
+  setup_HW_Basic;
   
-  SW_reset;
-}
+  while(1){
+  
+  
+
+
+do {
+   
+      LED_1_off;
+      LED_2_on;
+      for (int m = 0; m < Max; m++)_delay_us(800);
+   
+      LED_1_on;
+      LED_2_off;
+      for (int m = 0; m < Max; m++)_delay_us(800);
+    
+   if ((switch_3_down) && (switch_enabled)){Max /= 2; switch_enabled = 0;} 
+   
+  if ((switch_1_down) && (switch_3_up)){switch_enabled = 1;}
+
+   
+  }while(Max >= 8); Max = 512; } }
+
+
+
+
+
+  /************************************************************************************/
