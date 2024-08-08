@@ -11,7 +11,7 @@
 int main (void)                          //Example 1
 {
 
-  setup_HW;
+  setup_HW_Basic;
 
   while (1) {
 
