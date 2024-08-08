@@ -1,39 +1,38 @@
-/*
-  EEPROM usage
-  0x1FF, 0x1FE and 0x1FD    OSCCAL
-  0x1FC and 0x1FB       PRN generator
-*/
+
 
 
 #include "Project_0_header.h"
 
 
 int main (void)
-{ int counter, ON_time;
+{ unsigned int PRN = 1;
 
   setup_HW_Basic;
-  
-  while(1){
-  
-  counter = 0;
-  ON_time = 16;
+  LED_1_on;
 
-  if (switch_1_down){LED_2_on;}
-else {LED_2_off;}
+  while (1) {
 
+    while (switch_1_up);
 
-do {
-    if (Led_1_is_on) {
+    if ((Led_1_is_on) && !(Led_2_is_on)) {
       LED_1_off;
-      for (int m = 0; m <= (512 - ON_time); m++)_delay_us(6);
-    }
-    else {
-      LED_1_on;
-      for (int m = 0; m <= ON_time; m++)_delay_us(6);
-    }
-    counter += 1;
-    if ((counter >= 100)  && (switch_3_down)) {
-      counter = 0;
-      ON_time *= 2;
+      LED_2_on;
       }
-  }while(ON_time != 512);  }}
+    else if (!(Led_1_is_on) && (Led_2_is_on)) {
+      LED_1_on;
+    }
+    else if ((Led_1_is_on) && (Led_2_is_on)) {
+      LEDs_off;
+    }
+    else if (!(Led_1_is_on) && !(Led_2_is_on)) {
+
+      PRN = (PRN_8bit_GEN() % 3);
+      switch (PRN) {
+        case 0: LED_1_on; break;
+        case 1: LED_2_on; break;
+        case 2: LEDs_on; break;
+      }
+    }
+    Timer_T0_10mS_delay_x_m(20);
+  }
+}
