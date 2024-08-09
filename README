@@ -25,7 +25,7 @@ In PCB_111000_CP2102 the I2C bus is replaced with a one wire firmware UART.
 Originally 56 projects were developed for use with PCB111000.
 These have been revised over the years and are now as follows
 
-10 very short projects provided to show what a C program looks like and explore basic methods of flow control
+20 very short projects provided to show what a C program looks like and explore basic methods of flow control
 9 projects exploring the operation of the recever transmitter (USART) block
 7 projects exploring interrupts
 4 projects exploring bit operatons, division and the conversion between 8 bit binary and decimal numbers
