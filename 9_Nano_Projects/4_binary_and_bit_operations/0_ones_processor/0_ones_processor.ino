@@ -15,12 +15,20 @@ char update_reg;
 int main(void){
   unsigned int PORT_1 = 1;
 char bit_num, bit_name;
-
+ char digits[8];
 
 setup_HW;
-
+for(int m = 0; m <=7; m++)digits[m] = 0;
 for(int m = 0; m <=7; m++)reg_bkp[m] = 0;
 update_reg = 0;
+
+//digits[0] = 1;
+//digits[1] = 2;
+//digits [2] = 3;
+//I2C_Tx_BWops(digits);
+
+//while(1);
+
 
 while(1){
 
@@ -43,7 +51,8 @@ switch(waitforkeypress_Basic()){
 }
 
 if(!(update_reg))
-I2C_Tx_any_segment('a', bit_num);
+{digits[0] |= (1 << bit_num);
+I2C_Tx_BWops(digits);}
 update_reg = 0;}
 
 while(1);
