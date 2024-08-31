@@ -9,12 +9,16 @@
 #define six 6
 #define seven 7
 
+#define cpu_reg   digits[2]
+
+
+
 char reg_bkp[8];
 char update_reg;
 
 int main(void){
   unsigned int PORT_1 = 1;
-char bit_num, bit_name;
+char bit_num, bit_name, keypress;
  char digits[8];
 
 setup_HW;
@@ -22,17 +26,9 @@ for(int m = 0; m <=7; m++)digits[m] = 0;
 for(int m = 0; m <=7; m++)reg_bkp[m] = 0;
 update_reg = 0;
 
-//digits[0] = 1;
-//digits[1] = 2;
-//digits [2] = 3;
-//I2C_Tx_BWops(digits);
-
-//while(1);
-
-
 while(1){
-
-switch(waitforkeypress_Basic()){
+if ((keypress = waitforkeypress_Basic()) == 'x')break;
+switch(keypress){
   case 'z': bit_num = zero; set_update(0); break;
   case 'o': bit_num = one;  set_update(1); break;
   case 't': switch(waitforkeypress_Basic()){
@@ -51,9 +47,15 @@ switch(waitforkeypress_Basic()){
 }
 
 if(!(update_reg))
-{digits[0] |= (1 << bit_num);
+{cpu_reg |= (1 << bit_num);
 I2C_Tx_BWops(digits);}
 update_reg = 0;}
+
+String_to_PC_Basic("Copy to register");
+waitforkeypress_Basic();
+digits[0] = cpu_reg;
+cpu_reg = 0;
+I2C_Tx_BWops(digits);
 
 while(1);
 }
