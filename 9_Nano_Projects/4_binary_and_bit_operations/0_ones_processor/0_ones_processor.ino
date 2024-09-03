@@ -49,22 +49,27 @@ String_to_PC_Basic("\r\nTo manipulate bits\r\n\t\
 send 'r' to clear them\r\n\t\
 's' to set them,\r\n\t\
 'c' to change them and\r\n\t\
-'t' to test them");
+'t' to test a single bit");
 
 while(1){
 
 mode = waitforkeypress_Basic();
 
-String_to_PC_Basic("\r\n\r\nStep 1: Set up CPU register");
+switch(mode){
+case 'r': String_to_PC_Basic("\r\n\r\nClear bits"); break;
+case 's': String_to_PC_Basic("\r\n\r\nSet bits"); break;
+case 'c': String_to_PC_Basic("\r\n\r\nToggle bits"); break;
+case 't': String_to_PC_Basic("\r\n\r\nTest one bit"); break;
+default: SW_reset;  break;}
+String_to_PC_Basic("\tStep 1: Set up CPU register");
 
-select_bits_to_process();
+select_bit_to_process();
 
 switch(mode){
 case 'r': clear_bits; break;
 case 's': set_bits; break;
-case 'c': break;
-case 't': break;}
-
+case 'c': change_bits; break;
+case 't': test_one_bit; break;}
 }
 while(1);
 }
@@ -72,16 +77,21 @@ while(1);
 
 
 
-void select_bits_to_process(void){
+void select_bit_to_process(void){
+while(!(select_bits()));
+{cpu_reg_1 |= (1 << bit_num);
+Display_registers;}     
+ 
+}
+
+/*
+void select_bit_to_process(void){
 do{
 if(select_bits())
 {cpu_reg_1 |= (1 << bit_num);
-Display_registers;}     
-}while (keypress != 'x');}
-
-
-
-
+Display_registers;} 
+}while (keypress != 'x'); }
+*/
 
 
 char set_update(char bit_num)
