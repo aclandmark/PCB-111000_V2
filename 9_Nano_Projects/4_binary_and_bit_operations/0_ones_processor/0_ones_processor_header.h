@@ -114,6 +114,15 @@ TWCR = (1 << TWINT);
 
 
 
+#define User_prompt_Basic \
+while(1){\
+do{String_to_PC_Basic("R?    ");}  while((isCharavailable_Basic(50) == 0));\
+User_response = Char_from_PC_Basic();\
+if((User_response == 'R') || (User_response == 'r'))break;} String_to_PC_Basic("\r\n");
+
+
+
+
 /*****************************************************************************/
 #include "Resources_nano_projects\Subroutines\HW_timers.c"
 #include "Resources_nano_projects\PC_comms\Basic_Rx_Tx_Basic.c"
