@@ -12,93 +12,95 @@
 #define seven 7
 
 
-
-
-
 char reg_bkp[8];
 char update_reg;
 char bit_num, keypress;
 char digits[8];
 
+
 int main(void){
-  char mode;
+char mode;
 
 setup_HW;
 
 String_to_PC_Basic("\r\n\r\nManipulating one of the PORT registers\r\n");
 
-String_to_PC_Basic\
+User_prompt_Basic;
+if(User_response =='r')
+
+
+{String_to_PC_Basic\
 ("\r\nStep 1  Set up CPU register\r\n\
 Type bit names\r\n\
 z, o, tw, th, fo, fi, si or se");
 
-do{
+/*do{
 if(select_bits())
 {cpu_reg_1 |= (1 << bit_num);
 Display_registers;} 
-}while (keypress != 'x'); 
+}while (keypress != 'x'); */
+
+do{
+if(select_bits())
+{cpu_reg_2 = 1;Display_registers; _delay_ms(500);
+   cpu_reg_2 = (cpu_reg_2 << bit_num); Display_registers;_delay_ms(500);
+  
+  cpu_reg_1 |= cpu_reg_2; 
+  cpu_reg_2 = 0;
+Display_registers;} 
+}while (keypress != 'x');
+
 
 String_to_PC_Basic("\r\n\r\nStep 2  Copy to PORT register\r\n");
 waitforkeypress_Basic();
 port_reg = cpu_reg_1;
 cpu_reg_1 = 0;
-Display_registers;
+Display_registers;}
+
+
+if(User_response == 'R'){String_to_PC_Basic("\r\nport_reg |= (1 << one) | (1 << two) | (1 << five) | (1 << six);\r\n");
+port_reg |= (1 << one) | (1 << two) | (1 << five) | (1 << six);Display_registers;}
+
 
 
 String_to_PC_Basic("\r\nTo manipulate bits\r\n\t\
-send 'r' to clear them\r\n\t\
-'s' to set them,\r\n\t\
-'c' to change them and\r\n\t\
-'t' to test a single bit");
+send 'r' to clear one\r\n\t\
+'s' to set one,\r\n\t\
+'c' to change one and\r\n\t\
+'t' to test one");
 
 while(1){
 
 mode = waitforkeypress_Basic();
 
-switch(mode){
-case 'r': String_to_PC_Basic("\r\n\r\nClear bits"); break;
-case 's': String_to_PC_Basic("\r\n\r\nSet bits"); break;
-case 'c': String_to_PC_Basic("\r\n\r\nToggle bits"); break;
-case 't': String_to_PC_Basic("\r\n\r\nTest one bit"); break;
-default: SW_reset;  break;}
-String_to_PC_Basic("\tStep 1: Set up CPU register");
+System_response;
+
+if (mode == 'x')continue;
 
 select_bit_to_process();
 
 switch(mode){
-case 'r': clear_bits; break;
-case 's': set_bits; break;
-case 'c': change_bits; break;
-case 't': test_one_bit; break;}
-}
-while(1);
-}
+case 'r': clear_bit_1_text; cpu_reg_1 = ~cpu_reg_1;
+          clear_bit_2_text;port_reg = port_reg & cpu_reg_1; break;
+          
+case 's': set_bit_text; port_reg = port_reg | cpu_reg_1;break;
+case 'c': change_bit_text; port_reg = port_reg ^ cpu_reg_1;break;
+case 't': cpu_reg_2 = port_reg & cpu_reg_1;test_bit_text; break;}
+
+//
+update_display;}}
 
 
-
-
+/******************************************************************************************************/
 void select_bit_to_process(void){
 while(!(select_bits()));
 {cpu_reg_1 |= (1 << bit_num);
-Display_registers;}     
- 
-}
-
-/*
-void select_bit_to_process(void){
-do{
-if(select_bits())
-{cpu_reg_1 |= (1 << bit_num);
-Display_registers;} 
-}while (keypress != 'x'); }
-*/
+Display_registers;}}
 
 
 char set_update(char bit_num)
 {if(!(reg_bkp[bit_num])){update_reg = 0;reg_bkp[bit_num] = 1;} 
 else update_reg = 1;return update_reg;}
-
-
 
 char select_bits(void){
     update_reg = 0;
