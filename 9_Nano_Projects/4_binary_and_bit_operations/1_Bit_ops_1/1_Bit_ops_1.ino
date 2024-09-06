@@ -20,12 +20,29 @@ char PRN_counter = 0;
 setup_HW;
 for(int m = 0; m <= 7; m++)digits[m] = 0;
 
-if(watch_dog_reset==0)String_to_PC_Basic("\r\nSelect OP:  |   ^   &   ~|  ~^  or  ~&");
+if(watch_dog_reset==0){String_to_PC_Basic("\r\n    Examining the operation of the\r\n\
+    OR, XOR, NAND functions and ther complements. (AK to continue)\r\n");
+waitforkeypress_Basic();
+    
+    String_to_PC_Basic("\r\n   Select OP:\
+\r\n  |   for   OR\
+\r\n  ^   for   XOR\
+\r\n  &   for   AND\
+\r\n  ~|    for   NOR\
+\r\n  ~^    for   NXOR\
+\r\n  ~&    for   NAND\
+\r\n\r\n");}
 BWop = waitforkeypress_Basic(); 
 if (BWop == '~') 
-{comp = 1; BWop = waitforkeypress_Basic();}else comp = 0;                    //detect complement operator
+{Char_to_PC_Basic('N');comp = 1; BWop = waitforkeypress_Basic();}else comp = 0;                    //detect complement operator
 if ((BWop != '|') && (BWop != '^') && (BWop != '&'))
 SW_reset;                                                                    //reset if duff char was sent 
+
+switch(BWop){
+  case '|': String_to_PC_Basic("OR"); break;
+  case '^': String_to_PC_Basic("XOR"); break;
+  case '&': String_to_PC_Basic("AND"); break;}
+
 
 do{
 digits[0] = PRN_8bit_GEN();
@@ -35,7 +52,7 @@ lfsr = digits[1];
 I2C_Tx_BWops(digits);
 }
 while (waitforkeypress_Basic() !='x');                                      //Press 'x' to escape               
-SW_reset;}
+{String_to_PC_Basic("\tAnother OP\r\n"); SW_reset;}}
 
 
 
