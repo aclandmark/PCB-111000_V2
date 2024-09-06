@@ -21,10 +21,10 @@ setup_HW;
 for(int m = 0; m <= 7; m++)digits[m] = 0;
 
 if(watch_dog_reset==0){String_to_PC_Basic("\r\n    Examining the operation of the\r\n\
-    OR, XOR, NAND functions and ther complements. (AK to continue)\r\n");
+    OR, XOR, NAND functions and their complements. (AK to continue)\r\n");
 waitforkeypress_Basic();
     
-    String_to_PC_Basic("\r\n   Select OP:\
+    String_to_PC_Basic("\r\n   Select OP ('x' to change it):\
 \r\n  |   for   OR\
 \r\n  ^   for   XOR\
 \r\n  &   for   AND\
