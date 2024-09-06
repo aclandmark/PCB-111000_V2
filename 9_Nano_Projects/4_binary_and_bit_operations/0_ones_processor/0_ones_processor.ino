@@ -32,7 +32,7 @@ if(User_response =='r')
 {String_to_PC_Basic\
 ("\r\nStep 1  Set up CPU register\r\n\
 Type bit names\r\n\
-z, o, tw, th, fo, fi, si or se");
+z, o, tw, th, fo, fi, si or se  ('x' when done)");
 
 /*do{
 if(select_bits())
@@ -51,7 +51,7 @@ Display_registers;}
 }while (keypress != 'x');
 
 
-String_to_PC_Basic("\r\n\r\nStep 2  Copy to PORT register\r\n");
+String_to_PC_Basic("\r\n\r\nStep 2  Copy to PORT register ak\r\n");
 waitforkeypress_Basic();
 port_reg = cpu_reg_1;
 cpu_reg_1 = 0;
