@@ -8,6 +8,7 @@
 #include <avr/wdt.h>
 
 char watch_dog_reset = 0;
+char User_response;
 
 #define switch_1_down  ((PIND & 0x04)^0x04)
 #define switch_1_up    (PIND & 0x04)
@@ -106,8 +107,11 @@ if ((eeprom_read_byte((uint8_t*)0x1FE) > 0x0F)\
 
 
 /*****************************************************************************/
-#define diagnostic_mode \
-
+#define User_prompt \
+while(1){\
+do{String_to_PC_Basic("R?    ");}  while((isCharavailable_Basic(250) == 0));\
+User_response = Char_from_PC_Basic();\
+if((User_response == 'R') || (User_response == 'r'))break;} String_to_PC_Basic("\r\n");
 
 
 
