@@ -23,20 +23,23 @@ digits 1, 2 and 5 can therfore by extracted by subtracting 48 from 49, 50 and 53
  
 
 
-*****************Example 6: Sending numbers to the PC*********************************************************
- int main (void)                          //Example 6
-  { int i = 0, number = 12345;
+//*****************Example 1: Sending numbers to the PC*********************************************************
+ /*int main (void)                          //Example 6
+  { int i = 0;
+  int number = 12345;
   char s[12];
   setup_HW;
+  //User_prompt;
   wdt_enable(WDTO_120MS);
-  while(switch_1_down)wdr();
+ while(switch_1_down)wdr();
   
-  do {
+  while(1) {
     s[i++] = number % 10 + '0';
-  }
-  while ((number = number / 10) > 0);
-  s[i] = '\0';
-  for (int m = i; m > 0; m--)
+    number = number/10;
+    if (!(number))break;
+  }s[i] = '\0';
+  
+    for (int m = i; m > 0; m--)
     Char_to_PC_Basic(s[m - 1]);
  
  newline_Basic();
@@ -44,11 +47,81 @@ digits 1, 2 and 5 can therfore by extracted by subtracting 48 from 49, 50 and 53
   while(switch_1_down);
   return 1;
   }
+*/
+
+/*
+int main (void)                          //Example 2
+  { int i = 0; 
+  long number = 1;
+  long number_old = 1;
+  char s[12];
+  setup_HW;
+  //User_prompt;
+  wdt_enable(WDTO_120MS);
+  while(switch_1_down)wdr();
+  
+  for(int m = 2; m < 11; m++){
+i = 0;
+  while(1) {
+    
+    s[i++] = number % 10 + '0';
+    number = number/10;
+    if (!(number))break;
+  }s[i] = '\0';
+  
+    for (int p = i; p > 0; p--)
+    Char_to_PC_Basic(s[p - 1]); 
+ newline_Basic();
+
+number = (number_old * 10) + m;  
+number_old = number;
+//for (int n = 0; n < 12; n++)s[n] = 0;
+}
+
+while(switch_1_up)wdr();
+  while(switch_1_down);
+  return 1;
+  }*/
 
 
 
-**************Example 7: Entering numbers at the keyboard*****************************************************
-int main (void)                          //Example 7
+int main (void)                          //Example 3
+  { int i = 0; 
+  long number = 123456789;
+  long number_old = 123456789;
+  char s[12];
+  setup_HW;
+  //User_prompt;
+  wdt_enable(WDTO_120MS);
+  while(switch_1_down)wdr();
+  
+  for(int m = 2; m < 11; m++){
+i = 0;
+  while(1) {
+    
+    s[i++] = number % 10 + '0';
+    number = number/10;
+    if (!(number))break;
+  }s[i] = '\0';
+  
+    for (int p = i; p > 0; p--)
+    Char_to_PC_Basic(s[p - 1]); 
+ newline_Basic();
+
+number = number_old / 10;  
+number_old = number;
+//for (int n = 0; n < 12; n++)s[n] = 0;
+}
+
+while(switch_1_up)wdr();
+  while(switch_1_down);
+  return 1;
+  }
+
+
+
+//**************Example 7: Entering numbers at the keyboard*****************************************************
+/*int main (void)                          //Example 8
   { long num = 0;
   char keypress;
   setup_HW;
@@ -65,6 +138,7 @@ int main (void)                          //Example 7
   return 1;
   }  
 
+*/
 
 
 
@@ -79,8 +153,7 @@ int main (void)                          //Example 7
 
 
 
-
-************This area is for project subroutines*************************************************************/
+/************This area is for project subroutines*************************************************************/
 void Num_string_from_KBD_Basic(char * array_ptr)
 { char keypress;
   while ((keypress = waitforkeypress_Basic()) != '\r')
