@@ -22,7 +22,7 @@ digits 1, 2 and 5 can therfore by extracted by subtracting 48 from 49, 50 and 53
   int main (void)                          //Example 1
   { setup_HW;
   User_prompt;
-  String_to_PC_Basic("\r\nExploring the operation oof the USART\r\n");
+  String_to_PC_Basic("\r\nExploring the operation of the USART\r\n");
   Char_to_PC_Basic('?');
   newline_Basic();
   while (1)
