@@ -11,7 +11,7 @@ String_to_PC_Basic("Enter number at keyboard\r\n");
 Num_string_from_KBD_Basic(num_string);
 Char_to_PC_Basic('\t');
 num = Askii_to_binary(num_string);
-num_to_PC_Local(num/2);
+Int_to_PC_Basic(num/2);
 newline_Basic();
 SW_reset;
 return 1;}
@@ -27,7 +27,7 @@ String_to_PC_Basic("Enter number at keyboard\r\n");
 Num_string_from_KBD_Basic(num_string);
 Char_to_PC_Basic('\t');
 num = Askii_to_binary(num_string);
-num_to_PC_Local(num/2);
+Int_to_PC_Basic(num/2);
 newline_Basic();
 SW_reset;
 return 1;}
@@ -48,7 +48,7 @@ Num_string_from_KBD_Basic(num_string);
 num = Askii_to_binary(num_string);
 
 if(num == old_num * 2)
-{num_to_PC_Local(num);newline_Basic();old_num = num;}
+{newline_Basic();old_num = num;}
 else Char_to_PC_Basic('?');
 }
 SW_reset;
@@ -81,7 +81,7 @@ long Askii_to_binary(char * array_ptr) {
 
 
 /*************************************************************************************************************/
- void num_to_PC_Local (long number)
+/* void num_to_PC_Local (long number)
 { int i = 0;
   char s[12];
    do
@@ -90,6 +90,6 @@ long Askii_to_binary(char * array_ptr) {
   while ((number = number / 10) > 0);
   s[i] = '\0';
   for (int m = i; m > 0; m--)Char_to_PC_Basic(s[m - 1]);
-  Char_to_PC_Basic(' ');}
+  Char_to_PC_Basic(' ');}*/
 
 /********************************************************************************************************************/
