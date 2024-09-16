@@ -1,35 +1,25 @@
 
 
-/*
-In this project the "setup_328_HW_Arduino_IO" code segment has been replaced by "setup_328_HW_Basic_IO".
-
-Arduino provides a comprehensive library for sending data to and from a PC.
-However simple DIY (do it yourself) functions are used here to illustate
-the steps involved and introduce the Atmega328 data sheet.
- 
-ASKII coding is introduced.  Every character on the PC keyboard is assigned a number from 32 to 127.
-For example 63 is used to send a question mark '?' to the PC.
-Decimal 125 is sent as 3 eight bit numbers 49, 50 and 53. 
-48 is used to represent zero.
-digits 1, 2 and 5 can therfore by extracted by subtracting 48 from 49, 50 and 53.  
-5 is then added to 2 times 10 and 1 times 100 to obtain 125 in binary form. 
-*/
-
 
 
 #include "Receiver_Transmitter_header.h"
 
-  int main (void)                          //Example 1
-  { setup_HW;
-  User_prompt;
-  String_to_PC_Basic("\r\nExploring the operation of the USART\r\n");
-  Char_to_PC_Basic('?');
+  int main (void)                          //Example 5
+  { char symbol = '!';
+  setup_HW;
+  wdt_enable(WDTO_120MS);
+  while(switch_1_down)wdr();
+  
   newline_Basic();
-  while (1)
-  { Char_to_PC_Local
-    (waitforkeypress_Basic());
+  while (symbol <= '~')
+  { Int_to_PC_Basic(symbol);
+    Char_to_PC_Local(symbol++);
+    wdr();_delay_ms(50);
+    if (!((symbol - '!') % 8))newline_Basic();
+    else Char_to_PC_Local('\t');
   }
-  return 1;
+  while(switch_1_up)wdr();
+  while(switch_1_down);
   }
   
 
@@ -130,7 +120,7 @@ int main (void)                          //Example 5
   
   newline_Basic();
   while (symbol <= '~')
-  { Num_to_PC_Local(symbol);
+  { Int_to_PC_Basic(symbol);
     Char_to_PC_Local(symbol++);
     wdr();_delay_ms(50);
     if (!((symbol - '!') % 8))newline_Basic();
