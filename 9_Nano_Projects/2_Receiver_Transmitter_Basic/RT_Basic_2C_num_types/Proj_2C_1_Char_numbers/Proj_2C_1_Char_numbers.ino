@@ -1,36 +1,8 @@
 
-/*Proj_3G_Char_nos
-***********************************************************/
-
-/*USES THE DISPLAY TO EXPLORE THE OPERATION OF BINARY NUMBERS
 
 
 
-IT INTRODUCES
-
-
-
-1.  Binary notation for unsigned integers from 0 to 255 and signed integers between -128 and +127.
-
-2.  Project subroutine "I2C_Tx_display_char(digit, mode)" where digit is any binary number between 0 and 11111111 
-and mode is either "u" for unsigned or "s" for signed.
-
-
-OPERATION
-
-The 4 LHS digits of the display are used to display the binary number and the 4 RHS digits for the decimal number.
-Press sw1 to increment the binary number or sw3 to decrement it.
-sw2 toggles the display between "signed" and "unsigned" numbers.
-
-Switch location on PCB:  SW3 - SW2 - SW1
-
-Note: 
-This project has been compiled with Optimisation level 1 in an attempt to minimise occaisional unstable operation.*/
-
-
-
-
-#include "Proj_2_B1_header_file.h"
+#include "Proj_2_C1_header_file.h"
 
 
 
