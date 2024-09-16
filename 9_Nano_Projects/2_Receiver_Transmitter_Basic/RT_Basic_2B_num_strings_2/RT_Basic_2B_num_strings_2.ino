@@ -1,20 +1,63 @@
-
+/* Numbers from the keyboard*/
 
 #include "Receiver_Transmitter_header.h"
 
-
-int main (void){
+int main (void){                    //Example 1
   char num_string[12];
+  long num;
 setup_HW;
-User_prompt;
+if(watch_dog_reset == 1)watch_dog_reset = 0; else
+String_to_PC_Basic("Enter number at keyboard\r\n");
 Num_string_from_KBD_Basic(num_string);
+Char_to_PC_Basic('\t');
+num = Askii_to_binary(num_string);
+num_to_PC_Local(num/2);
 newline_Basic();
-String_to_PC_Basic(num_string);
 SW_reset;
 return 1;}
 
 
+/*
+int main (void){                    //Example 1
+  char num_string[12];
+  long num;
+setup_HW;
+if(watch_dog_reset == 1)watch_dog_reset = 0; else
+String_to_PC_Basic("Enter number at keyboard\r\n");
+Num_string_from_KBD_Basic(num_string);
+Char_to_PC_Basic('\t');
+num = Askii_to_binary(num_string);
+num_to_PC_Local(num/2);
+newline_Basic();
+SW_reset;
+return 1;}
+*/
 
+
+/*
+int main (void){                      //Example 2
+  char num_string[12];
+  long num = 2;
+  long old_num = 2;
+setup_HW;
+String_to_PC_Basic("Multiply number by 2 and enter it\r\n");
+String_to_PC_Basic("2\r\n");
+while(1){
+  
+Num_string_from_KBD_Basic(num_string);
+num = Askii_to_binary(num_string);
+
+if(num == old_num * 2)
+{num_to_PC_Local(num);newline_Basic();old_num = num;}
+else Char_to_PC_Basic('?');
+}
+SW_reset;
+return 1;}
+
+*/
+
+
+/***********************Subroutines*********************************/
 void Num_string_from_KBD_Basic(char * array_ptr)
 { char keypress;
   while ((keypress = waitforkeypress_Basic()) != '\r')
@@ -36,46 +79,17 @@ long Askii_to_binary(char * array_ptr) {
   return num;}
 
 
+
 /*************************************************************************************************************/
- void num_to_PC (long number)                          //Example 6
-  { 
-  
-  while(1) {
-    s[i++] = number % 10 + '0';
-    number = number/10;
-    if (!(number))break;
-  }s[i] = '\0';
-  
-    for (int m = i; m > 0; m--)
-    Char_to_PC_Basic(s[m - 1]);
- 
- newline_Basic();
-  return 1;
+ void num_to_PC_Local (long number)
+{ int i = 0;
+  char s[12];
+   do
+  { s[i++] = number % 10 + '0';
   }
-  
-/*long Int_KBD_to_display_A_Local(char num_string[]){                //Acquires an integer string from the keyboard and returns the binary equivalent
-char keypress;
-long Long_Num_from_mini_OS;
-int s=0;
-
-while(1){
-keypress = waitforkeypress_Basic();
-if ((!(decimal_digit_Basic(keypress)))
-&& (keypress != '-'))continue;                                //Ignore keypress if it is not OK
-Char_to_PC_Basic(keypress);
-num_string[s++] = keypress;
-break;}
- 
-while(1){
-if ((keypress = wait_for_return_key_Basic())  =='\r')break;         //Detect return key press (i.e \r or\r\n)
-if ((decimal_digit_Basic(keypress)) || (keypress == '-'))
-{num_string[s++] = keypress;
-Char_to_PC_Basic(keypress);
-}}  
-newline_Basic();                                             
-String_to_PC_Basic(num_string);
-return 1;}*/
-
-
+  while ((number = number / 10) > 0);
+  s[i] = '\0';
+  for (int m = i; m > 0; m--)Char_to_PC_Basic(s[m - 1]);
+  Char_to_PC_Basic(' ');}
 
 /********************************************************************************************************************/
