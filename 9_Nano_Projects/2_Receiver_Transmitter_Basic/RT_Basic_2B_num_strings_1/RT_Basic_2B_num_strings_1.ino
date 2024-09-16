@@ -70,7 +70,7 @@ int main (void)                          //Example 1
   while(switch_1_down)wdr();
   
   for(int m = 2; m < 11; m++){
-   num_to_PC_local(number);
+  Int_to_PC_Basic(number);
  newline_Basic();
 
 number = (number_old * 10) + m;  
@@ -92,7 +92,7 @@ while(switch_1_up)wdr();
   while(switch_1_down)wdr();
   
   for(int m = 2; m < 11; m++){
-num_to_PC_local(number);
+Int_to_PC_Basic(number);
  newline_Basic();
 
 number = number_old / 10;  
@@ -101,21 +101,6 @@ number_old = number;}
 while(switch_1_up)wdr();
   while(switch_1_down);
   return 1;}*/
-
-
-
-/********************************************************************************************************/
-void num_to_PC_local (long number)
-{ int i = 0;
-  char s[12];
-   do
-  { s[i++] = number % 10 + '0';
-  }
-  while ((number = number / 10) > 0);
-  s[i] = '\0';
-  for (int m = i; m > 0; m--)Char_to_PC_Basic(s[m - 1]);
-  Char_to_PC_Basic(' ');}
-
 
 
 
