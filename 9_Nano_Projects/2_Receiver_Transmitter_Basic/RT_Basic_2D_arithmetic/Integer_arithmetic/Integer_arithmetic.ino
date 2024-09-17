@@ -1,33 +1,33 @@
 
-
+#include "Int_arithmetic.h"
 
 /*******Example 8: Simple arithmetic Data to & from PC*********************************************************/
 int main (void)                          //Example 8
-{ long num = 0;
+{ long num_1, num_2;
   char numLength;
   char Num_string[12];
+  char op;
   
   setup_HW;
-  String_to_PC_Basic("?");
-  Num_string_from_KBD_Basic(Num_string);
+  String_to_PC_Basic("Enter integer and op");
+  num_1 = Int_from_PC_Basic(Num_string);
 
-  { int m = 0; while (Num_string[m])
-      Char_to_PC_Basic(Num_string[m++]);
+while(1){
+op = waitforkeypress_Basic();
+num_2 = Int_from_PC_Basic(Num_string);
+switch (op){
+  case '*': num_1 = num_1 * num_2;break;
+  
   }
 
-  num = Askii_to_binary(Num_string);
+  
+  Char_to_PC_Basic('\t');
 
-  num = num * 2;
-  String_to_PC_Basic("\r\n");
+ Hex_and_Int_to_PC_Basic(10, num_1);
 
-  numLength = Binary_to_Askii(num, Num_string);
-
-  for (int m = numLength; m > 0; m--)
-    Char_to_PC_Basic(Num_string[m - 1]);
-
-  I2C_Tx_long(num);
-while(switch_1_up);
-    newline_Basic();
+  I2C_Tx_long(num_1);
+//while(switch_1_up);
+    newline_Basic();}
   SW_reset;
   return 1;
 }
