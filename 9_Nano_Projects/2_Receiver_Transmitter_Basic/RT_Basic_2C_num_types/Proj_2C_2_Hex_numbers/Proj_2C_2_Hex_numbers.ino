@@ -43,6 +43,7 @@ while(1){
   switch(waitforkeypress_Basic()){
    case 'x': Num= Num + Inc;break;
    case 'y': Num= Num - Inc;break;
+   case 'z': Num = Num * -1; break;
    default:SW_reset;break;    
   }}
   }
