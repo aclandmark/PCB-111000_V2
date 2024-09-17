@@ -71,8 +71,8 @@
 ********Example 3: Echo character string or prints file*******************************************************
 int main (void)                          //Example 3
   { setup_HW;
-  while (!(isCharavailable_Basic(65)))
-    Char_to_PC_Basic('?');
+  while (!(isCharavailable_Basic(65)))    //Use local version
+    Char_to_PC_Basic('?');                //Use local version
   newline_Basic();
   Char_to_PC_Basic(Char_from_PC_Basic());
   while (1)
@@ -139,7 +139,7 @@ void Char_to_PC_Local(char data)
 }
 
 /********************************************************************************************************/
-void Num_to_PC_Local (long number)
+/*void Num_to_PC_Local (long number)
 { int i = 0;
   char s[12];
   
@@ -150,7 +150,7 @@ void Num_to_PC_Local (long number)
   s[i] = '\0';
   for (int m = i; m > 0; m--)Char_to_PC_Basic(s[m - 1]);
   Char_to_PC_Basic(' ');
-}
+}*/
 
 
 
