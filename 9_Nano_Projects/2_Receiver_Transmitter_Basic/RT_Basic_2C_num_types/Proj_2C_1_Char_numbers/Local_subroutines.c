@@ -6,11 +6,11 @@ void String_to_PC_Basic(const char s[]);
 void Short_binary_to_PC_Local(int);
 void newline_Basic(void);
 
-char digit;
-char mode;
+//char digit;
+//char mode;
 
 
-void update_screen(void){
+void update_screen(char mode,char digit){
 
 Short_Int_to_PC_Local (10,digit, mode);
 Char_to_PC_Basic ('\t');  
