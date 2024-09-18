@@ -44,7 +44,7 @@ void Short_Int_to_PC_Local (char radix, char number, char mode)
    unsigned char num;
    
     //num = (byte)number;
-   num = (unsigned)number;
+   num = (unsigned)number;    //Should really be unsigned char
    if(radix == 10){  if ((mode == 's') && (number < 0)){num = -number; sign = '-';}}
    do
   { s[i] = num % radix;// + '0';
