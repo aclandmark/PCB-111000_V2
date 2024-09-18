@@ -140,7 +140,7 @@ void Long_Hex_and_Int_to_PC_Basic (char radix, long number)
 unsigned long num;
   
 if ((number < 0) && (radix == 10)){sign = '-'; number *= -1;}
-    num = (unsigned)number;  
+    num = (unsigned long)number;  
    
    do  { s[i] = num % radix;// + '0';
 if (s[i] < 10)s[i] += '0'; else s[i] += '7';
