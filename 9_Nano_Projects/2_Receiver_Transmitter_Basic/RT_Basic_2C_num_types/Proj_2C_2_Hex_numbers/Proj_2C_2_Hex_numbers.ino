@@ -25,7 +25,7 @@ unsigned char digit_array[4], radix = 16;
 
 setup_HW;
 
-  String_to_PC_Basic("Enter positive number and increment then AK or x\r\n");  
+  String_to_PC_Basic("Enter positive number and increment then x or y or AK\r\n");  
     Num = Int_from_PC_Basic(digits);
     Hex_and_Int_to_PC_Basic(10, Num);
     Inc = Int_from_PC_Basic(digits);
