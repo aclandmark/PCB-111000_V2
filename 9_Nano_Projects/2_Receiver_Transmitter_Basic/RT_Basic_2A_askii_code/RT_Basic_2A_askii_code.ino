@@ -5,22 +5,17 @@
 #include "Receiver_Transmitter_header.h"
 #include "Local_subroutines.c"
 
-  int main (void)                          //Example 5
-  { char symbol = '!';
-  setup_HW;
-  wdt_enable(WDTO_120MS);
-  while(switch_1_down)wdr();
-  
+  int main (void)                          //Example 1
+  { setup_HW;
+  User_prompt;
+  String_to_PC_Local("\r\nExploring the operation oof the USART\r\n");
+  Char_to_PC_Local('?');
   newline_Basic();
-  while (symbol <= '~')
-  { Int_to_PC_Basic(symbol);
-    Char_to_PC_Local(symbol++);
-    wdr();_delay_ms(50);
-    if (!((symbol - '!') % 8))newline_Basic();
-    else Char_to_PC_Local('\t');
+  while (1)
+  { Char_to_PC_Local
+    (waitforkeypress_Local());
   }
-  while(switch_1_up)wdr();
-  while(switch_1_down);
+  return 1;
   }
   
 
