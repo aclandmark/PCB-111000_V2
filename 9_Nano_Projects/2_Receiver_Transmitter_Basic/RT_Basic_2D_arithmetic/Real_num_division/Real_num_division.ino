@@ -13,8 +13,7 @@ int main (void)                          //Example 9
   String_to_PC_Basic("?\r\n");
   
   for(int m = 0; m <=2; m++)
-  {//Num_string_from_KBD_Basic(Num_string);
-  Num = Int_from_PC_Basic(Num_string);
+  {Num = Int_from_PC_Basic(Num_string);
   switch (m)
   { case 0: A = Num; Char_to_PC_Basic('?');break;
   case 1: B = Num; String_to_PC_Basic("?\r\n");break;
@@ -25,8 +24,7 @@ int main (void)                          //Example 9
   String_to_PC_Basic(". ");
     while (no_decimal_places) {
   no_decimal_places =    divide(mod*10, B, &Div, &mod, no_decimal_places);
-  //Long_Hex_and_Int_to_PC_Basic(10,Div);
-  Char_to_PC_Basic(Div + '0');}
+   Char_to_PC_Basic(Div + '0');}
   String_to_PC_Basic("\r\n");
    SW_reset;
   return 1; }
