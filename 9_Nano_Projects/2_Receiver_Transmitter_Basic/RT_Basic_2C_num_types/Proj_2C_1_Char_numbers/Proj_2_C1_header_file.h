@@ -10,6 +10,8 @@
 
 char watch_dog_reset = 0;
 
+
+
 #define switch_1_down  ((PIND & 0x04)^0x04)
 #define switch_1_up    (PIND & 0x04)
 
