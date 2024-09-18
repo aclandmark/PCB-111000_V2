@@ -8,9 +8,9 @@ int main (void){                    //Example 1
 setup_HW;
 if(watch_dog_reset == 1)watch_dog_reset = 0; else
 String_to_PC_Basic("Enter number at keyboard\r\n");
-Num_string_from_KBD_Basic(num_string);
+Num_string_from_KBD_Local(num_string);
 Char_to_PC_Basic('\t');
-num = Askii_to_binary(num_string);
+num = Askii_to_binary_Local(num_string);
 Int_to_PC_Basic(num/2);
 newline_Basic();
 SW_reset;
@@ -24,9 +24,9 @@ int main (void){                    //Example 1
 setup_HW;
 if(watch_dog_reset == 1)watch_dog_reset = 0; else
 String_to_PC_Basic("Enter number at keyboard\r\n");
-Num_string_from_KBD_Basic(num_string);
+Num_string_from_KBD_Local(num_string);
 Char_to_PC_Basic('\t');
-num = Askii_to_binary(num_string);
+num = Askii_to_binary_Local(num_string);
 Int_to_PC_Basic(num/2);
 newline_Basic();
 SW_reset;
@@ -44,8 +44,8 @@ String_to_PC_Basic("Multiply number by 2 and enter it\r\n");
 String_to_PC_Basic("2\r\n");
 while(1){
   
-Num_string_from_KBD_Basic(num_string);
-num = Askii_to_binary(num_string);
+Num_string_from_KBD_Local(num_string);
+num = Askii_to_binary_Local(num_string);
 
 if(num == old_num * 2)
 {newline_Basic();old_num = num;}
@@ -58,7 +58,7 @@ return 1;}
 
 
 /***********************Subroutines*********************************/
-void Num_string_from_KBD_Basic(char * array_ptr)
+void Num_string_from_KBD_Local(char * array_ptr)
 { char keypress;
   while ((keypress = waitforkeypress_Basic()) != '\r')
   { *array_ptr = keypress;
@@ -70,7 +70,7 @@ void Num_string_from_KBD_Basic(char * array_ptr)
 
 
 /********************************************************************************************************/
-long Askii_to_binary(char * array_ptr) {
+long Askii_to_binary_Local(char * array_ptr) {
   long num = 0;
 { int m = 0; while (*(array_ptr + m)) {
       num = num * 10 + (*(array_ptr + m++))  - '0';
