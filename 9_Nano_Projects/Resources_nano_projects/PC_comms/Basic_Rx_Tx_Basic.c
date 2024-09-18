@@ -90,7 +90,7 @@ void Int_to_PC_Basic (long number)
 
 
 /**********************************************************************************************************************************************************************************/
-int Int_from_PC_Basic(char digits[]){
+long Int_from_PC_Basic(char digits[]){
 char keypress;
 for(int n = 0; n<=7; n++) digits[n] = 0; 
 
