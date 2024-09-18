@@ -1,11 +1,12 @@
 /*****************************************************************************/
-#include <avr/io.h>
-#include <avr/wdt.h>
-#include <avr/interrupt.h>
-#include <avr/eeprom.h>
-#include <stdint.h>
-#include <stdio.h>
+//#include <avr/io.h>
+//#include <avr/interrupt.h>
+//#include <avr/eeprom.h>
+//#include <stdint.h>
+//#include <stdio.h>
 
+
+#include <avr/wdt.h>
 #define wdr()  __asm__ __volatile__("wdr")
 
 
