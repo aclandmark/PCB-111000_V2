@@ -8,41 +8,33 @@
 
 #define Search_array_length   125
 
-#define BL 30                     //Buffer length
 
 /************************************************************************************************************/
 int main (void)  
   { 
-    char num_string[BL + 2];
+    char num_string[12];
     long  number;
     long factor;
     char factor_counter;
  
- setup_HW_Arduino;
-set_up_pci_on_sw1_and_sw3;
- enable_pci_on_sw1_and_sw3
+ setup_HW;
 
-switch(reset_status){
-  case POR_reset:                 User_prompt_A;    Serial.write(message_1);break;
-  case WDT_reset:                 Serial.write(message_2);break;
-  case WDT_reset_with_flag:       Serial.write(message_3);break;
-  case External_reset:            Serial.write(message_1);break;}
 
-  
-   number = Int_Num_from_PC_A_Local(num_string, BL);
-   newline_A();
-  Serial.print(number);  _delay_ms(5);
+  String_to_PC_Basic(message_1);
+   number = Int_from_PC_Basic(num_string);
+   newline_Basic();
+  Int_to_PC_Basic(number);  _delay_ms(5);
 
-  Serial.write('\t');
+ Char_to_PC_Basic('\t');
   factor_counter = 0;
   do{_delay_ms(5);                                                  //Required by Serial.print
   factor = Product_search(number);                                 //Get lowest factor
   number = number/factor;                                          //Next number to factorise
-  Int_Num_to_PC_A(factor,num_string, '\t' ); //
+  Int_to_PC_Basic(factor); //
   factor_counter += 1;} 
   while (number != 1);  
 
-  if(factor_counter == 1){Serial.write("Prime\r");}
+  if(factor_counter == 1){String_to_PC_Basic("Prime\r");}
   SW_reset;
   return 1;}
 
@@ -67,7 +59,7 @@ while (j<=Search_array_length)
 {return search_array[j];}                              //and return it
 j += 1;} 
 if(L*Search_array_length > number)return 0;                            //No factors found at all: Return zero for prime number
-L += 1; Serial.write('.');}}                           //No factor found in array: increment L and populate new array
+L += 1; Char_to_PC_Basic('.');}}                           //No factor found in array: increment L and populate new array
 
 
 
@@ -88,21 +80,12 @@ i++;}}
 
 
 /************************************************************************************************************/
-ISR(PCINT2_vect){
-if(switch_3_down) return;
-if((switch_1_up) && (switch_3_up))return;
- if(switch_1_down) eeprom_write_byte((uint8_t*)0x1FA, 0);
- SW_reset;}
+
 
 
 
 /************************************************************************************************************/
-long Int_Num_from_PC_A_Local(char * num_as_string, char bufferlen)    //Project version implements the backspace key
-{char strln;
-Serial.flush();   
-strln = Serial.readBytesUntil('\r',num_as_string, bufferlen);
-num_as_string[strln] = 0;
-return atol(num_as_string);}
+
 
 
 
