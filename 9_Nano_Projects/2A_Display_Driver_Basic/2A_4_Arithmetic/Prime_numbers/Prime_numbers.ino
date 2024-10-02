@@ -5,30 +5,44 @@
 
 int main (void){
 
-char counter=0;
-unsigned int Number=0;  
+char counter=9, group = 1;
+unsigned int prime_num = 1;  
                                                                                                                                     
  setup_HW;
 
-String_to_PC_Basic("New method");
- 
- while (1){
-for(int m = 1; m <= 100; m++){
+String_to_PC_Basic("New method_2\r\n1  ");
+ while(1){
+prime_num = next_prime_number(prime_num);
 
-if(prime_num_check(Number + m))
-{ Int_to_PC_Basic(Number + m);I2C_Tx_long(Number+m);_delay_ms(100);
-counter += 1;
-if (counter==10){counter = 0;newline_Basic();}}} 
+if(prime_num > 100*group)
+{newline_Basic(); 
+counter = 10; 
+group += 1;
+waitforkeypress_Basic();}
 
-while(1){if (waitforkeypress_Basic() != 'x');
-else break;}
-Number += 100;
-String_to_PC_Basic("\r\n\r\n");counter = 0;}
+if (counter)                                   //Print them out 10 at a time
+{if (counter == 10)
+String_to_PC_Basic("\r\n");
+Int_to_PC_Basic(prime_num); 
+Char_to_PC_Basic(' ');
+counter -= 1;
 
-}
+if(!(counter)){counter = 10;}}
+
+}}
 
 /***************************************************************************************************************************/
-char prime_num_check(int Num)
+
+
+unsigned long next_prime_number(unsigned long num){
+ 
+ while (!(prime_num_check(++num)));
+ return num;}
+
+
+
+
+char prime_num_check(unsigned int Num)
 {            
 int i = 2;                        
 int m;                            
