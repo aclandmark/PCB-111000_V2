@@ -36,7 +36,7 @@ unsigned long next_prime_number(unsigned long num){
 
 
 /***************************************************************************************************************************/
-char prime_num_check(unsigned int Num)
+char prime_num_check_OLD(unsigned int Num)
 {            
 int i = 2;                        
 int m;                            
