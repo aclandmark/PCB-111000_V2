@@ -39,7 +39,7 @@ unsigned long next_prime_number(unsigned long num){
 
 
 /***************************************************************************************************************************/
-char prime_num_check(unsigned int Num)
+char prime_num_check_OLD(unsigned int Num)
 {            
 int i = 2;                        
 int m;                            
@@ -57,6 +57,18 @@ return 1;}
 
 
 
-
+char prime_num_check(unsigned int Num)                        
+{   
+int i = 2;   
+int m;  
+ while(1){  
+if (i*i > Num)break;  
+m=0;
+while(1){
+if(i*(i+m) == Num)return 0;
+if(i*(i+m) > Num)break;
+m += 1;}  
+i += 1;}
+return 1;}
 
 /****************************************************************************************************************************/
