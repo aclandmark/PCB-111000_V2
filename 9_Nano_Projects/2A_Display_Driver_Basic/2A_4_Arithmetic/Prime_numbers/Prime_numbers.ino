@@ -14,7 +14,7 @@ String_to_PC_Basic("New method_2\r\n1  ");
  while(1){
 prime_num = next_prime_number(prime_num);
 
-if(prime_num > 100*group)
+if(prime_num > 200*group)
 {newline_Basic(); 
 counter = 10; 
 group += 1;
