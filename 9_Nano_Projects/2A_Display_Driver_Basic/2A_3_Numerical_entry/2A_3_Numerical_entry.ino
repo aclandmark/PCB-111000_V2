@@ -19,14 +19,14 @@ EEPROM usage
 
 #define zero "abcdef"                   //chars a,b,c,d,e and f are stored in an array named "zero"
 #define one "bc"                        //chars b and c are stored in an array named "one"
-#define two "abged"                     //Note: the compiler terminates each string in zero
+#define two "abdeg"                     //Note: the compiler terminates each string in zero
 #define three "abcdg"
-#define four "fgbc"
-#define five "afgcd"
-#define six "fegdc"
-#define seven "abc"
+#define four "bcfg"
+#define five "acdfg"
+#define six "gcdef"
+#define seven "bca"
 #define eight "abcdefg"
-#define nine "abcfg"
+#define nine "gabcf"
 
 
 
@@ -39,12 +39,26 @@ int digit_num=0;                                                    //defines nu
 const char* string_ptr = 0;                                         //pointer: will be loaded with the address of a segment string 
 setup_HW;                                                //(i.e. the address of string "zero", "one", "two" etc....) 
 
-if(watch_dog_reset != 1)String_to_PC_Basic("Send digits?");
-else String_to_PC_Basic("Again");
+
+if(watch_dog_reset != 1){
+
+Char_to_PC_Basic('0'); Char_to_PC_Basic('\t');Int_to_PC_Basic((int)zero);newline_Basic();
+Char_to_PC_Basic('1'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)one);newline_Basic();
+Char_to_PC_Basic('2'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)two);newline_Basic();
+Char_to_PC_Basic('3'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)three);newline_Basic();
+Char_to_PC_Basic('4'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)four);newline_Basic();
+Char_to_PC_Basic('5'); Char_to_PC_Basic('\t');Int_to_PC_Basic((int)five);newline_Basic();
+Char_to_PC_Basic('6'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)six);newline_Basic();
+Char_to_PC_Basic('7'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)seven);newline_Basic();
+Char_to_PC_Basic('8'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)eight);newline_Basic();
+Char_to_PC_Basic('9'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)nine);newline_Basic();
+String_to_PC_Basic("Send digits?");}
+
+else String_to_PC_Basic("\r\nAgain");
 
 I2C_Tx_any_segment_clear_all();
 
-while(1){
+//while(1){
 
 digit_num = 0;                                                      //First digit on display
 
@@ -70,8 +84,8 @@ display_num_string(string_ptr, digit_num);digit_num++;}
 while (digit_num < 8);                                              //return to the top of the "do" loop until all digits have been illuminated
 
 while(!(isCharavailable_Basic(1)))wdr(); Char_from_PC_Basic();
-I2C_Tx_any_segment_clear_all();}}                                                    //clear display and repeat
-
+I2C_Tx_any_segment_clear_all();//}                                                    //clear display and repeat
+SW_reset;}
 
 
 
