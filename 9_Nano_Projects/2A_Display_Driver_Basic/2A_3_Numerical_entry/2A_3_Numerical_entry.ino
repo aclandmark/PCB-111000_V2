@@ -14,7 +14,7 @@ EEPROM usage
 
 
 #include "Segment_driver_header.h"
-
+#include "Local_subroutines.c"
 
 
 #define zero "abcdef"                   //chars a,b,c,d,e and f are stored in an array named "zero"
@@ -28,43 +28,35 @@ EEPROM usage
 #define eight "abcdefg"
 #define nine "gabcf"
 
-
+const char *message_1 = "String memory dump\t";
+  const char *message_2 = "\r\nDigit\tAddress    String\r\n";
 
 
 
 int main (void){
 
-char   digit;
+char   digit='0';
 int digit_num=0;                                                    //defines number of next digit on display           
+int string_counter=0;
+int letter_counter=0;
 const char* string_ptr = 0;                                         //pointer: will be loaded with the address of a segment string 
+
+
 setup_HW;                                                //(i.e. the address of string "zero", "one", "two" etc....) 
 
 
 if(watch_dog_reset != 1){
-
-Char_to_PC_Basic('0'); Char_to_PC_Basic('\t');Int_to_PC_Basic((int)zero);newline_Basic();
-Char_to_PC_Basic('1'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)one);newline_Basic();
-Char_to_PC_Basic('2'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)two);newline_Basic();
-Char_to_PC_Basic('3'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)three);newline_Basic();
-Char_to_PC_Basic('4'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)four);newline_Basic();
-Char_to_PC_Basic('5'); Char_to_PC_Basic('\t');Int_to_PC_Basic((int)five);newline_Basic();
-Char_to_PC_Basic('6'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)six);newline_Basic();
-Char_to_PC_Basic('7'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)seven);newline_Basic();
-Char_to_PC_Basic('8'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)eight);newline_Basic();
-Char_to_PC_Basic('9'); Char_to_PC_Basic('\t');Int_to_PC_Basic((long)nine);newline_Basic();
-String_to_PC_Basic("Send digits?");}
+print_memory_contents;
+String_to_PC_Basic("\r\nSend digits?");}
 
 else String_to_PC_Basic("\r\nAgain");
 
 I2C_Tx_any_segment_clear_all();
 
-//while(1){
-
 digit_num = 0;                                                      //First digit on display
 
 do{                                                                 //start of "do{}while();" loop
 while(!(isCharavailable_Basic(1)))wdr(); digit = Char_from_PC_Basic();           //user enters digit (0 to 9) at the PC keyboard
-
 
 switch(digit){                                                      //The appropriate address is loaded into location "string_pointer"
 case '0': string_ptr = zero; break;                                 //The address of array zero is loaded into location "string_ptr"
@@ -78,13 +70,12 @@ case '7': string_ptr = seven; break;
 case '8': string_ptr = eight; break;
 case '9': string_ptr = nine; break;
 default: continue; break;}                                          //Illegal key press: Go immediately to the start of the do loop
-
                                                                     //Send the address of the required string to subroutine "display_num_string();"
 display_num_string(string_ptr, digit_num);digit_num++;} 
 while (digit_num < 8);                                              //return to the top of the "do" loop until all digits have been illuminated
 
 while(!(isCharavailable_Basic(1)))wdr(); Char_from_PC_Basic();
-I2C_Tx_any_segment_clear_all();//}                                                    //clear display and repeat
+I2C_Tx_any_segment_clear_all();                                                   //clear display and repeat
 SW_reset;}
 
 
@@ -111,4 +102,4 @@ default: break;}char_ptr++;}}                                       //incrementi
 
 
 
-/************************************************************************************************************************/                                                                 
+/************************************************************************************************************************/ 
