@@ -4,8 +4,8 @@
 
 #include "Interrupt_basic_header.h"
 
-//volatile long PORT_1 = 1, PORT_2 = 0x8000;                            //For example 1, 2 and 3
-//volatile int m = 0, n = 0;                                            //Extras for example 3
+volatile long PORT_1 = 1, PORT_2 = 0x8000;                            //For example 1, 2 and 3
+volatile int m = 0, n = 0;                                            //Extras for example 3
 
 volatile unsigned int PRN;                                            //For example 4
 unsigned char PRN_counter = 0;                                        //For example 4
