@@ -67,6 +67,14 @@ Char_to_PC_Basic(s[i++]);}}												//Transmit character and increment "i" so
 
 
 /**********************************************************************************************************************************************************************************/
+void Num_string_to_PC_Basic(char s[]){
+{int m = 0;while(1)
+{if(!(s[m]))break; 
+else Char_to_PC_Basic(s[m++]);}}}
+
+
+
+/**********************************************************************************************************************************************************************************/
 char decimal_digit_Basic (char data){											//Returns 1 if data is a character of 0 to 9 inclusive
 if (((data > '9') || (data < '0')) )return 0;							//Otherwise return zero
 else return 1;}
