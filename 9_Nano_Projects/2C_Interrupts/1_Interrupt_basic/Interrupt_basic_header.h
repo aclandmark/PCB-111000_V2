@@ -7,6 +7,23 @@ char str_counter;
 
 #define switch_1_down  ((PIND & 0x04)^0x04)
 
+#define set_up_PCI_on_sw2               PCICR |= (1 << PCIE0);
+#define enable_pci_on_sw2               PCMSK0 |= (1 << PCINT6);
+#define set_up_PCI_on_sw1_and_sw3       PCICR |= (1 << PCIE2);
+#define enable_pci_on_sw1_and_sw3       PCMSK2 |= (1 << PCINT18) | (1 << PCINT23);
+
+
+#define switch_3_down  ((PIND & 0x80)^0x80)
+#define switch_3_up   (PIND & 0x80)
+#define switch_1_down ((PIND & 0x04)^0x04)
+#define switch_1_up   (PIND & 0x04)
+#define switch_2_down ((PINB & 0x40)^0x40)
+#define switch_2_up   (PINB & 0x40)
+
+
+
+
+
 /*****************************************************************************/
 #define setup_HW \
 setup_watchdog;\
