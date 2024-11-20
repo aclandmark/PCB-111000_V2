@@ -7,13 +7,13 @@ extern volatile char num_present;
 
 /*******************************************************************************************************/
 char Int_to_String_Basic (long number, char * s)
-{ int i = 11;
+{ int i = 11;                                               //Save characters starting from the end of the array rather than the begining
 for(int m = 0; m <= 11; m++)s[m] = 0;
    do
   { *(s+i) = number % 10 + '0'; i-=1;  }
   while ((number = number / 10) > 0);
  
-if (i >= 0){
+if (i >= 0){                                                //Shift the characters from the end of the array to the beginning
 for(int m = 1; m <=(11-i); m++)*(s + m-1) = *(s + m+i); 
 *(s + 11-i) = '.';}
  return (12-i);}
@@ -46,7 +46,6 @@ else break;
 start_value += 1;
 product = 1.0;}}
 str_ptr = Int_to_String_Basic(result, result_as_string); //Char_to_PC_Basic('.');
-
 
 /*****Improve iteration starting with one decimal place then 2, 3......up to 6 in all****/
 for(int p = 1; p <= 6; p++)
