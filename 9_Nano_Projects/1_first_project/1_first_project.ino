@@ -8,20 +8,27 @@ EEPROM usage
 #include "First_project_header.h"
 
 
- int main (void)                          //Example 1
+ int main (void)                          //Example 2A
   { unsigned int PORT_1;
+    int T1_period = 15;
+
 
   setup_HW;
-    PORT_1 = 1;
+  while(1){
+  PORT_1 = 1;
   for (int m = 0; m <= 15; m++)
-  {  I2C_Tx_2_integers(PORT_1, PORT_1);
-    Timer_T0_10mS_delay_x_m(12);
-   PORT_1 = PORT_1 << 1;
-   }
-  SW_reset;
-    }
+  {  I2C_Tx_2_integers(PORT_1 << m, PORT_1 << m);
+    Timer_T0_10mS_delay_x_m(T1_period);}
+for (int m = 14; m; m--)
+{  I2C_Tx_2_integers(PORT_1 << m, PORT_1 << m);
+    Timer_T0_10mS_delay_x_m(T1_period); }
+   if(switch_1_down)T1_period = Adjust_T1_period(T1_period);}}
 
-
+int Adjust_T1_period(int T1_period){
+  if (T1_period <= 1)T1_period = 15;
+  else
+  T1_period = T1_period *12/15;
+  return T1_period;}
 
 /**************************************************************************************************
 
@@ -74,8 +81,30 @@ for (int m = 14; m; m--)
    }
   while(1);
   }
-  
 
+
+  
+  ***********************************************************************************************
+int main (void)                          //Example 2A
+  { unsigned int PORT_1;
+    int T1_period = 15;
+
+  setup_HW;
+  while(1){
+  PORT_1 = 1;
+  for (int m = 0; m <= 15; m++)
+  {  I2C_Tx_2_integers(PORT_1 << m, PORT_1 << m);
+    Timer_T0_10mS_delay_x_m(T1_period);}
+for (int m = 14; m; m--)
+{  I2C_Tx_2_integers(PORT_1 << m, PORT_1 << m);
+    Timer_T0_10mS_delay_x_m(T1_period); }
+   if(switch_1_down)T1_period = Adjust_T1_period(T1_period);}}
+
+int Adjust_T1_period(int T1_period){
+  if (T1_period <= 1)T1_period = 15;
+  else
+  T1_period = T1_period *12/15;
+  return T1_period;}
 
 
 
