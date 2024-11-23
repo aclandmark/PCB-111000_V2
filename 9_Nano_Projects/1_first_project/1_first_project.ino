@@ -6,26 +6,19 @@ EEPROM usage
 
 
 #include "First_project_header.h"
-#include "Local_subroutines.c"
 
-unsigned int PRN;
-unsigned char PRN_counter;
+int main (void)                          //Example 1
+  { unsigned int PORT_1;
 
- int main (void)   
-  {int T1_period = 15;
-  char direction;
-  char seg_counter;
   setup_HW;
-  
-  I2C_Tx_any_segment_clear_all();
-  PRN_counter = 0;
-  PRN = PRN_16bit_GEN (0, &PRN_counter);
-   direction=1;
-  while(1){
-     direction ^= 1;
-   seg_counter=0;
- PRN = update_display(T1_period, direction, seg_counter, PRN);
- if(switch_1_down); else T1_period = Adjust_T1_period(T1_period);}}
+    PORT_1 = 1;
+  for (int m = 0; m <= 15; m++)
+  {  I2C_Tx_2_integers(PORT_1, PORT_1);
+    Timer_T0_10mS_delay_x_m(12);
+   PORT_1 = PORT_1 << 1;
+   }
+  SW_reset;
+    }
   
  
 /**************************************************************************************************
@@ -47,7 +40,9 @@ int main (void)                          //Example 1
    }
   SW_reset;
     }
-  
+
+
+  ***********************************************************************************************
 int main (void)                          //Example 1A
   { unsigned int PORT_1;
 
@@ -273,7 +268,7 @@ int main (void)                          //Example 8
 unsigned int PRN;
 unsigned char PRN_counter;
 
- int main (void)   
+ int main (void)                             //Example 9
   {int T1_period = 15;
   char direction;
   char seg_counter;
