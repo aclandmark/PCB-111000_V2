@@ -6,30 +6,28 @@ EEPROM usage
 
 
 #include "First_project_header.h"
+#include "Local_subroutines.c"
 
+unsigned int PRN;
+unsigned char PRN_counter;
 
- int main (void)                          //Example 2A
-  { unsigned int PORT_1;
-    int T1_period = 15;
-
-
+ int main (void)   
+  {int T1_period = 15;
+  char direction;
+  char seg_counter;
   setup_HW;
+  
+  I2C_Tx_any_segment_clear_all();
+  PRN_counter = 0;
+  PRN = PRN_16bit_GEN (0, &PRN_counter);
+   direction=1;
   while(1){
-  PORT_1 = 1;
-  for (int m = 0; m <= 15; m++)
-  {  I2C_Tx_2_integers(PORT_1 << m, PORT_1 << m);
-    Timer_T0_10mS_delay_x_m(T1_period);}
-for (int m = 14; m; m--)
-{  I2C_Tx_2_integers(PORT_1 << m, PORT_1 << m);
-    Timer_T0_10mS_delay_x_m(T1_period); }
-   if(switch_1_down)T1_period = Adjust_T1_period(T1_period);}}
-
-int Adjust_T1_period(int T1_period){
-  if (T1_period <= 1)T1_period = 15;
-  else
-  T1_period = T1_period *12/15;
-  return T1_period;}
-
+     direction ^= 1;
+   seg_counter=0;
+ PRN = update_display(T1_period, direction, seg_counter, PRN);
+ if(switch_1_down); else T1_period = Adjust_T1_period(T1_period);}}
+  
+ 
 /**************************************************************************************************
 
   Use this area for saving the examples when they have been got working and finished with
@@ -100,11 +98,6 @@ for (int m = 14; m; m--)
     Timer_T0_10mS_delay_x_m(T1_period); }
    if(switch_1_down)T1_period = Adjust_T1_period(T1_period);}}
 
-int Adjust_T1_period(int T1_period){
-  if (T1_period <= 1)T1_period = 15;
-  else
-  T1_period = T1_period *12/15;
-  return T1_period;}
 
 
 
@@ -275,56 +268,26 @@ int main (void)                          //Example 8
 
 *****************Example 9: The default program****************************************************
  
- char display_bkp[7];
- 
- int main (void)                          //Example 9
-  { char letter = 0;
-  char digit_num = 0;
-  char seg_counter = 0;
-  char direction = 0;
-  unsigned int PRN;
-  unsigned char PRN_counter;
+#include "Local_subroutines.c"
 
+unsigned int PRN;
+unsigned char PRN_counter;
+
+ int main (void)   
+  {int T1_period = 15;
+  char direction;
+  char seg_counter;
   setup_HW;
-  wdt_enable(WDTO_30MS);
+  
   I2C_Tx_any_segment_clear_all();
-  while(switch_1_down)wdr();
-
-
   PRN_counter = 0;
   PRN = PRN_16bit_GEN (0, &PRN_counter);
-
-  while (1)
-  { while (seg_counter < 56) {
-      letter = (PRN % 7) + 'a';
-      PRN = PRN_16bit_GEN (PRN, &PRN_counter);
-      digit_num = (PRN % 8);
-      if ((!(direction)) && (display_bkp[letter - 'a'] & (1 << digit_num))) {
-        PRN_counter -= 1;
-        continue;
-      }
-      if ((direction) && (!(display_bkp[letter - 'a'] & (1 << digit_num)))) {
-        PRN_counter -= 1;
-        continue;
-      }
-      I2C_Tx_any_segment(letter, digit_num);
-      backup_the_display(letter, digit_num);
-      seg_counter += 1;
-      Timer_T0_10mS_delay_x_m(8);
-       while(switch_1_down);
-    }
-    direction ^= 1;
-    seg_counter = 0;
-    Timer_T0_10mS_delay_x_m(50);
-  }
-  SW_reset;
-  return 1;
-  }
-
-  void backup_the_display(char segment, char digit_num)
-  { display_bkp[segment - 'a'] =
-    display_bkp[segment - 'a'] ^ (1 << digit_num);
-  }
+   direction=1;
+  while(1){
+     direction ^= 1;
+   seg_counter=0;
+ PRN = update_display(T1_period, direction, seg_counter, PRN);
+ if(switch_1_down); else T1_period = Adjust_T1_period(T1_period);}}
 
 
 
