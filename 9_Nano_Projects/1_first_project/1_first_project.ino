@@ -78,6 +78,8 @@ for (int m = 14; m; m--)
 
   
   ***********************************************************************************************
+#include "Local_subroutines.c"
+
 int main (void)                          //Example 2A
   { unsigned int PORT_1;
     int T1_period = 15;
