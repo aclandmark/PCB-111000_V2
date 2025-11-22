@@ -1,5 +1,48 @@
 Partlist
 
+Capacitors
+
+18pF (C7, C8)				2 OFF
+10nF (C9, C15, C16, C17)  	4 OFF			RS 199-2068
+100nF (C1, C2, C6) 			3 OFF			RS 669-8417
+4.7uF (C3, C5)				2 OFF			RS 723-5076
+
+C4, C10 to 14 missing
+
+Resistors
+
+220R (R27, R28)				2 OFF			RS 812-1849
+330R (R20 to 26)			7 OFF			RS 257-3195		
+560R R15, R16)				2 OFF			RS 679-2225
+3K9	(R5, R17, R18)			3 OFF			RS 242-6578
+10K	 (R2, R3, R8, R14)		4 OFF			RS 679-1765
+22K	(R7, R9)				2 OFF			RS 223-2439
+
+R1, R4, R6, R11, R12, R13 missing
+
+Others
+
+4_DIGIT_7SEGMENT_DISPLAY Common Anode RE 55-1674                                                      
+4_DIGIT_7SEGMENT_DISPLAY Common Anode RE 55-1674                                                     
+
+Atmega 328
+Atmega 168
+
+CA_DUAL_LED             1 OFF 		RS228-5770 
+
+CP2102 					1 OFF
+DPDT switch				1 OFF		RE 76-0100 
+SM NO push button 		1 OFF		RE 51-0709 
+Push button switch		3 OFF		RE 51-0711
+Watch Crystal 			1 OFF		RS 197-708	OK
+MOSFET ZVN3306FTA		1 OFF		RS 275-945	OK
+
+
+
+
+
+OLD list
+
 Two versions of PCB 111000 are available
 
 Displays 
@@ -10,35 +53,14 @@ Displays
 PCB 2 layer board 85mm by 40mm
 	
 
-IC1      FT230XS   	RS 757-0010				Ordered from RS
 IC2      ATMEGA 168 	RS 127-8268				Ordered from RS                 
 IC3      ATMEGA 328    	RS131-0275				Ordered from RS
-L1       CHOKE		RS 724-1582 				Ordered from RS                   
+                 
 
 Transistor	275-945		ZVN3306FTA			Ordered from RS
 
 
-
-27R 		RE 62-1803		R1, R4			Got loads					
-100R 		RS 223-2120		R10			Ordered from RS					
-220R 		RS 223-2164		R19, R27, R28		Got 50				
-220R		RS 223-2164		R20-26			Got 50 
-
-560R 		RS 223-2221		R15,16			Got 12		
-
-3K9  		RS 223-2344		R5-6, R17-18		Ordered from RS					
-10K  		RS 679-1765		R2-3, R8, R14		Ordered from RS					
-22K 		RS 223-2439		R7, R9			Ordered from RS						
-
-18pF		RS 648-0935					Got loads			
-47p		RS 669-8628		C2, C5			Ordered from RS						
-10n		RS 264-4141		C1, C9, C15-17		Got loads					
-
-100n		RS 434-8104		C3, C6			Got loads		
-4.7uF		RS 691-1224		C4			Got loads					
-1uF		RS 434-8110					Got loads
-				
-Xtal		RS 226-0725					Ordered from RS					
+			
 
 SW1		RE 76-0100 (78-0560)	DPDT			Ordered from RE							
 SW2		RE 51-0709 (51-0708)	NO push button (SM)	Got 7			
