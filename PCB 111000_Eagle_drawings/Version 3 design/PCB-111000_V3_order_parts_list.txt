@@ -1,4 +1,4 @@
-Partlist
+Partslist
 
 Capacitors
 
